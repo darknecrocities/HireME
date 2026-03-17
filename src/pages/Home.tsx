@@ -38,9 +38,9 @@ const item = {
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-black">
+    <div className="min-h-screen bg-black flex flex-col">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-32 pb-40 px-4">
+      <section className="relative overflow-hidden pt-24 md:pt-32 pb-24 md:pb-40 px-4 flex-1 flex flex-col justify-center">
         {/* Strict dark blue glow */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-blue-900/10 blur-[120px] rounded-full pointer-events-none" />
         
@@ -59,7 +59,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-6xl sm:text-7xl lg:text-8xl font-black text-white leading-tight mb-8 tracking-tighter"
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[1.1] mb-8 tracking-tighter"
           >
             THE FUTURE OF
             <br />
@@ -115,7 +115,7 @@ export default function Home() {
               <motion.div key={feature.title} variants={item}>
                 <Link
                   to={feature.path}
-                  className="block glass-card-hover p-12 h-full no-underline border-white/5 group"
+                  className="flex flex-col justify-between glass-card-hover p-10 h-full no-underline border-white/5 group"
                 >
                   <div className="w-16 h-16 rounded-3xl flex items-center justify-center mb-8 border border-white/10 group-hover:border-blue-500/50 transition-colors"
                     style={{ background: 'rgba(255,255,255,0.02)' }}>
@@ -136,8 +136,8 @@ export default function Home() {
       </section>
 
       {/* Corporate Branding Footer */}
-      <footer className="border-t border-white/5 bg-black py-20 px-4">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-10">
+      <footer className="border-t border-white/5 bg-black py-16 px-4 mt-auto">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center md:items-start justify-between gap-10">
           <div className="flex flex-col items-center md:items-start">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center">

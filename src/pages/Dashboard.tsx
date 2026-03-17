@@ -99,7 +99,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
           <ScoreCard label="TOTAL SESSIONS" value={stats.totalSessions} maxValue={50} icon={BarChart3} color="blue" />
           <ScoreCard label="NEURAL AVERAGE" value={stats.avgScore} maxValue={100} icon={Target} color="violet" />
           <ScoreCard label="PEAK PERFORMANCE" value={stats.bestScore} maxValue={100} icon={Award} color="emerald" />
@@ -117,7 +117,7 @@ export default function Dashboard() {
               <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
               Neural Score Projection
             </h3>
-            <div className="h-80 w-full">
+            <div className="h-64 sm:h-80 w-full min-h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
@@ -144,7 +144,7 @@ export default function Dashboard() {
               <Smile className="w-4 h-4 text-blue-500" />
               Emotional Quotient
             </h3>
-            <div className="h-60 w-full mb-6">
+            <div className="h-48 sm:h-60 w-full mb-6 min-h-[200px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -209,8 +209,8 @@ export default function Dashboard() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-8">
-                    <div className="flex flex-col items-end">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 w-full sm:w-auto mt-4 sm:mt-0">
+                    <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto">
                       <span className="text-xl font-black text-white">{session.type === 'interview' ? session.aiAnalysis.interviewScore : session.aiAnalysis.resumeScore}</span>
                       <span className="text-[9px] font-black text-slate-600 uppercase">Neural Score</span>
                     </div>
