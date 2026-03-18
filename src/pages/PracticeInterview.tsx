@@ -4,6 +4,7 @@ import { Video, Mic, MicOff, Clock, CheckCircle2, Send, Sparkles, StopCircle, Ey
 import { useMediaPipe } from '../hooks/useMediaPipe';
 import { useAI } from '../hooks/useAI';
 import { useFirestore } from '../hooks/useFirestore';
+import { useAudioAnalysis } from '../hooks/useAudioAnalysis';
 import BodyLanguageOverlay from '../components/BodyLanguageOverlay';
 import type { InterviewMessage } from '../types';
 
@@ -22,6 +23,8 @@ export default function PracticeInterview() {
   const [feedback, setFeedback] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  
+  const { audioScore, isSpeaking, volume } = useAudioAnalysis(sessionStarted && !showFeedback);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
@@ -37,6 +40,12 @@ export default function PracticeInterview() {
     }
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [sessionStarted, showFeedback]);
+
+  useEffect(() => {
+    if (sessionStarted && !showFeedback) {
+      scores.audio = audioScore;
+    }
+  }, [audioScore, sessionStarted, showFeedback, scores]);
 
   const formatTime = (s: number) => {
     const m = Math.floor(s / 60);
@@ -62,7 +71,7 @@ export default function PracticeInterview() {
     stop();
 
     const fb = await getFeedback(
-      { eyeContact: scores.eyeContact, posture: scores.posture, gestures: scores.gestures },
+      { eyeContact: scores.eyeContact, posture: scores.posture, gestures: scores.gestures, confidence: scores.confidence, audio: scores.audio },
       `${role} interview in ${industry}`
     );
 
@@ -83,7 +92,9 @@ export default function PracticeInterview() {
         gesturesScore: scores.gestures,
         crucialMoments: [],
         detectedEmotion: emotion,
-        detectedGesture: gesture
+        detectedGesture: gesture,
+        confidenceScore: scores.confidence,
+        audioScore: scores.audio
       },
       feedback: fb
     });

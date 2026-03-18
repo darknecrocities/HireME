@@ -44,7 +44,7 @@ export function useAI() {
   }, []);
 
   const getFeedback = useCallback(async (
-    scores: { eyeContact: number; posture: number; gestures: number },
+    scores: { eyeContact: number; posture: number; gestures: number; confidence: number; audio: number },
     interviewType: string
   ): Promise<string> => {
     setLoading(true);

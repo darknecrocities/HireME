@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import type { BodyLanguageScores } from '../types';
-import { Eye, PersonStanding, Hand } from 'lucide-react';
+import { Eye, PersonStanding, Hand, Shield, Volume2 } from 'lucide-react';
 
 interface Props {
   scores: BodyLanguageScores;
@@ -27,6 +27,8 @@ export default function BodyLanguageOverlay({ scores, isActive }: Props) {
     { icon: Eye, label: 'Eye Contact', value: scores.eyeContact },
     { icon: PersonStanding, label: 'Posture', value: scores.posture },
     { icon: Hand, label: 'Gestures', value: scores.gestures },
+    { icon: Shield, label: 'Confidence', value: scores.confidence },
+    { icon: Volume2, label: 'Vocal Score', value: scores.audio },
   ];
 
   return (

@@ -35,6 +35,8 @@ export interface BodyLanguageData {
   crucialMoments: CrucialMoment[];
   detectedEmotion?: string;
   detectedGesture?: string;
+  confidenceScore: number;
+  audioScore: number;
 }
 
 export interface Session {
@@ -82,6 +84,8 @@ export interface BodyLanguageScores {
   eyeContact: number;
   posture: number;
   gestures: number;
+  confidence: number;
+  audio: number;
   overall: number;
 }
 

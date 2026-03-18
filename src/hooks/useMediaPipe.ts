@@ -1,10 +1,14 @@
 import { useRef, useCallback, useState, useEffect } from 'react';
 import type { BodyLanguageScores } from '../types';
-const { FaceMesh, FACEMESH_TESSELATION, FACEMESH_RIGHT_EYE, FACEMESH_LEFT_EYE } = window as any;
-const { Hands, HAND_CONNECTIONS } = window as any;
-const { Pose, POSE_CONNECTIONS } = window as any;
-const { Camera } = window as any;
-const { drawConnectors, drawLandmarks } = window as any;
+
+// Accessing MediaPipe from window globals because direct ESM imports
+// in Vite 8 are incompatible with these UMD bundles.
+const { FaceMesh, FACEMESH_TESSELATION, FACEMESH_RIGHT_EYE, FACEMESH_LEFT_EYE, FACEMESH_LEFT_EYEBROW, FACEMESH_RIGHT_EYEBROW, FACEMESH_LIPS, FACEMESH_FACE_OVAL } = (window as any);
+const { Pose, POSE_CONNECTIONS } = (window as any);
+const { Hands, HAND_CONNECTIONS } = (window as any);
+const { Camera } = (window as any);
+const { drawConnectors, drawLandmarks } = (window as any);
+
 
 export function useMediaPipe() {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -14,6 +18,8 @@ export function useMediaPipe() {
     eyeContact: 0,
     posture: 0,
     gestures: 0,
+    confidence: 0,
+    audio: 0,
     overall: 0,
   });
   
@@ -29,10 +35,11 @@ export function useMediaPipe() {
   const cameraRef = useRef<any | null>(null);
   const animFrameRef = useRef<number | null>(null);
 
-  const scoreHistory = useRef<{ eye: number[]; posture: number[]; gesture: number[] }>({
+  const scoreHistory = useRef<{ eye: number[]; posture: number[]; gesture: number[]; confidence: number[] }>({
     eye: [],
     posture: [],
     gesture: [],
+    confidence: [],
   });
 
   const smoothScore = useCallback((history: number[], newValue: number, windowSize = 20): number => {
@@ -57,24 +64,51 @@ export function useMediaPipe() {
     let baseEye = 40;
     let basePosture = 40;
     let baseGesture = 30;
+    let baseConfidence = 50;
 
-    if (face?.multiFaceLandmarks?.length > 0) baseEye = 85 + (Math.random() - 0.5) * 10;
-    if (pose?.poseLandmarks) basePosture = 90 + (Math.random() - 0.5) * 10;
-    if (hands?.multiHandLandmarks?.length > 0) baseGesture = 80 + (Math.random() - 0.5) * 10;
+    if (face?.multiFaceLandmarks?.length > 0) {
+      const landmarks = face.multiFaceLandmarks[0];
+      // Basic head orientation check: distance between eyes vs nose center
+      const leftEye = landmarks[33];
+      const rightEye = landmarks[263];
+      const noseTip = landmarks[1];
+      
+      const headCenter = (leftEye.x + rightEye.x) / 2;
+      const horizontalOffset = Math.abs(noseTip.x - headCenter);
+      
+      // If offset is high, head is turned
+      const headTurnBonus = Math.max(0, 100 - (horizontalOffset * 500));
+      baseEye = 70 + (headTurnBonus * 0.3);
+      baseConfidence = 60 + (headTurnBonus * 0.4);
+    }
+
+    if (pose?.poseLandmarks) {
+      basePosture = 85 + (Math.random() - 0.5) * 5;
+      baseConfidence += 5;
+    }
+    
+    if (hands?.multiHandLandmarks?.length > 0) {
+      baseGesture = 80 + (Math.random() - 0.5) * 10;
+      baseConfidence += 5;
+    }
 
     const eyeVal = smoothScore(scoreHistory.current.eye, Math.max(0, Math.min(100, baseEye)));
     const postureVal = smoothScore(scoreHistory.current.posture, Math.max(0, Math.min(100, basePosture)));
     const gestureVal = smoothScore(scoreHistory.current.gesture, Math.max(0, Math.min(100, baseGesture)));
-    const overall = Math.round((eyeVal + postureVal + gestureVal) / 3);
+    const confidenceVal = smoothScore(scoreHistory.current.confidence, Math.max(0, Math.min(100, baseConfidence)));
+    
+    // Audio will be handled by a separate hook/useEffect, keeping it at current or 0 for now
+    const audioVal = scores.audio;
+    const overall = Math.round((eyeVal + postureVal + gestureVal + confidenceVal + audioVal) / 5);
 
-    setScores({ eyeContact: eyeVal, posture: postureVal, gestures: gestureVal, overall });
+    setScores({ eyeContact: eyeVal, posture: postureVal, gestures: gestureVal, confidence: confidenceVal, audio: audioVal, overall });
 
-    const currentEmo = eyeVal > 85 ? 'Highly Focused' : (gestureVal > 80 ? 'Expressive' : 'Analytical');
-    const currentGes = gestureVal > 50 ? 'Active Hands' : 'Still';
+    const currentEmo = confidenceVal > 80 ? 'Highly Confident' : (eyeVal > 80 ? 'Attentive' : 'Processing');
+    const currentGes = gestureVal > 60 ? 'Engaged' : 'Calm';
     
     setEmotion(currentEmo);
     setGesture(currentGes);
-  }, [smoothScore]);
+  }, [smoothScore, scores.audio]);
 
   const drawFrame = useCallback(() => {
     if (!canvasRef.current || !videoRef.current) return;
@@ -136,21 +170,30 @@ export function useMediaPipe() {
     updateScores();
   }, [updateScores]);
 
-  const initMediaPipe = useCallback(() => {
-    const faceMesh = new FaceMesh({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
-    faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-    faceMesh.onResults((res: any) => onResults('face', res));
-    faceMeshRef.current = faceMesh;
+  const initMediaPipe = useCallback(async () => {
+    if (faceMeshRef.current) return;
 
-    const pose = new Pose({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}` });
-    pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-    pose.onResults((res: any) => onResults('pose', res));
-    poseRef.current = pose;
+    try {
+      const faceMesh = new FaceMesh({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
+      faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+      faceMesh.onResults((res: any) => onResults('face', res));
+      await faceMesh.initialize();
+      faceMeshRef.current = faceMesh;
 
-    const hands = new Hands({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-    hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-    hands.onResults((res: any) => onResults('hands', res));
-    handsRef.current = hands;
+      const pose = new Pose({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}` });
+      pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+      pose.onResults((res: any) => onResults('pose', res));
+      await pose.initialize();
+      poseRef.current = pose;
+
+      const hands = new Hands({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+      hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+      hands.onResults((res: any) => onResults('hands', res));
+      await hands.initialize();
+      handsRef.current = hands;
+    } catch (e) {
+      console.error('MediaPipe initialization failed:', e);
+    }
   }, [onResults]);
 
   const start = useCallback(async () => {
@@ -166,7 +209,7 @@ export function useMediaPipe() {
     }
 
     setIsActive(true);
-    if (!faceMeshRef.current) initMediaPipe();
+    if (!faceMeshRef.current) await initMediaPipe();
 
     if (videoRef.current) {
       const camera = new Camera(videoRef.current, {
