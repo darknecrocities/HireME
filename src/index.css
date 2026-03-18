@@ -4,8 +4,9 @@
 @theme {
   --color-black-pure: #000000;
   --color-blue-deep: #050a18;
-  --color-blue-accent: #1e3a8a; /* Indigo/Navy mix */
-  --color-blue-glow: #3b82f6; 
+  --color-blue-accent: #1e3a8a;
+  /* Indigo/Navy mix */
+  --color-blue-glow: #3b82f6;
   --color-slate-400: #94a3b8;
   --color-slate-300: #cbd5e1;
   --color-accent-blue: #3b82f6;
@@ -19,26 +20,48 @@
   --color-glass-white: rgba(255, 255, 255, 0.04);
   --color-glass-border: rgba(255, 255, 255, 0.08);
   --font-family-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --nav-h: 5rem;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --nav-h: 4.5rem;
+  }
 }
 
 /* ===== Global Resets & Base Styles ===== */
 * {
-  margin: 0;
-  padding: 0;
+  /* margin: 0; */
+  /* padding: 0; */
   box-sizing: border-box;
 }
 
 html {
+  margin: 0;
+  padding: 0;
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #1e293b transparent;
+  scrollbar-gutter: stable;
 }
 
 body {
+  margin: 0;
+  padding: 0;
   font-family: var(--font-family-sans);
   background: var(--color-black-pure);
   color: var(--color-slate-300);
   min-height: 100vh;
+  overflow-x: hidden;
+  width: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
 }
 
 /* ===== Glassmorphism Utilities (Deeper for black theme) ===== */
@@ -87,45 +110,42 @@ body {
 /* ===== Background Mesh (Strict Blue/Black) ===== */
 .mesh-background {
   background-color: var(--color-black-pure);
-  background-image: 
+  background-image:
     radial-gradient(circle at 10% 20%, rgba(5, 10, 24, 1) 0%, transparent 40%),
     radial-gradient(circle at 90% 80%, rgba(5, 10, 24, 0.8) 0%, transparent 40%),
     radial-gradient(circle at 50% 50%, rgba(30, 58, 138, 0.05) 0%, transparent 50%);
 }
 
-/* ===== Scrollbar ===== */
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: var(--color-black-pure);
-}
-
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 3px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
-}
+/* ===== Scrollbar: Uses modern scrollbar-color/width properties instead of
+   ::-webkit-scrollbar, which forces Chrome out of overlay scrollbar mode. ===== */
 
 /* ===== Loading Animations ===== */
 @keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
 }
 
 .loading-shimmer {
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0) 100%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0) 100%);
   background-size: 200% 100%;
   animation: shimmer 2s infinite;
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
 .float-animation {

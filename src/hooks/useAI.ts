@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { generateInterviewQuestion, analyzeResume, generateSessionFeedback } from '../services/gemini';
 import type { ResumeAnalysisResult } from '../types';
 
 export function useAI() {
@@ -9,12 +8,14 @@ export function useAI() {
   const getInterviewQuestion = useCallback(async (
     role: string,
     previousAnswer: string = '',
-    context: string = ''
+    context: string = '',
+    questionNumber: number = 1
   ): Promise<string> => {
     setLoading(true);
     setError(null);
     try {
-      const question = await generateInterviewQuestion(role, previousAnswer, context);
+      const { generateInterviewQuestion } = await import('../services/gemini');
+      const question = await generateInterviewQuestion(role, previousAnswer, context, questionNumber);
       return question;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to generate question';
@@ -32,6 +33,7 @@ export function useAI() {
     setLoading(true);
     setError(null);
     try {
+      const { analyzeResume } = await import('../services/gemini');
       const result = await analyzeResume(resumeText, jobDescription);
       return result;
     } catch (err) {
@@ -43,19 +45,21 @@ export function useAI() {
     }
   }, []);
 
-  const getFeedback = useCallback(async (
+  const getFullSessionAnalysis = useCallback(async (
+    transcript: { question: string; answer: string }[],
     scores: { eyeContact: number; posture: number; gestures: number; confidence: number; audio: number },
-    interviewType: string
-  ): Promise<string> => {
+    role: string
+  ): Promise<any> => {
     setLoading(true);
     setError(null);
     try {
-      const feedback = await generateSessionFeedback(scores, interviewType);
-      return feedback;
+      const { analyzeFullSession } = await import('../services/gemini');
+      const result = await analyzeFullSession(transcript, scores, role);
+      return result;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to generate feedback';
       setError(message);
-      return '';
+      return null;
     } finally {
       setLoading(false);
     }
@@ -66,6 +70,6 @@ export function useAI() {
     error,
     getInterviewQuestion,
     getResumeAnalysis,
-    getFeedback,
+    getFullSessionAnalysis,
   };
 }

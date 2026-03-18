@@ -9,42 +9,49 @@ import {
   Menu,
   X,
   Sparkles,
-  ShieldCheck
+  User,
+  LogOut,
+  Zap
 } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
+import { useProfile } from '../hooks/useProfile';
 
 const navItems = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/resume', label: 'Resume', icon: FileText },
   { path: '/interview', label: 'Interview', icon: Video },
   { path: '/dashboard', label: 'Analytics', icon: BarChart3 },
+  { path: '/pricing', label: 'Pricing', icon: Zap },
 ];
 
 export default function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, logout } = useAuth();
+  const { profile } = useProfile();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5"
-      style={{ background: 'rgba(0, 0, 0, 0.8)', backdropFilter: 'blur(30px)' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="sticky top-0 w-full z-50 border-b border-white/5"
+      style={{ background: 'rgba(0, 0, 0, 0.8)', backdropFilter: 'blur(30px)', height: 'var(--nav-h)' }}>
+      <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-20">
           {/* Logo & Branding */}
-          <Link to="/" className="flex items-center gap-3 no-underline group">
-            <div className="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(37,99,235,0.4)] group-hover:scale-110 transition-transform">
-              <Sparkles className="w-6 h-6 text-white" />
+          <Link to="/" className="flex items-center gap-4 no-underline group flex-shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center shadow-[0_0_30px_rgba(37,99,235,0.4)] group-hover:scale-110 transition-all duration-500">
+              <Sparkles className="w-7 h-7 text-white" />
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-black text-white tracking-tighter leading-none">
+              <span className="text-2xl font-black text-white tracking-tighter leading-none">
                 HIRE<span className="text-blue-500">ME</span>
               </span>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">
-                BY TAIM TEAM
+              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1">
+                PREMIUM AI ENGINE
               </span>
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-2 lg:gap-6">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
@@ -52,10 +59,10 @@ export default function Navbar() {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className="relative px-5 py-2.5 rounded-xl text-sm font-semibold no-underline transition-all duration-300"
+                  className="relative px-4 lg:px-6 py-2.5 rounded-xl text-xs lg:text-sm font-black no-underline transition-all duration-300 uppercase tracking-widest"
                   style={{ 
-                    color: isActive ? '#fff' : '#94a3b8',
-                    background: isActive ? 'rgba(255,255,255,0.05)' : 'transparent'
+                    color: isActive ? '#fff' : '#475569',
+                    background: isActive ? 'rgba(59,130,246,0.1)' : 'transparent'
                   }}
                 >
                   <span className="flex items-center gap-2">
@@ -65,19 +72,40 @@ export default function Navbar() {
                   {isActive && (
                     <motion.div
                       layoutId="nav-glow"
-                      className="absolute -bottom-[1px] left-4 right-4 h-[2px] bg-blue-500 shadow-[0_0_10px_#3b82f6]"
+                      className="absolute -bottom-[1px] left-4 right-4 h-[2px] bg-blue-500 shadow-[0_0_15px_#3b82f6]"
                     />
                   )}
                 </Link>
               );
             })}
             
-            <div className="w-px h-6 bg-white/10 mx-4" />
+            <div className="w-px h-8 bg-white/10 mx-2 lg:mx-4" />
             
-            <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600 text-white text-xs font-bold hover:bg-blue-700 transition-colors">
-              <ShieldCheck className="w-4 h-4" />
-              VERIFIED AI
-            </button>
+            <div className="flex items-center gap-4">
+              {user ? (
+                <div className="flex items-center gap-4">
+                  <div className="flex flex-col items-end">
+                    <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">{profile?.occupation || 'Digital Entity'}</span>
+                    <span className="text-[10px] font-bold text-white max-w-[150px] truncate">{profile?.fullName || user.email}</span>
+                  </div>
+                  <button 
+                    onClick={() => logout()}
+                    className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
+                    title="Sign Out"
+                  >
+                    <LogOut className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <Link to="/auth" className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-violet-600 rounded-xl blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
+                  <div className="relative flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black text-white text-[10px] font-black tracking-[0.2em] hover:bg-blue-600/10 transition-all border border-blue-500/30">
+                    <User className="w-3.5 h-3.5 text-blue-400 group-hover:animate-pulse" />
+                    JOIN SYSTEM
+                  </div>
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* Mobile Toggle */}
@@ -120,6 +148,27 @@ export default function Navbar() {
                   </Link>
                 );
               })}
+              
+              {!user && (
+                <Link
+                  to="/auth"
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-4 px-6 py-4 rounded-2xl text-base font-black text-blue-500 bg-blue-500/10 no-underline"
+                >
+                  <User className="w-5 h-5" />
+                  JOIN SYSTEM
+                </Link>
+              )}
+              
+              {user && (
+                <button
+                  onClick={() => { logout(); setMobileOpen(false); }}
+                  className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-base font-black text-rose-500 bg-rose-500/10 border-none text-left cursor-pointer"
+                >
+                  <LogOut className="w-5 h-5" />
+                  LOGOUT
+                </button>
+              )}
             </div>
           </motion.div>
         )}

@@ -60,8 +60,10 @@ export default function ScoreCard({ label, value, maxValue = 100, icon: Icon, co
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
-      className="glass-card-hover p-6"
+      className="glass-card group hover:scale-[1.02] transition-all duration-500 p-6 border-white/5 hover:border-blue-500/20 shadow-xl"
     >
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-violet-500/10 rounded-2xl blur-xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
+      <div className="relative">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: `${color}15` }}>
@@ -83,6 +85,7 @@ export default function ScoreCard({ label, value, maxValue = 100, icon: Icon, co
           className="h-full rounded-full"
           style={{ background: `linear-gradient(90deg, ${color}, ${color}99)` }}
         />
+      </div>
       </div>
     </motion.div>
   );

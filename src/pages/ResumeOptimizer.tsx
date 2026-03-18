@@ -2,37 +2,91 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FileText, Sparkles, CheckCircle2, AlertCircle, Loader2, RotateCcw, Target, Award } from 'lucide-react';
 import { useAI } from '../hooks/useAI';
+import { useUsageLimit } from '../hooks/useUsageLimit';
+import { Link } from 'react-router-dom';
 import type { ResumeAnalysisResult } from '../types';
 
 export default function ResumeOptimizer() {
   const [resumeText, setResumeText] = useState('');
   const [jobDescription, setJobDescription] = useState('');
   const [results, setResults] = useState<ResumeAnalysisResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { loading, getResumeAnalysis } = useAI();
+  const { hasReachedLimit, incrementUsage } = useUsageLimit();
 
   const handleAnalyze = async () => {
-    if (!resumeText || !jobDescription) return;
+    if (hasReachedLimit('resume')) {
+      return; // Handled by UI overlay
+    }
+    
+    if (!resumeText.trim()) {
+      setError('Neural scan requires resume data input.');
+      return;
+    }
+    if (!jobDescription.trim()) {
+      setError('Neural scan requires job description input.');
+      return;
+    }
+
+    setError(null); // Clear any previous errors
     const data = await getResumeAnalysis(resumeText, jobDescription);
     setResults(data);
+    incrementUsage('resume');
   };
 
   const reset = () => {
     setResults(null);
     setResumeText('');
     setJobDescription('');
+    setError(null);
   };
 
   return (
-    <div className="min-h-screen px-4 py-20 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
+    <div className="min-h-screen bg-black pt-24 pb-20 px-6 relative overflow-hidden">
+      {hasReachedLimit('resume') && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="relative w-full max-w-lg p-10 rounded-[40px] bg-white/[0.03] border border-white/10 shadow-[0_0_50px_rgba(59,130,246,0.15)] backdrop-blur-2xl text-center"
+          >
+            <div className="mb-8 flex justify-center">
+              <div className="w-20 h-20 rounded-3xl bg-blue-600/20 flex items-center justify-center border border-blue-500/30">
+                <Sparkles className="w-10 h-10 text-blue-400" />
+              </div>
+            </div>
+            <h2 className="text-3xl font-black text-white tracking-tighter mb-4 uppercase">Neural Trial Ended</h2>
+            <p className="text-slate-400 font-medium text-sm leading-relaxed mb-10">
+              You've reached the 1-use limit for guest entities. To unlock unlimited neural optimization and save your progress, upgrade to the full system.
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              <Link
+                to="/pricing"
+                className="py-4 rounded-2xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)]"
+              >
+                View Tiers
+              </Link>
+              <Link
+                to="/auth"
+                className="py-4 rounded-2xl bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+              >
+                Sign Up
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      )}
+      {/* Background Glows */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
       
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="max-w-[1400px] mx-auto relative z-10 w-full flex-1 flex flex-col items-center justify-center">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 text-[10px] font-black tracking-widest uppercase"
             style={{ background: 'rgba(30, 58, 138, 0.4)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}>
@@ -42,6 +96,11 @@ export default function ResumeOptimizer() {
           <h1 className="text-5xl font-black text-white mb-4 tracking-tighter">
             PRO<span className="gradient-text">FILE</span> OPTIMIZER
           </h1>
+          {error && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2 justify-center">
+              <AlertCircle className="w-4 h-4" /> {error}
+            </motion.div>
+          )}
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-500">
             Arron Kian Parejas Personal Edition
           </p>
@@ -109,10 +168,10 @@ export default function ResumeOptimizer() {
               key="results"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="space-y-8"
+              className="w-full space-y-8"
             >
               {/* Score Header */}
-              <div className="glass-card p-12 border-white/5 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden">
+              <div className="glass-card p-12 border-blue-500/10 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden shadow-2xl">
                 <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_20px_#3b82f6]" />
                 
                 <div className="relative">

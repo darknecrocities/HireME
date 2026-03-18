@@ -20,6 +20,13 @@ export interface AIAnalysis {
   semanticGaps?: string[];
   interviewScore?: number;
   STARCompleteness?: STARCompleteness;
+  hiringProbability?: number;
+  improvementChecklist?: string[];
+  confidenceScore?: number;
+  technicalFeedback?: string;
+  bodyLanguageFeedback?: string;
+  vocalFeedback?: string;
+  top3JobRecommendations?: { title: string; reason: string }[];
 }
 
 export interface CrucialMoment {
@@ -49,6 +56,7 @@ export interface Session {
   aiAnalysis: AIAnalysis;
   bodyLanguage: BodyLanguageData;
   feedback: string;
+  fullAnalysis?: any;
 }
 
 // ===== UI State Types =====

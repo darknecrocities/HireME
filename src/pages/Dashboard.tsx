@@ -70,10 +70,13 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-20 bg-black">
-      <div className="max-w-7xl mx-auto">
+    <div className="flex-1 px-4 py-12 bg-black relative overflow-hidden flex flex-col items-center">
+      {/* Background Glows */}
+      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
+      <div className="max-w-7xl mx-auto w-full">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -118,7 +121,7 @@ export default function Dashboard() {
               Neural Score Projection
             </h3>
             <div className="h-64 sm:h-80 w-full min-h-[250px]">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.03)" vertical={false} />
                   <XAxis dataKey="name" stroke="#475569" fontSize={10} fontWeight="bold" axisLine={false} tickLine={false} />
@@ -145,7 +148,7 @@ export default function Dashboard() {
               Emotional Quotient
             </h3>
             <div className="h-48 sm:h-60 w-full mb-6 min-h-[200px]">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={150}>
                 <PieChart>
                   <Pie
                     data={emotionData.length > 0 ? emotionData : [{ name: 'Neutral', value: 1 }]}
@@ -202,10 +205,13 @@ export default function Dashboard() {
                       <p className="text-sm font-black text-white uppercase tracking-tight">
                         {session.type === 'interview' ? `${session.employerIndustry} Interview` : 'Resume Analysis'}
                       </p>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-3 mt-1">
                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{new Date(session.startTime).toLocaleDateString()}</p>
                         <span className="text-white/10">•</span>
-                        <p className="text-[10px] font-black text-blue-500 uppercase tracking-widest">{(session.bodyLanguage?.detectedEmotion as string) || 'Stable'}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-[9px] font-black text-emerald-500 uppercase tracking-widest">Hire: {session.aiAnalysis?.hiringProbability || 0}%</p>
+                          <p className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Conf: {session.aiAnalysis?.confidenceScore || 0}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
