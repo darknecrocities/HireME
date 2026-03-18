@@ -1,67 +1,85 @@
-# HireME: Next-Gen AI Interview Coaching Platform
+# 💎 HireME: Neural Career Achievement Matrix
 
-HireME is a futuristic, AI-powered interview coaching application that leverages local neural models and Google's Gemini API to provide real-time, behavioral, and semantic feedback to candidates. Built with modern web technologies, it offers a secure, instant, and privacy-focused training experience directly in the browser.
+> **The Future of Interview Mastery.** Powered by Gemini AI & Real-time Neural Tracking.
 
-![Dashboard Preview](docs/dashboard-preview.png)
-
-## Features
-- **Virtual Interview Portal**: Real-time behavioral practice powered by Google Gemini.
-- **Neural Body Language Tracking**: Local, client-side tracking of eye contact, posture, and hand gestures using MediaPipe (Zero Python/Server dependency!).
-- **Resume Optimizer**: AI-driven analysis for ATS keyword matching and STAR method achievement mapping.
-- **Dynamic Dashboard**: Comprehensive session logging and emotional quotient analytics.
-- **Glassmorphism UI**: High-end, futuristic dark-mode responsive design.
-
-## Architecture Highlights
-- **Frontend**: React 18, React Router v6, Tailwind CSS v4, Framer Motion for animations.
-- **Computer Vision**: `@mediapipe/face_mesh`, `@mediapipe/hands`, and `@mediapipe/pose` executing securely in the browser via JavaScript.
-- **AI/LLM**: Google Generative AI (`gemini-2.5-flash`) for dynamic interview questions and feedback generation.
-- **Database/Auth**: Firebase Firestore for session data persistence.
-- **Build Tool**: Vite for blazing fast hot module replacement and optimized production builds.
-
-## Setup Instructions
-
-### Prerequisites
-- Node.js (v18 or higher)
-- A Google Gemini API Key. [Get one here](https://aistudio.google.com/app/apikey).
-- (Optional) A Firebase Project for database storage.
-
-### 1. Installation
-Clone the repository and install dependencies:
-```bash
-git clone https://github.com/darknecrocities/HireME.git
-cd HireME
-npm install
-```
-
-### 2. Environment Configuration
-Create a `.env` file in the root directory and add your API credentials. You can copy the provided template:
-```bash
-cp .env.example .env
-```
-Inside `.env`, insert your Gemini API Key:
-```env
-VITE_GEMINI_API_KEY="your_gemini_api_key_here"
-```
-
-### 3. Start Development Server
-Run the local development server:
-```bash
-npm run dev
-```
-Navigate to `http://localhost:5173` in your browser.
-
-## Important Note on MediaPipe
-This application utilizes highly optimized **JavaScript** implementations of MediaPipe rather than Python. 
-1. **Zero Latency**: Models process your webcam feed locally on your machine's CPU/GPU instantly. No round-trip server delay.
-2. **Privacy First**: Your video stream never leaves your browser. No frames are sent over the internet for processing.
-3. **No Complex Backends**: By avoiding Python (FastAPI/Flask + WebSockets), the application can be deployed statically (e.g., to Vercel, Netlify, or GitHub Pages) for free.
-
-## Build for Production
-To generate a production-ready static build:
-```bash
-npm run build
-```
-The optimized files will be located in the `dist/` directory.
+HireME is a high-performance, futuristic AI interview coaching platform designed to elevate candidates through real-time behavioral analysis and semantic feedback. By merging Google's **Gemini Pro** models with local **MediaPipe** neural networks, HireME delivers an unparalleled, privacy-first training experience directly in your browser.
 
 ---
-*Built for Excellence ✨ 2026 TAIM TEAM*
+
+## 🔥 Key Features
+
+-   **📽️ Neural Interview Portal**: Engage with a dynamic AI interviewer that adapts its behavior and questions based on your role and industry.
+-   **👁️ Bio-Metric Tracking**: Industry-leading, client-side tracking of **eye contact, posture, and hand gestures** (powered by MediaPipe).
+-   **🧠 Semantic Analysis**: Real-time feedback on answer quality, **STAR method** completeness, and hiring probability.
+-   **📈 Evolution Dashboard**: Track your growth over time with high-fidelity session history and emotional quotient analytics.
+-   **🎨 Glassmorphic Interface**: A premium, high-prestige UI built for the elite professional, featuring advanced dark-mode aesthetics.
+
+---
+
+## 🛠️ Extensive Tech Stack
+
+### ⚡ Core Frontend
+-   **React 18**: High-performance UI library with modern Concurrent Mode and Hooks.
+-   **Vite**: Next-generation frontend tooling for lightning-fast HMR and optimized builds.
+-   **Tailwind CSS**: Utility-first CSS framework for rapid, responsive UI development.
+-   **Framer Motion**: State-of-the-art animation library for professional-grade transitions.
+-   **Lucide React**: Premium icon set for consistent and high-tech visual language.
+
+### 🤖 Artificial Intelligence & Neural Engines
+-   **Google Gemini Pro (v2.5 Flash)**: Advanced LLM for semantic evaluation and dynamic question generation.
+-   **MediaPipe (Iris, Face, Pose, Hands)**: Real-time computer vision models executing securely via **WebAssembly** in the browser.
+-   **Web Speech API**: Real-time speech-to-text processing for low-latency session transcripts.
+
+### ☁️ Cloud & Backend Infrastructure
+-   **Firebase Authentication**: Secure, enterprise-grade user identity management.
+-   - **Firestore**: Real-time NoSQL database for session persistence and profile data.
+-   **Firebase Analytics**: Advanced telemetry to track user engagement and system performance.
+
+### 🔌 External Integrations
+-   **[TheirStack API](https://app.theirstack.com/)**: Specialized API for real-time job market data and technical stack analysis.
+
+---
+
+## 🚀 Future Roadmap
+
+We are constantly evolving. Our upcoming releases will include:
+
+1.  **💼 Live Job Posting Engine**: Direct integration with **TheirStack API** to pull real-time job openings tailored to your skill set and performance data.
+2.  **📄 Automated AI Resume Builder**: A neural-engine that takes your interview performance and automatically constructs a high-converting, ATS-optimized resume.
+3.  **🔊 Vocal Tonality Analysis**: Advanced audio processing to analyze pitch, speed, and filler-word usage for a complete communication audit.
+
+---
+
+## 📥 Installation & Setup
+
+1.  **Clone the Neural Matrix**:
+    ```bash
+    git clone https://github.com/darknecrocities/HireME.git
+    cd HireME
+    ```
+2.  **Initialize Node Modules**:
+    ```bash
+    npm install
+    ```
+3.  **Environment Calibration**:
+    Create a `.env` file and populate it with your security keys:
+    ```env
+	VITE_GEMINI_API_KEY="YOUR_KEY"
+	VITE_FIREBASE_API_KEY="YOUR_KEY"
+	# ... follow .env.example
+    ```
+4.  **Ignite the Engine**:
+    ```bash
+    npm run dev
+    ```
+
+---
+
+## 🔒 Security & Privacy
+
+-   **Local Processing**: All camera and video data stays on your device. We use **Zero-Latency Neural Models** (MediaPipe) that never upload your video stream to any server.
+-   **Encrypted Sync**: Session data is encrypted and synced only to your private Firebase instance.
+
+---
+
+*Engineered with precision for the next generation of professionals. ✨ 2026 TAIM TEAM*
