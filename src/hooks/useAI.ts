@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { ResumeAnalysisResult } from '../types';
+import type { ResumeAnalysisResult, EnhancedResume } from '../types';
 
 export function useAI() {
   const [loading, setLoading] = useState(false);
@@ -45,6 +45,25 @@ export function useAI() {
     }
   }, []);
 
+  const getEnhancedResume = useCallback(async (
+    resumeText: string,
+    targetJob?: string
+  ): Promise<EnhancedResume | null> => {
+    setLoading(true);
+    setError(null);
+    try {
+      const { generateEnhancedResume } = await import('../services/gemini');
+      const result = await generateEnhancedResume(resumeText, targetJob);
+      return result;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to enhance resume';
+      setError(message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const getFullSessionAnalysis = useCallback(async (
     transcript: { question: string; answer: string }[],
     scores: { eyeContact: number; posture: number; gestures: number; confidence: number; audio: number },
@@ -70,6 +89,7 @@ export function useAI() {
     error,
     getInterviewQuestion,
     getResumeAnalysis,
+    getEnhancedResume,
     getFullSessionAnalysis,
   };
 }

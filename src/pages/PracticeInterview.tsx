@@ -31,11 +31,134 @@ export default function PracticeInterview() {
   const [transcript, setTranscript] = useState<{ question: string; answer: string }[]>([]);
   const [questionCount, setQuestionCount] = useState(0);
   
+  const [showInstructions, setShowInstructions] = useState(true);
+  const [countdown, setCountdown] = useState(0);
+  const [answerTimer, setAnswerTimer] = useState(0);
+  const [isAnswering, setIsAnswering] = useState(false);
+  
+  const [displayedAIQuestion, setDisplayedAIQuestion] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  
   const { audioScore } = useAudioAnalysis(sessionStarted && !showFeedback);
+  const [preferredVoice, setPreferredVoice] = useState<SpeechSynthesisVoice | null>(null);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+
+  const speak = useCallback((text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      
+      if (preferredVoice) {
+        utterance.voice = preferredVoice;
+      } else {
+        // Fallback search if state not yet set
+        const voices = window.speechSynthesis.getVoices();
+        const maleVoice = voices.find(v => 
+          v.name.toLowerCase().includes('male') || 
+          v.name.toLowerCase().includes('guy') || 
+          v.name.toLowerCase().includes('alex') || 
+          v.name.toLowerCase().includes('daniel') ||
+          v.name.toLowerCase().includes('david') ||
+          v.name.toLowerCase().includes('microsoft david')
+        );
+        if (maleVoice) utterance.voice = maleVoice;
+      }
+
+      utterance.rate = 0.9;
+      utterance.pitch = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+  }, [preferredVoice]);
+
+  const startListening = () => {
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+      alert('Speech recognition is not supported in this browser.');
+      return;
+    }
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-US';
+    recognition.onresult = (event: any) => {
+      let transcriptText = '';
+      for (let i = 0; i < event.results.length; i++) transcriptText += event.results[i][0].transcript;
+      setUserInput(transcriptText);
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+    recognition.start();
+    recognitionRef.current = recognition;
+    setIsListening(true);
+  };
+
+  const stopListening = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    }
+  };
+
+  const toggleListening = () => {
+    if (isListening) {
+      stopListening();
+    } else {
+      startListening();
+    }
+  };
+
+  useEffect(() => {
+    if (countdown > 0) {
+      countdownRef.current = setTimeout(() => setCountdown(c => c - 1), 1000);
+    } else if (countdown === 0 && sessionStarted && !isAnswering && messages.length > 0 && messages[messages.length-1].role === 'ai') {
+      setIsAnswering(true);
+      setAnswerTimer(30);
+      // Auto-start listening when answering starts
+      if (!isListening) {
+        startListening();
+      }
+    }
+    return () => { if (countdownRef.current) clearTimeout(countdownRef.current); };
+  }, [countdown, sessionStarted, isAnswering, messages, isListening]);
+
+  useEffect(() => {
+    const lastMessage = messages[messages.length - 1];
+    if (lastMessage?.role === 'ai' && sessionStarted) {
+      setIsTyping(true);
+      setDisplayedAIQuestion('');
+      let currentText = '';
+      const text = lastMessage.content;
+      const chars = text.split('');
+      let i = 0;
+      
+      const interval = setInterval(() => {
+        if (i < chars.length) {
+          currentText += chars[i];
+          setDisplayedAIQuestion(currentText);
+          i++;
+        } else {
+          setIsTyping(false);
+          clearInterval(interval);
+        }
+      }, 30); // Speed of typing
+      
+      return () => clearInterval(interval);
+    }
+  }, [messages, sessionStarted]);
+
+  useEffect(() => {
+    if (isAnswering && answerTimer > 0) {
+      answerTimerRef.current = setTimeout(() => setAnswerTimer(t => t - 1), 1000);
+    } else if (isAnswering && answerTimer === 0) {
+      sendAnswer();
+    }
+    return () => { if (answerTimerRef.current) clearTimeout(answerTimerRef.current); };
+  }, [isAnswering, answerTimer]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -54,6 +177,26 @@ export default function PracticeInterview() {
     }
   }, [audioScore, sessionStarted, showFeedback, scores]);
 
+  useEffect(() => {
+    const updateVoices = () => {
+      const voices = window.speechSynthesis.getVoices();
+      const maleVoice = voices.find(v => 
+        v.lang.startsWith('en') && (
+          v.name.toLowerCase().includes('male') || 
+          v.name.toLowerCase().includes('guy') || 
+          v.name.toLowerCase().includes('alex') || 
+          v.name.toLowerCase().includes('daniel') ||
+          v.name.toLowerCase().includes('david')
+        )
+      );
+      if (maleVoice) setPreferredVoice(maleVoice);
+    };
+
+    updateVoices();
+    window.speechSynthesis.onvoiceschanged = updateVoices;
+    return () => { window.speechSynthesis.onvoiceschanged = null; };
+  }, []);
+
   const formatTime = (s: number) => {
     const m = Math.floor(s / 60);
     const sec = s % 60;
@@ -70,14 +213,19 @@ export default function PracticeInterview() {
     setStar({ situation: false, task: false, action: false, result: false });
     setTranscript([]);
     setQuestionCount(1);
+    setCountdown(15);
+    setIsAnswering(false);
 
     await start();
     const question = await getInterviewQuestion(role, '', `Industry: ${industry}`, 1);
     setMessages([{ role: 'ai', content: question, timestamp: new Date() }]);
+    speak(question);
   };
 
   const endSession = async () => {
     if (timerRef.current) clearInterval(timerRef.current);
+    if (countdownRef.current) clearTimeout(countdownRef.current);
+    if (answerTimerRef.current) clearTimeout(answerTimerRef.current);
     stop();
 
     const analysis = await getFullSessionAnalysis(
@@ -126,11 +274,15 @@ export default function PracticeInterview() {
   };
 
   const sendAnswer = useCallback(async () => {
-    if (!userInput.trim() || aiLoading) return;
-    const answer = userInput.trim();
+    if (aiLoading) return;
+    const answer = userInput.trim() || "(No response provided)";
     const currentQuestion = messages[messages.length - 1].content;
     
+    setIsAnswering(false);
+    setAnswerTimer(0);
     setUserInput('');
+    stopListening();
+    setDisplayedAIQuestion('');
     setMessages(prev => [...prev, { role: 'user', content: answer, timestamp: new Date() }]);
     setTranscript(prev => [...prev, { question: currentQuestion, answer }]);
 
@@ -139,37 +291,12 @@ export default function PracticeInterview() {
       setQuestionCount(nextCount);
       const question = await getInterviewQuestion(role, answer, `Industry: ${industry}`, nextCount);
       setMessages(prev => [...prev, { role: 'ai', content: question, timestamp: new Date() }]);
+      setCountdown(15);
+      speak(question);
     } else {
       setMessages(prev => [...prev, { role: 'ai', content: "Great! We've covered the core topics. Click 'Complete Session' below to see your full neural analysis report.", timestamp: new Date() }]);
     }
   }, [userInput, aiLoading, role, industry, getInterviewQuestion, messages, questionCount]);
-
-  const toggleListening = () => {
-    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      alert('Speech recognition is not supported in this browser.');
-      return;
-    }
-    if (isListening && recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsListening(false);
-      return;
-    }
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = 'en-US';
-    recognition.onresult = (event: any) => {
-      let transcriptText = '';
-      for (let i = 0; i < event.results.length; i++) transcriptText += event.results[i][0].transcript;
-      setUserInput(transcriptText);
-    };
-    recognition.onerror = () => setIsListening(false);
-    recognition.onend = () => setIsListening(false);
-    recognition.start();
-    recognitionRef.current = recognition;
-    setIsListening(true);
-  };
 
   return (
     <div className="flex-1 w-full px-4 py-12 flex flex-col items-center justify-center relative overflow-hidden">
@@ -226,81 +353,149 @@ export default function PracticeInterview() {
           <p className="text-sm font-bold uppercase tracking-widest text-slate-500">Personal Edition</p>
         </motion.div>
 
-        <AnimatePresence mode="wait">
-          {!sessionStarted ? (
-            <div key="setup" className="w-full flex items-center justify-center py-10">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="w-full max-w-2xl glass-card p-10 border-blue-900/20 shadow-2xl"
-              >
-                <h2 className="text-xl font-black text-white mb-8 border-b border-white/5 pb-4">Session Parameters</h2>
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Goal Role</label>
-                    <input
-                      type="text"
-                      value={role}
-                      onChange={(e) => setRole(e.target.value)}
-                      className="w-full px-5 py-4 rounded-2xl text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-mono"
-                      style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.05)' }}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Target Industry</label>
-                    <select
-                      value={industry}
-                      onChange={(e) => setIndustry(e.target.value)}
-                      className="w-full px-5 py-4 rounded-2xl text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none font-mono"
-                      style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.05)' }}
-                    >
-                      {['Technology', 'Finance', 'Healthcare', 'Consulting', 'Marketing', 'Education'].map(i => (
-                        <option key={i} value={i} style={{ background: '#000' }}>{i}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <button
-                    onClick={startSession}
-                    className="w-full flex items-center justify-center gap-3 px-8 py-5 rounded-3xl text-white font-black text-base transition-all hover:scale-[1.02] shadow-[0_10px_30px_rgba(37,99,235,0.3)]"
-                    style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', border: 'none', cursor: 'pointer' }}
-                  >
-                    <Video className="w-5 h-5" />
-                    INITIATE AI SESSION
-                  </button>
+      <AnimatePresence mode="wait">
+        {showInstructions ? (
+          <motion.div
+            key="instructions"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="fixed inset-0 z-[110] flex items-center justify-center px-4"
+          >
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
+            <div className="relative w-full max-w-2xl glass-card p-10 border-blue-900/30 overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
+              <div className="flex flex-col items-center text-center space-y-6">
+                <div className="w-20 h-20 rounded-3xl bg-blue-600/10 flex items-center justify-center border border-blue-500/20 ring-1 ring-blue-500/10">
+                  <CheckCircle2 className="w-10 h-10 text-blue-400" />
                 </div>
-              </motion.div>
-            </div>
-          ) : (
-            <motion.div key="session" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full">
-              {/* Main Session Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
-                <div className="lg:col-span-8 flex flex-col gap-4">
-                  <div className="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10" style={{ background: '#000', aspectRatio: '16/9' }}>
-                    <canvas ref={canvasRef} className="w-full h-full object-cover" style={{ display: isActive ? 'block' : 'none' }} />
-                    <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ display: !isActive ? 'block' : 'none', transform: 'scaleX(-1)' }} />
-                    <BodyLanguageOverlay scores={scores} isActive={isActive} />
-                    <div className="absolute top-6 left-6 flex items-center gap-4">
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/5">
-                        <Clock className="w-4 h-4 text-blue-500" />
-                        <span className="text-sm font-black text-white">{formatTime(timer)}</span>
-                      </div>
-                    </div>
+                <div>
+                  <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Neural Interview Protocol</h2>
+                  <p className="text-[10px] font-black text-slate-500 tracking-[0.4em] uppercase">Session Guidelines & Preparation</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full text-left">
+                  <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
+                    <p className="text-[10px] font-black text-blue-400 mb-1 uppercase tracking-widest">01. PREPARATION</p>
+                    <p className="text-xs text-slate-400 font-bold leading-relaxed">Each question granted 15s preparation time with voice synchronization.</p>
                   </div>
-                  <div className="flex items-center justify-between px-2">
-                    <div className="flex items-center gap-3">
-                      <button onClick={toggleMesh} className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${showMesh ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400'}`} style={{ border: 'none', cursor: 'pointer' }}>
-                        <Eye className="w-4 h-4" /> {showMesh ? 'Disable AI Mesh' : 'Enable AI Mesh'}
-                      </button>
-                      <button onClick={toggleListening} className={`p-3 rounded-2xl transition-all ${isListening ? 'bg-rose-600/20 border-rose-500/50' : 'bg-white/5 border-white/10'}`} style={{ border: '1px solid', cursor: 'pointer' }}>
-                        {isListening ? <MicOff className="w-5 h-5 text-rose-500" /> : <Mic className="w-5 h-5 text-slate-400" />}
-                      </button>
+                  <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
+                    <p className="text-[10px] font-black text-violet-400 mb-1 uppercase tracking-widest">02. RESPONSE</p>
+                    <p className="text-xs text-slate-400 font-bold leading-relaxed">Maximum 30s response window per question for neural precision.</p>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
+                    <p className="text-[10px] font-black text-emerald-400 mb-1 uppercase tracking-widest">03. DURATION</p>
+                    <p className="text-xs text-slate-400 font-bold leading-relaxed">Standardized 3-question evaluation path for diagnostic accuracy.</p>
+                  </div>
+                  <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
+                    <p className="text-[10px] font-black text-rose-400 mb-1 uppercase tracking-widest">04. ANALYSIS</p>
+                    <p className="text-xs text-slate-400 font-bold leading-relaxed">Real-time body language and vocal tone biometric tracking.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowInstructions(false)}
+                  className="w-full py-5 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)]"
+                >
+                  INITIALIZE SYSTEM
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ) : !sessionStarted ? (
+          <div key="setup" className="w-full flex items-center justify-center py-10">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="w-full max-w-2xl glass-card p-10 border-blue-900/20 shadow-2xl"
+            >
+              <h2 className="text-xl font-black text-white mb-8 border-b border-white/5 pb-4">Session Parameters</h2>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Goal Role</label>
+                  <input
+                    type="text"
+                    value={role}
+                    onChange={(e) => setRole(e.target.value)}
+                    className="w-full px-5 py-4 rounded-2xl text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-mono"
+                    style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.05)' }}
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Target Industry</label>
+                  <select
+                    value={industry}
+                    onChange={(e) => setIndustry(e.target.value)}
+                    className="w-full px-5 py-4 rounded-2xl text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none font-mono"
+                    style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.05)' }}
+                  >
+                    {['Technology', 'Finance', 'Healthcare', 'Consulting', 'Marketing', 'Education'].map(i => (
+                      <option key={i} value={i} style={{ background: '#000' }}>{i}</option>
+                    ))}
+                  </select>
+                </div>
+                <button
+                  onClick={startSession}
+                  className="w-full flex items-center justify-center gap-3 px-8 py-5 rounded-3xl text-white font-black text-base transition-all hover:scale-[1.02] shadow-[0_10px_30px_rgba(37,99,235,0.3)]"
+                  style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', border: 'none', cursor: 'pointer' }}
+                >
+                  <Video className="w-5 h-5" />
+                  INITIATE AI SESSION
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        ) : (
+          <motion.div key="session" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full">
+            {/* Main Session Grid */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
+              <div className="lg:col-span-8 flex flex-col gap-4">
+                <div className="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10" style={{ background: '#000', aspectRatio: '16/9' }}>
+                  <canvas ref={canvasRef} className="w-full h-full object-cover" style={{ display: isActive ? 'block' : 'none' }} />
+                  <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ display: !isActive ? 'block' : 'none', transform: 'scaleX(-1)' }} />
+                  <BodyLanguageOverlay scores={scores} isActive={isActive} />
+                  
+                  {/* Overlay Timers */}
+                  <AnimatePresence>
+                    {countdown > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 1.5 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.5 }}
+                        className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm"
+                      >
+                        <div className="text-[120px] font-black text-white leading-none tracking-tighter">{countdown}</div>
+                        <div className="text-xs font-black text-blue-400 uppercase tracking-[0.5em] mt-4">Preparing Question</div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <div className="absolute top-6 left-6 flex items-center gap-4">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/5">
+                      <Clock className="w-4 h-4 text-blue-500" />
+                      <span className="text-sm font-black text-white">{formatTime(timer)}</span>
                     </div>
-                    <button onClick={endSession} className={`flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-black text-xs uppercase tracking-widest transition-all ${questionCount >= 3 ? 'bg-blue-600 shadow-lg shadow-blue-900/40' : 'bg-rose-950/40 border border-rose-900/50 hover:bg-rose-900/60'}`} style={{ cursor: 'pointer' }}>
-                      {questionCount >= 3 ? <Sparkles className="w-5 h-5" /> : <StopCircle className="w-5 h-5" />} {questionCount >= 3 ? 'Complete Session' : 'Terminate Session'}
+                    {isAnswering && (
+                      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl backdrop-blur-md border ${answerTimer < 10 ? 'bg-rose-600/20 border-rose-500/30' : 'bg-emerald-600/20 border-emerald-500/30'}`}>
+                        <div className={`w-2 h-2 rounded-full animate-pulse ${answerTimer < 10 ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+                        <span className={`text-sm font-black ${answerTimer < 10 ? 'text-rose-400' : 'text-emerald-400'}`}>{answerTimer}s remaining</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-between px-2">
+                  <div className="flex items-center gap-3">
+                    <button onClick={toggleMesh} className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${showMesh ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400'}`} style={{ border: 'none', cursor: 'pointer' }}>
+                      <Eye className="w-4 h-4" /> {showMesh ? 'Disable AI Mesh' : 'Enable AI Mesh'}
+                    </button>
+                    <button onClick={toggleListening} className={`p-3 rounded-2xl transition-all ${isListening ? 'bg-rose-600/20 border-rose-500/50' : 'bg-white/5 border-white/10'}`} style={{ border: '1px solid', cursor: 'pointer' }}>
+                      {isListening ? <MicOff className="w-5 h-5 text-rose-500" /> : <Mic className="w-5 h-5 text-slate-400" />}
                     </button>
                   </div>
+                  <button onClick={endSession} className={`flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-black text-xs uppercase tracking-widest transition-all ${questionCount >= 3 ? 'bg-blue-600 shadow-lg shadow-blue-900/40' : 'bg-rose-950/40 border border-rose-900/50 hover:bg-rose-900/60'}`} style={{ cursor: 'pointer' }}>
+                    {questionCount >= 3 ? <Sparkles className="w-5 h-5" /> : <StopCircle className="w-5 h-5" />} {questionCount >= 3 ? 'Complete Session' : 'Terminate Session'}
+                  </button>
                 </div>
+              </div>
 
                 <div className="lg:col-span-4 flex flex-col glass-card border-white/5" style={{ height: '600px' }}>
                   <div className="p-5 border-b border-white/5 bg-white/5">
@@ -314,17 +509,60 @@ export default function PracticeInterview() {
                     </div>
                   </div>
                   <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                    {messages.map((msg, i) => (
-                      <motion.div key={i} initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }} animate={{ opacity: 1, x: 0 }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[90%] rounded-2xl px-5 py-4 text-xs font-bold leading-relaxed ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white/5 text-slate-300 rounded-tl-none border border-white/10'}`}>
-                          {msg.role === 'ai' && <div className="text-[10px] font-black text-blue-400 mb-2 uppercase tracking-widest flex items-center gap-2"><Sparkles className="w-3 h-3" /> Digital Coach</div>}
-                          {msg.content}
+                    {messages.map((msg, i) => {
+                      const isLastAI = i === messages.length - 1 && msg.role === 'ai';
+                      return (
+                        <motion.div key={i} initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }} animate={{ opacity: 1, x: 0 }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`max-w-[90%] rounded-2xl px-5 py-4 text-xs font-bold leading-relaxed ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white/5 text-slate-300 rounded-tl-none border border-white/10'}`}>
+                            {msg.role === 'ai' && <div className="text-[10px] font-black text-blue-400 mb-2 uppercase tracking-widest flex items-center gap-2"><Sparkles className="w-3 h-3" /> Digital Coach</div>}
+                            {isLastAI && isTyping ? (
+                              <div className="flex flex-col gap-2">
+                                <span>{displayedAIQuestion}</span>
+                                <span className="inline-block w-1.5 h-4 bg-blue-500/50 animate-pulse ml-1" />
+                              </div>
+                            ) : msg.content}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                    {/* Live User Transcript */}
+                    {isAnswering && userInput && (
+                      <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex justify-end">
+                        <div className="max-w-[90%] rounded-2xl px-5 py-4 text-xs font-bold leading-relaxed bg-blue-600/40 text-white/90 rounded-tr-none border border-blue-500/30 backdrop-blur-sm">
+                          <div className="text-[8px] font-black text-blue-300 mb-2 uppercase tracking-widest flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                            Live Transcription
+                          </div>
+                          {userInput}
+                          <span className="inline-block w-1.5 h-4 bg-white/50 animate-pulse ml-1" />
                         </div>
                       </motion.div>
-                    ))}
+                    )}
                     {aiLoading && <div className="flex gap-1 p-4"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" /><div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce delay-75" /><div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce delay-150" /></div>}
                     <div ref={chatEndRef} />
                   </div>
+
+                  {/* Submit Button Overlay */}
+                  <AnimatePresence>
+                    {isAnswering && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="p-4 pt-0"
+                      >
+                        <button
+                          onClick={sendAnswer}
+                          className="w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-[0.3em] transition-all shadow-[0_10px_30px_rgba(16,185,129,0.2)] flex items-center justify-center gap-3 active:scale-95"
+                          style={{ border: 'none', cursor: 'pointer' }}
+                        >
+                          <CheckCircle2 className="w-4 h-4" />
+                          SUBMIT ANSWER
+                        </button>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
                   <div className="p-4 bg-black/40">
                     <div className="flex items-center gap-2">
                       <input type="text" value={userInput} onChange={(e) => setUserInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') sendAnswer(); }} placeholder={isListening ? 'LISTENING_STREAM...' : 'TYPE RESPONSE...'} className="flex-1 px-5 py-4 rounded-2xl text-[10px] font-black text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 uppercase tracking-widest font-mono" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }} />

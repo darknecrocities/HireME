@@ -40,12 +40,33 @@ export function useFirestore() {
     setLoading(true);
     setError(null);
     try {
+      const collectionRef = collection(db, 'sessions');
       const q = query(
-        collection(db, 'sessions'), 
+        collectionRef, 
         where('userId', '==', user.uid), 
         orderBy('startTime', 'desc')
       );
-      const snapshot = await getDocs(q);
+      
+      let snapshot;
+      try {
+        snapshot = await getDocs(q);
+      } catch (err: any) {
+        // Fallback for missing index: query without orderBy and sort client-side
+        if (err.message?.includes('index')) {
+          const fallbackQ = query(collectionRef, where('userId', '==', user.uid));
+          snapshot = await getDocs(fallbackQ);
+          return snapshot.docs
+            .map(doc => ({
+              sessionId: doc.id,
+              ...doc.data(),
+              startTime: doc.data().startTime?.toDate?.() || new Date(),
+              endTime: doc.data().endTime?.toDate?.() || new Date(),
+            }))
+            .sort((a: any, b: any) => b.startTime.getTime() - a.startTime.getTime()) as Session[];
+        }
+        throw err;
+      }
+
       if (snapshot.empty) return [];
       return snapshot.docs.map(doc => ({
         sessionId: doc.id,
