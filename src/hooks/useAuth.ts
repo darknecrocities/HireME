@@ -4,10 +4,11 @@ import {
   createUserWithEmailAndPassword, 
   signOut, 
   onAuthStateChanged, 
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  signInWithPopup
 } from 'firebase/auth';
 import type { User } from 'firebase/auth';
-import { auth } from '../services/firebase';
+import { auth, googleProvider } from '../services/firebase';
 
 import { doc, setDoc } from 'firebase/firestore';
 import { db } from '../services/firebase';
@@ -69,6 +70,26 @@ export function useAuth() {
     }
   };
 
+  const loginWithGoogle = async () => {
+    setError(null);
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      
+      // Check if user has a profile in Firestore, if not create one
+      await setDoc(doc(db, 'users', user.uid), {
+        fullName: user.displayName || 'Google User',
+        email: user.email,
+        occupation: 'Professional', // Default
+        bday: '', // Default empty
+        createdAt: new Date().toISOString()
+      }, { merge: true });
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
   return {
     user,
     loading,
@@ -76,6 +97,7 @@ export function useAuth() {
     login,
     signup,
     logout,
-    resetPassword
+    resetPassword,
+    loginWithGoogle
   };
 }
