@@ -280,7 +280,7 @@ export default function ResumeOptimizer() {
   };
 
   return (
-    <div className="min-h-screen bg-black pt-24 pb-20 px-6 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-[#030817] text-white pt-36 pb-20 px-6 relative overflow-hidden">
       {hasReachedLimit('resume') && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
@@ -315,9 +315,12 @@ export default function ResumeOptimizer() {
           </motion.div>
         </div>
       )}
-      {/* Background Glows */}
-      <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
+      {/* Background glows */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute top-0 left-1/2 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-blue-700/15 blur-[140px]" />
+        <div className="absolute top-[38rem] right-[-10rem] h-[320px] w-[320px] rounded-full bg-cyan-500/10 blur-[110px]" />
+        <div className="absolute bottom-0 left-[-8rem] h-[320px] w-[320px] rounded-full bg-blue-600/10 blur-[110px]" />
+      </div>
       
       <div className="max-w-[1400px] mx-auto relative z-10 w-full flex-1 flex flex-col items-center justify-center">
         {/* Header */}
@@ -326,20 +329,19 @@ export default function ResumeOptimizer() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6 text-[10px] font-black tracking-widest uppercase"
-            style={{ background: 'rgba(30, 58, 138, 0.4)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}>
-            <Award className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-blue-300 mb-6">
+            <Award className="w-4 h-4" />
             Neural Achievement Matrix v4.0
           </div>
-          <h1 className="text-5xl font-black text-white mb-4 tracking-tighter">
-            PRO<span className="gradient-text">FILE</span> OPTIMIZER
+          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
+            PRO<span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">FILE</span> OPTIMIZER
           </h1>
           {error && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2 justify-center">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 mx-auto max-w-lg p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2 justify-center">
               <AlertCircle className="w-4 h-4" /> {error}
             </motion.div>
           )}
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-500">
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">
             Smart Validator Edition
           </p>
         </motion.div>
@@ -375,7 +377,7 @@ export default function ResumeOptimizer() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="glass-card p-10 border-white/5 relative overflow-hidden group">
+                <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-10 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
                     <label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600/20 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:bg-blue-600/30 transition-all">
                       <Upload className="w-3.5 h-3.5" />
@@ -388,47 +390,44 @@ export default function ResumeOptimizer() {
                     <div className="w-8 h-8 rounded-xl bg-blue-600/20 flex items-center justify-center border border-blue-500/20">
                       <FileText className="w-4 h-4 text-blue-400" />
                     </div>
-                    <h2 className="text-sm font-black text-white uppercase tracking-widest">Source Document</h2>
+                    <h2 className="text-sm font-bold text-white uppercase tracking-widest">Source Document</h2>
                   </div>
                   
                   {isExtracting ? (
                     <div className="w-full h-80 flex flex-col items-center justify-center space-y-4 rounded-3xl bg-black/40 border border-white/5">
                       <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-                      <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Neural Extraction in Progress...</p>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Neural Extraction in Progress...</p>
                     </div>
                   ) : (
                     <textarea
                       value={resumeText}
                       onChange={(e) => setResumeText(e.target.value)}
                       placeholder="PASTE YOUR RESUME TEXT OR UPLOAD A PDF..."
-                      className="w-full h-80 px-6 py-5 rounded-3xl text-sm font-bold text-slate-300 placeholder:text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
-                      style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.05)' }}
+                      className="w-full h-80 px-6 py-5 rounded-[20px] text-sm font-bold text-slate-300 placeholder:text-slate-500 bg-[#081124] border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
                     />
                   )}
                 </div>
 
                 <div className="flex flex-col gap-8">
-                  <div className="glass-card p-10 border-white/5 flex-1">
+                  <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-10 flex-1">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="w-8 h-8 rounded-xl bg-violet-600/20 flex items-center justify-center border border-violet-500/20">
                         <Target className="w-4 h-4 text-violet-400" />
                       </div>
-                      <h2 className="text-sm font-black text-white uppercase tracking-widest">Target Objective</h2>
+                      <h2 className="text-sm font-bold text-white uppercase tracking-widest">Target Objective</h2>
                     </div>
                     <textarea
                       value={jobDescription}
                       onChange={(e) => setJobDescription(e.target.value)}
                       placeholder="PASTE TARGET JOB DESCRIPTION..."
-                      className="w-full h-52 px-6 py-5 rounded-3xl text-sm font-bold text-slate-300 placeholder:text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
-                      style={{ background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(255,255,255,0.05)' }}
+                      className="w-full h-52 px-6 py-5 rounded-[20px] text-sm font-bold text-slate-300 placeholder:text-slate-500 bg-[#081124] border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
                     />
                   </div>
 
                   <button
                     onClick={activeTab === 'analyze' ? handleAnalyze : handleEnhance}
                     disabled={loading || !resumeText || (activeTab === 'analyze' && !jobDescription)}
-                    className="w-full flex items-center justify-center gap-3 py-6 rounded-3xl font-black text-xs uppercase tracking-[0.3em] overflow-hidden transition-all hover:scale-[1.02] disabled:opacity-30 disabled:grayscale"
-                    style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', color: '#fff', border: 'none', cursor: 'pointer' }}
+                    className="w-full flex items-center justify-center gap-3 py-6 rounded-[28px] bg-blue-500 font-bold text-sm uppercase tracking-[0.2em] text-white transition hover:bg-blue-400 disabled:opacity-50 disabled:hover:bg-blue-500 shadow-lg"
                   >
                     {loading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -448,7 +447,7 @@ export default function ResumeOptimizer() {
               className="w-full max-w-6xl space-y-8"
             >
               {/* Score Header */}
-              <div className="glass-card p-12 border-blue-500/10 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden shadow-2xl">
+              <div className="rounded-[28px] border border-blue-500/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-12 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_20px_#3b82f6]" />
                 
                 <div className="relative">
@@ -491,7 +490,7 @@ export default function ResumeOptimizer() {
 
               {/* Feedbacks Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="glass-card p-10 border-white/5">
+                <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-10">
                   <div className="flex items-center gap-3 mb-8">
                     <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                     <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Achievement Mapping</h3>
@@ -511,7 +510,7 @@ export default function ResumeOptimizer() {
                   </div>
                 </div>
 
-                <div className="glass-card p-10 border-white/5">
+                <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-10">
                   {error && (
                     <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-4 rounded-xl border border-red-400/20 mb-8">
                       <AlertCircle className="w-5 h-5 flex-shrink-0" />

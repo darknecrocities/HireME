@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Mail, Lock, UserPlus, LogIn, ArrowLeft, Sparkles, User, Calendar, Briefcase } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, UserPlus, LogIn, ArrowLeft, Sparkles, User, Calendar, Briefcase, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 type AuthMode = 'login' | 'signup' | 'forgot';
 
@@ -86,6 +86,13 @@ export default function Auth() {
         {/* Auth Card */}
         <div className="glass-card p-10 relative overflow-hidden border-blue-900/30">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50" />
+          
+          <Link 
+            to="/"
+            className="absolute top-6 right-6 p-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all cursor-pointer z-10"
+          >
+            <X className="w-5 h-5" />
+          </Link>
           
           <AnimatePresence mode="wait">
             <motion.div

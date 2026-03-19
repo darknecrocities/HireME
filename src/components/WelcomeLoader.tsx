@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Brain } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 export default function WelcomeLoader() {
   return (
@@ -15,17 +15,16 @@ export default function WelcomeLoader() {
         
         <motion.div
           animate={{ 
-            scale: [1, 1.05, 1],
-            rotate: [0, 5, 0]
+            scale: [1, 1.05, 1]
           }}
           transition={{ 
             duration: 4, 
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="relative z-10 w-24 h-24 rounded-3xl gradient-blue-violet flex items-center justify-center shadow-[0_0_50px_rgba(59,130,246,0.3)]"
+          className="relative z-10 w-24 h-24 flex items-center justify-center drop-shadow-[0_0_50px_rgba(59,130,246,0.5)]"
         >
-          <Brain className="w-12 h-12 text-white" />
+          <img src="/mediapipe-assets/HireMeLogo.png" alt="HireME Logo" className="w-20 h-20 rounded-3xl object-contain" />
         </motion.div>
       </div>
 
