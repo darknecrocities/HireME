@@ -1,85 +1,136 @@
-# 💎 HireME: Neural Career Achievement Matrix
+# 🚀 HireME: AI-Enhanced Neural Career Pathway
 
-> **The Future of Interview Mastery.** Powered by Gemini AI & Real-time Neural Tracking.
+[![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
+[![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white)](https://firebase.google.com/)
+[![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=Google%20Gemini&logoColor=white)](https://ai.google.dev/)
 
-HireME is a high-performance, futuristic AI interview coaching platform designed to elevate candidates through real-time behavioral analysis and semantic feedback. By merging Google's **Gemini Pro** models with local **MediaPipe** neural networks, HireME delivers an unparalleled, privacy-first training experience directly in your browser.
-
----
-
-## 🔥 Key Features
-
--   **📽️ Neural Interview Portal**: Engage with a dynamic AI interviewer that adapts its behavior and questions based on your role and industry.
--   **👁️ Bio-Metric Tracking**: Industry-leading, client-side tracking of **eye contact, posture, and hand gestures** (powered by MediaPipe).
--   **🧠 Semantic Analysis**: Real-time feedback on answer quality, **STAR method** completeness, and hiring probability.
--   **📈 Evolution Dashboard**: Track your growth over time with high-fidelity session history and emotional quotient analytics.
--   **🎨 Glassmorphic Interface**: A premium, high-prestige UI built for the elite professional, featuring advanced dark-mode aesthetics.
+**HireME** is a premium, AI-driven recruitment suite designed to bridge the gap between candidate potential and industry demand. Built with a "Neural First" philosophy, it combines real-time computer vision, large language models, and high-fidelity UI to provide a board-ready career preparation experience.
 
 ---
 
-## 🛠️ Extensive Tech Stack
+## 🔭 Vision & Evolution
 
-### ⚡ Core Frontend
--   **React 18**: High-performance UI library with modern Concurrent Mode and Hooks.
--   **Vite**: Next-generation frontend tooling for lightning-fast HMR and optimized builds.
--   **Tailwind CSS**: Utility-first CSS framework for rapid, responsive UI development.
--   **Framer Motion**: State-of-the-art animation library for professional-grade transitions.
--   **Lucide React**: Premium icon set for consistent and high-tech visual language.
-
-### 🤖 Artificial Intelligence & Neural Engines
--   **Google Gemini Pro (v2.5 Flash)**: Advanced LLM for semantic evaluation and dynamic question generation.
--   **MediaPipe (Iris, Face, Pose, Hands)**: Real-time computer vision models executing securely via **WebAssembly** in the browser.
--   **Web Speech API**: Real-time speech-to-text processing for low-latency session transcripts.
-
-### ☁️ Cloud & Backend Infrastructure
--   **Firebase Authentication**: Secure, enterprise-grade user identity management.
--   - **Firestore**: Real-time NoSQL database for session persistence and profile data.
--   **Firebase Analytics**: Advanced telemetry to track user engagement and system performance.
-
-### 🔌 External Integrations
--   **[TheirStack API](https://app.theirstack.com/)**: Specialized API for real-time job market data and technical stack analysis.
+The traditional recruitment process is fragmented and static. **HireME** evolves this by introducing a **Neural Resonance** layer—a continuous feedback loop where your movements, vocal tone, and professional achievements are analyzed in real-time to match you with high-growth career nodes.
 
 ---
 
-## 🚀 Future Roadmap
+## 🛰 System Architecture
 
-We are constantly evolving. Our upcoming releases will include:
-
-1.  **💼 Live Job Posting Engine**: Direct integration with **TheirStack API** to pull real-time job openings tailored to your skill set and performance data.
-2.  **📄 Automated AI Resume Builder**: A neural-engine that takes your interview performance and automatically constructs a high-converting, ATS-optimized resume.
-3.  **🔊 Vocal Tonality Analysis**: Advanced audio processing to analyze pitch, speed, and filler-word usage for a complete communication audit.
-
----
-
-## 📥 Installation & Setup
-
-1.  **Clone the Neural Matrix**:
-    ```bash
-    git clone https://github.com/darknecrocities/HireME.git
-    cd HireME
-    ```
-2.  **Initialize Node Modules**:
-    ```bash
-    npm install
-    ```
-3.  **Environment Calibration**:
-    Create a `.env` file and populate it with your security keys:
-    ```env
-	VITE_GEMINI_API_KEY="YOUR_KEY"
-	VITE_FIREBASE_API_KEY="YOUR_KEY"
-	# ... follow .env.example
-    ```
-4.  **Ignite the Engine**:
-    ```bash
-    npm run dev
-    ```
+```mermaid
+graph TD
+    User((User)) --> |Client| React[React 19 Frontend]
+    React --> |Neural Link| Gemini[Google Gemini AI]
+    React --> |Vision Engine| MediaPipe[MediaPipe CV]
+    React --> |Identity/Data| Firebase[Firebase Services]
+    React --> |Job Feed| TheirStack[TheirStack API]
+    
+    subgraph "Neural Feedback Loop"
+        MediaPipe --> |Body Language| Analysis[AI Consensus Engine]
+        Gemini --> |Technical Metrics| Analysis
+        Analysis --> |Coaching| User
+    end
+```
 
 ---
 
-## 🔒 Security & Privacy
+## ✨ Features Deep-Dive
 
--   **Local Processing**: All camera and video data stays on your device. We use **Zero-Latency Neural Models** (MediaPipe) that never upload your video stream to any server.
--   **Encrypted Sync**: Session data is encrypted and synced only to your private Firebase instance.
+### 🧠 Neural Resume Optimization
+*   **Semantic Scoring**: Beyond simple keywords; our engine understands the *impact* of your achievements.
+*   **STAR-Method Alignment**: Automatically refactors bullet points to emphasize **S**ituation, **T**ask, **A**ction, and **R**esult.
+*   **Neural Enhancement**: A specialized model re-architects your resume into a premium, board-ready template with a focus on token efficiency and readability.
+
+### 🎭 High-Fidelity Practice Interviews
+*   **A-Body Tracking**: Real-time analysis of eye contact, posture, and micro-gestures using MediaPipe Face Mesh and Pose.
+*   **Vocal Resonance**: Analysis of vocal confidence and pacing.
+*   **Contextual Drills**: Gemini-driven interviewers that adapt their questions based on your real-time responses and the specific job node you are targeting.
+
+### 🔍 Search & Neural Recommendations
+*   **Neural Job Feed**: Powered by Theirstack, providing deep metadata on roles, technologies, and salary ranges.
+*   **Resonance Recommendation**: The system analyzes your interview performance and suggests roles where your soft and hard skills have the highest resonance.
+*   **Path Persistence**: Save and track your career nodes in a synchronized Firestore environment.
 
 ---
 
-*Engineered with precision for the next generation of professionals. ✨ 2026 TAIM TEAM*
+## 🛠 Tech Stack
+
+### High-Fidelity Frontend
+- **React 19 & Vite 8**: The cutting edge of modern web performance.
+- **TypeScript**: Ensuring type-safe neural data processing.
+- **Framer Motion 12**: Luxurious micro-animations and smooth transitions.
+- **Tailwind CSS 4**: Next-gen styling with 0-runtime overhead.
+
+### AI & Neural Infrastructure
+- **Model Orchestration**: `gemini-3-flash-preview` and `gemini-1.5-flash` with automatic failover.
+- **Vision Engine**: MediaPipe for high-performance client-side body language tracking.
+- **Data Visualization**: Recharts for visualizing interview performance metrics.
+
+### Backend & Security
+- **Firebase Firestore**: Real-time persistence for your career pathway.
+- **Firebase Auth**: Secure, seamless identity management.
+- **Client-Side Privacy**: All PDF processing and initial vision analysis occur on the client to ensure maximum data sovereignty.
+
+---
+
+## 👥 The Team
+
+| Name | Role & Responsibility | Focus |
+| :--- | :--- | :--- |
+| **Arron** | Lead Developer & Pitch Architect | Core Architecture & Strategy |
+| **Reshley** | Narrative Lead & Pitch Specialist | Manuscript & User Story |
+| **Gion** | Technical Editor & Full Stack dev | Video Production & UI Logic |
+| **Alex** | AI Integration Specialist | Backend & Neural Engineering |
+| **Masato** | Pitch & Growth Strategist | Business Alignment & Delivery |
+
+---
+
+## 📁 Project Structure
+
+```text
+hireme/
+├── src/
+│   ├── components/      # Reusable Neural UI components
+│   ├── hooks/           # AI & Data custom logic
+│   ├── pages/           # High-fidelity view layouts
+│   ├── services/        # Firebase & Gemini integrations
+│   ├── types/           # Global type definitions
+│   └── utils/           # Helper functions for PDF/Text
+├── public/              # Static assets and workers
+└── README.md            # You are here
+```
+
+---
+
+## 🚀 Installation & Neural Setup
+
+1. **Clone & Install**:
+   ```bash
+   git clone https://github.com/darknecrocities/HireME.git
+   npm install
+   ```
+
+2. **Environment Configuration**:
+   Create a `.env` in the root and configure your neural links:
+   ```env
+   VITE_FIREBASE_API_KEY=your_key
+   VITE_GEMINI_API_KEY=your_key
+   ```
+
+3. **Production Build**:
+   ```bash
+   npm run build
+   # Verify high-performance bundle output
+   ```
+
+---
+
+## 🗺 Roadmap
+
+- [ ] **Multi-Session Trends**: Track your neural growth over multiple interviews.
+- [ ] **Technical Assessment Sandbox**: Real-time coding challenges with AI peer review.
+- [ ] **Global Pathway Sync**: Mobile application for career tracking on the go.
+
+---
+
+*Built with ❤️ by the HireME Team.*
