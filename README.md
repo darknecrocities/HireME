@@ -56,7 +56,7 @@ HireME integrates the **MediaPipe Holistic Ecosystem** (Face Mesh, Hands, and Po
 *   **Eye Contact Resonance**: By tracking the iris and eyelid landmarks, the system calculates the frequency and duration of eye contact with the camera, alerting the user to "camera engagement" levels.
 *   **Gestural Dynamics**: Using hand landmark tracking, the system differentiates between "open/confident" gestures and "nervous/constricted" movements.
 *   **Body Posture Tracking**: Pose detection ensures the candidate maintains an upright, authoritative posture, providing a live "Professional Presence" score.
-*   **0-Latency Processing**: All CV processing happens on the client-side, ensuring data privacy and a responsive UI experience at 30+ FPS.
+*   **0-Latency Processing**: All CV processing happens on the client-side, ensuring data privacy and a responsive UI experience at 60+ FPS.
 
 #### **II. High-Fidelity Gemini Brain**
 The interview logic is powered by **Google Gemini API**, utilizing a recursive prompt engineering strategy:
@@ -83,7 +83,7 @@ HireME closes the loop by mapping your practice data to real-world opportunities
 - **Tailwind CSS 4**: Next-gen utility-first styling with zero runtime overhead, optimized for the "HireME Blue" glassmorphic aesthetic.
 
 ### **AI & Machine Learning Infrastructure**
-- **Model Orchestration**: Dual-model strategy using `gemini-3-flash-preview` for complex reasoning and `gemini-1.5-flash` for high-availability fallbacks.
+- **Model Orchestration**: Dual-model strategy using `gemini-3-flash-preview` for complex reasoning and `gemini-2.5-flash` for high-availability fallbacks.
 - **Computer Vision (CV)**: MediaPipe for real-time, client-side body language and landmark tracking.
 - **Data Visualization**: `Recharts` for visualizing performance trends and "Neural Resonance" growth.
 
