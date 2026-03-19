@@ -13,7 +13,7 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 
-const API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJwYXJlamFzYXJyb25raWFuQGdtYWlsLmNvbSIsInBlcm1pc3Npb25zIjoidXNlciIsImNyZWF0ZWRfYXQiOiIyMDI2LTAzLTE4VDEwOjMyOjQ3LjEyMTAzMyswMDowMCJ9.joJnsOFEgLDODFd-thlR8COKh3Wd2q3tOE2kBq2pxqg';
+const API_KEY = import.meta.env.VITE_THEIRSTACK_API_KEY;
 const API_URL = 'https://api.theirstack.com/v1/jobs/search';
 
 export interface Job {
