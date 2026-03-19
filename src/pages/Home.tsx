@@ -1,33 +1,57 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { FileText, Video, BarChart3, ArrowRight, Sparkles, Brain, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import {
+  FileText,
+  Video,
+  BarChart3,
+  ArrowRight,
+  Sparkles,
+  Brain,
+  ShieldCheck,
+  CheckCircle2,
+} from 'lucide-react';
 
 /* ─── Data ─── */
 const features = [
   {
     icon: FileText,
-    title: 'RESUME OPTIMIZER',
-    description: 'Advanced neural analysis for ATS keyword matching and STAR method achievement mapping.',
+    title: 'Resume Optimizer',
+    description:
+      'Advanced neural analysis for ATS keyword matching and STAR method achievement mapping.',
     path: '/resume',
   },
   {
     icon: Video,
-    title: 'VIRTUAL INTERVIEW',
-    description: 'AI-driven behavioral practice with multi-point body language tracking and live mesh projection.',
+    title: 'Virtual Interview',
+    description:
+      'AI-driven behavioral practice with multi-point body language tracking and live mesh projection.',
     path: '/interview',
   },
   {
     icon: BarChart3,
-    title: 'NEURAL ANALYTICS',
-    description: 'Comprehensive performance breakdown across 20+ non-verbal and semantic metrics.',
+    title: 'Neural Analytics',
+    description:
+      'Comprehensive performance breakdown across 20+ non-verbal and semantic metrics.',
     path: '/dashboard',
   },
 ];
 
 const steps = [
-  { step: '01', title: 'SYNCHRONIZE', desc: 'Input your target role and resume to calibrate our neural AI engine to your specific career path.' },
-  { step: '02', title: 'SIMULATE', desc: 'Engage in a high-fidelity interview session with real-time body language and audio monitoring.' },
-  { step: '03', title: 'EVOLVE', desc: 'Receive a comprehensive breakdown of your performance with actionable STAR-method improvements.' },
+  {
+    step: '01',
+    title: 'Synchronize',
+    desc: 'Input your target role and resume to calibrate our neural AI engine to your specific career path.',
+  },
+  {
+    step: '02',
+    title: 'Simulate',
+    desc: 'Engage in a high-fidelity interview session with real-time body language and audio monitoring.',
+  },
+  {
+    step: '03',
+    title: 'Evolve',
+    desc: 'Receive a comprehensive breakdown of your performance with actionable STAR-method improvements.',
+  },
 ];
 
 const capabilities = [
@@ -40,155 +64,249 @@ const capabilities = [
 /* ─── Animations ─── */
 const stagger = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { staggerChildren: 0.15 } },
+  show: { opacity: 1, transition: { staggerChildren: 0.12 } },
 };
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] as const } },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.4, 0, 0.2, 1] as const },
+  },
 };
 
-/* ─── Shared section header ─── */
-function SectionHeader({ label, title }: { label: string; title: string }) {
+function SectionHeader({
+  label,
+  title,
+  subtitle,
+}: {
+  label: string;
+  title: string;
+  subtitle?: string;
+}) {
   return (
-    <div className="text-center mb-20">
-      <p className="text-sm font-black text-blue-500 uppercase tracking-[0.4em] mb-4">{label}</p>
-      <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter">{title}</h2>
+    <div className="text-center max-w-3xl mx-auto mb-16">
+      <p className="text-xs md:text-sm font-bold text-blue-400 uppercase tracking-[0.32em] mb-4">
+        {label}
+      </p>
+      <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+        {title}
+      </h2>
+      {subtitle && (
+        <p className="mt-5 text-sm md:text-base text-slate-400 leading-relaxed">
+          {subtitle}
+        </p>
+      )}
     </div>
   );
 }
 
-/* ─── Page ─── */
+function GlassPanel({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
 export default function Home() {
   return (
-    <div className="w-full max-w-full flex flex-col items-center overflow-hidden">
+    <div className="min-h-screen w-full overflow-x-hidden bg-[#030817] text-white">
+      {/* Background glows */}
+      <div className="pointer-events-none fixed inset-0 overflow-hidden">
+        <div className="absolute top-0 left-1/2 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-blue-700/15 blur-[140px]" />
+        <div className="absolute top-[38rem] right-[-10rem] h-[320px] w-[320px] rounded-full bg-cyan-500/10 blur-[110px]" />
+        <div className="absolute bottom-0 left-[-8rem] h-[320px] w-[320px] rounded-full bg-blue-600/10 blur-[110px]" />
+      </div>
 
-      {/* ═══════════════════  HERO  ═══════════════════ */}
-      <section className="relative w-full overflow-hidden flex flex-col items-center justify-center px-6 py-40 md:py-56">
-        {/* glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-blue-900/10 blur-[140px] rounded-full pointer-events-none" />
+      {/* HERO */}
+      <section className="relative px-6 pt-24 pb-20 md:pt-32 md:pb-28">
+        <div className="mx-auto max-w-7xl">
+          <GlassPanel className="overflow-hidden px-8 py-12 md:px-14 md:py-16">
+            <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+              <div>
+                <motion.div
+                  initial={{ opacity: 0, y: -16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-blue-300"
+                >
+                  <ShieldCheck className="h-4 w-4" />
+                  Personal Edition
+                </motion.div>
 
-        <div className="relative z-10 max-w-5xl mx-auto w-full text-center space-y-10">
-          {/* badge */}
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full text-[10px] font-black uppercase tracking-[0.3em]"
-            style={{ background: 'rgba(30,58,138,0.2)', border: '1px solid rgba(59,130,246,0.2)', color: '#60a5fa' }}
-          >
-            <ShieldCheck className="w-4 h-4" />
-            Personal Edition
-          </motion.div>
+                <motion.h1
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl"
+                >
+                  Land your next job with
+                  <span className="block bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                    AI-powered career preparation
+                  </span>
+                </motion.h1>
 
-          {/* title */}
-          <motion.h1
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8, ease: 'easeOut' }}
-            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-white leading-[1.05] tracking-tighter"
-          >
-            THE FUTURE OF
-            <br />
-            <span className="gradient-text">INTERVIEWING</span>
-          </motion.h1>
+                <motion.p
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.6 }}
+                  className="mt-6 max-w-2xl text-base leading-8 text-slate-300"
+                >
+                  HireME helps you optimize your resume, practice interviews,
+                  and understand your performance through intelligent feedback
+                  designed for modern hiring.
+                </motion.p>
 
-          {/* subtitle */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-sm sm:text-base font-bold uppercase tracking-[0.2em] max-w-2xl mx-auto text-slate-500 leading-relaxed"
-          >
-            Next-generation AI coaching platform designed for elite career preparation.
-            Real-time neural tracking meets Gemini-powered expert guidance.
-          </motion.p>
+                <motion.div
+                  initial={{ opacity: 0, y: 24 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
+                  className="mt-8 flex flex-col gap-4 sm:flex-row"
+                >
+                  <Link
+                    to="/resume"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-7 py-4 text-sm font-bold text-white transition hover:bg-blue-400"
+                  >
+                    Optimize Resume
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
 
-          {/* CTA buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-4"
-          >
-            <Link
-              to="/interview"
-              className="group relative inline-flex items-center justify-center gap-3 px-10 py-5 rounded-3xl text-white font-black text-xs uppercase tracking-[0.3em] overflow-hidden no-underline transition-all hover:scale-105 min-w-[240px]"
-              style={{ background: '#3b82f6' }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-              <span className="relative z-10">INITIATE TRAIN</span>
-              <ArrowRight className="relative z-10 w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              to="/resume"
-              className="inline-flex items-center justify-center gap-3 px-10 py-5 rounded-3xl font-black text-xs uppercase tracking-[0.3em] no-underline border border-white/10 text-white hover:bg-white/5 transition-all min-w-[240px]"
-            >
-              OPTIMIZE PROFILE
-            </Link>
-          </motion.div>
+                  <Link
+                    to="/interview"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-7 py-4 text-sm font-bold text-white transition hover:bg-white/10"
+                  >
+                    Practice Interview
+                  </Link>
+                </motion.div>
+
+                <div className="mt-10 grid gap-4 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Step 1</p>
+                    <p className="mt-2 text-sm font-semibold text-white">Upload your resume</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Step 2</p>
+                    <p className="mt-2 text-sm font-semibold text-white">Get AI feedback</p>
+                  </div>
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <p className="text-xs uppercase tracking-[0.2em] text-slate-400">Step 3</p>
+                    <p className="mt-2 text-sm font-semibold text-white">Practice with confidence</p>
+                  </div>
+                </div>
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.7 }}
+              >
+                <GlassPanel className="p-6">
+                  <div className="rounded-[24px] border border-blue-400/15 bg-gradient-to-br from-blue-500/10 to-transparent p-6">
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/20">
+                        <Brain className="h-6 w-6 text-blue-300" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">HireME AI</p>
+                        <p className="text-xs text-slate-400">Career Readiness Platform</p>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 space-y-4">
+                      <div className="rounded-2xl border border-white/10 bg-[#081124] p-4">
+                        <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                          Resume Readiness
+                        </p>
+                        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/10">
+                          <div className="h-full w-[82%] rounded-full bg-blue-400" />
+                        </div>
+                      </div>
+
+                      <div className="rounded-2xl border border-white/10 bg-[#081124] p-4">
+                        <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+                          Interview Confidence
+                        </p>
+                        <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-white/10">
+                          <div className="h-full w-[74%] rounded-full bg-cyan-400" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="rounded-2xl border border-white/10 bg-[#081124] p-4">
+                          <p className="text-2xl font-bold text-white">20+</p>
+                          <p className="mt-1 text-xs text-slate-400">Performance metrics</p>
+                        </div>
+                        <div className="rounded-2xl border border-white/10 bg-[#081124] p-4">
+                          <p className="text-2xl font-bold text-white">AI</p>
+                          <p className="mt-1 text-xs text-slate-400">Real-time feedback engine</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </GlassPanel>
+              </motion.div>
+            </div>
+          </GlassPanel>
         </div>
       </section>
 
-      {/* ═══════════════  HOW IT WORKS  ═══════════════ */}
-      <section className="w-full px-6 py-32 md:py-40 border-t border-white/5 bg-gradient-to-b from-black to-blue-950/10">
-        <div className="max-w-7xl mx-auto w-full space-y-24">
-          <SectionHeader label="The Protocol" title="HOW IT WORKS" />
-
-          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-16">
-            {/* connector line */}
-            <div className="absolute top-10 left-0 w-full h-px bg-gradient-to-r from-transparent via-blue-900/40 to-transparent hidden md:block" />
-
-            {steps.map((s, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.2 }}
-                className="relative z-10 flex flex-col items-center text-center space-y-6"
-              >
-                <div className="w-20 h-20 rounded-full bg-black border-2 border-blue-600/30 flex items-center justify-center shadow-[0_0_30px_rgba(37,99,235,0.1)]">
-                  <span className="text-xl font-black text-blue-500">{s.step}</span>
-                </div>
-                <h3 className="text-2xl font-black text-white tracking-tight">{s.title}</h3>
-                <p className="text-xs font-bold uppercase tracking-widest leading-loose text-slate-500 max-w-xs">{s.desc}</p>
-              </motion.div>
-            ))}
+      {/* VALUE STRIP */}
+      <section className="px-6 pb-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="rounded-[24px] border border-white/8 bg-white/[0.02] px-6 py-5 text-center">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
+              Built for resume optimization, AI interview practice, and performance analytics
+            </p>
           </div>
         </div>
       </section>
 
-      {/* ═══════════════  CORE MODULES  ═══════════════ */}
-      <section className="w-full px-6 py-32 md:py-40 border-t border-white/5">
-        <div className="max-w-7xl mx-auto w-full space-y-24">
-          <SectionHeader label="Execution Suite" title="CORE MODULES" />
+      {/* FEATURES */}
+      <section className="px-6 py-20 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            label="Core Modules"
+            title="Everything you need to prepare smarter"
+            subtitle="Explore the main tools inside HireME and start with the one that matches your current goal."
+          />
 
           <motion.div
             variants={stagger}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-10"
+            className="grid gap-8 md:grid-cols-3"
           >
             {features.map((f) => (
               <motion.div key={f.title} variants={fadeUp}>
-                <Link
-                  to={f.path}
-                  className="flex flex-col items-center text-center glass-card-hover p-12 h-full no-underline border-white/5 group space-y-6"
-                >
-                  <div
-                    className="w-16 h-16 rounded-3xl flex items-center justify-center border border-white/10 group-hover:border-blue-500/50 transition-colors"
-                    style={{ background: 'rgba(255,255,255,0.02)' }}
-                  >
-                    <f.icon className="w-8 h-8 text-white group-hover:text-blue-500 transition-colors" />
-                  </div>
-                  <h3 className="text-xl font-black text-white tracking-tight">{f.title}</h3>
-                  <p className="text-xs font-bold uppercase tracking-widest leading-loose text-slate-500 opacity-70 group-hover:opacity-100 transition-opacity">
-                    {f.description}
-                  </p>
-                  <div className="flex items-center gap-2 text-[10px] font-black tracking-widest text-blue-500">
-                    ACCESS MODULE <ArrowRight className="w-3 h-3" />
-                  </div>
+                <Link to={f.path} className="block h-full no-underline">
+                  <GlassPanel className="group h-full p-8 transition hover:-translate-y-1 hover:border-blue-400/30">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-300">
+                      <f.icon className="h-7 w-7" />
+                    </div>
+
+                    <h3 className="mt-6 text-2xl font-bold tracking-tight text-white">
+                      {f.title}
+                    </h3>
+
+                    <p className="mt-4 text-sm leading-7 text-slate-400">
+                      {f.description}
+                    </p>
+
+                    <div className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-blue-300">
+                      Open module
+                      <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                    </div>
+                  </GlassPanel>
                 </Link>
               </motion.div>
             ))}
@@ -196,75 +314,169 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ═══════════  NEURAL ARCHITECTURE  ════════════ */}
-      <section className="w-full px-6 py-32 md:py-40 border-t border-white/5">
-        <div className="max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-20">
-          {/* left text */}
-          <div className="flex-1 space-y-10 text-center lg:text-left">
-            <div>
-              <p className="text-sm font-black text-blue-500 uppercase tracking-[0.4em] mb-4">Neural Architecture</p>
-              <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter leading-tight">
-                PRECISION COACHING FOR THE DIGITAL AGE
-              </h2>
-            </div>
+      {/* HOW IT WORKS */}
+      <section className="px-6 py-20 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <SectionHeader
+            label="How It Works"
+            title="A guided flow from preparation to improvement"
+            subtitle="The platform is designed to help users know what to do first and what to do next."
+          />
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-10">
-              {capabilities.map((c, i) => (
-                <div key={i} className="space-y-2 flex flex-col items-center lg:items-start">
-                  <div className="flex items-center gap-2 text-white">
-                    <CheckCircle2 className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                    <span className="text-xs font-black uppercase tracking-widest">{c.t}</span>
-                  </div>
-                  <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest">{c.d}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* right visual */}
-          <div className="flex-1 w-full max-w-xl">
-            <div className="relative aspect-video rounded-3xl overflow-hidden glass-card border-blue-500/20 p-1 flex items-center justify-center">
-              <div className="absolute inset-0 bg-blue-600/10 animate-pulse" />
-              <Brain className="w-32 h-32 text-blue-500/20" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center">
-                <span className="text-[10px] font-black text-blue-400 uppercase tracking-[0.5em] mb-4">System Online</span>
-                <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden">
-                  <motion.div
-                    initial={{ x: '-100%' }}
-                    animate={{ x: '100%' }}
-                    transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                    className="w-1/3 h-full bg-blue-500 shadow-[0_0_10px_#3b82f6]"
-                  />
-                </div>
-              </div>
-            </div>
+          <div className="grid gap-8 md:grid-cols-3">
+            {steps.map((s, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.15 }}
+              >
+                <GlassPanel className="h-full p-8">
+                  <p className="text-sm font-bold tracking-[0.25em] text-blue-400">{s.step}</p>
+                  <h3 className="mt-4 text-2xl font-bold text-white">{s.title}</h3>
+                  <p className="mt-4 text-sm leading-7 text-slate-400">{s.desc}</p>
+                </GlassPanel>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ═══════════════════  FOOTER  ═════════════════ */}
-      <footer className="w-full border-t border-white/5 bg-black py-16 px-6">
-        <div className="max-w-7xl mx-auto w-full flex flex-col items-center md:flex-row md:items-start justify-between gap-10">
-          <div className="flex flex-col items-center md:items-start">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-blue-600 flex items-center justify-center">
-                <Brain className="w-5 h-5 text-white" />
+      {/* CAPABILITIES */}
+      <section className="px-6 py-20 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid items-center gap-10 lg:grid-cols-2">
+            <GlassPanel className="p-8 md:p-10">
+              <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-400">
+                Why Choose HireME
+              </p>
+              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
+                Precision coaching for the digital hiring era
+              </h2>
+              <p className="mt-6 text-sm leading-7 text-slate-400">
+                Our platform combines semantic analysis, interview simulation,
+                and detailed performance insights to help users prepare with
+                more clarity and confidence.
+              </p>
+
+              <div className="mt-8 space-y-6">
+                {capabilities.map((c, i) => (
+                  <div key={i}>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle2 className="mt-1 h-5 w-5 text-blue-400" />
+                      <div>
+                        <p className="font-semibold text-white">{c.t}</p>
+                        <p className="mt-1 text-sm text-slate-400">{c.d}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <span className="text-2xl font-black text-white tracking-tighter">
-                HIRE<span className="text-blue-500">ME</span>
+            </GlassPanel>
+
+            <GlassPanel className="p-8 md:p-10">
+              <div className="rounded-[24px] border border-white/10 bg-gradient-to-br from-[#0a1328] to-[#050b18] p-8">
+                <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-400">
+                  Start Here
+                </p>
+                <h3 className="mt-4 text-3xl font-bold text-white">
+                  New to the platform?
+                </h3>
+                <p className="mt-4 text-sm leading-7 text-slate-400">
+                  Begin with the Resume Optimizer, then continue to Interview Practice,
+                  and finally review your analytics on the dashboard.
+                </p>
+
+                <div className="mt-8 space-y-4">
+                  <Link
+                    to="/resume"
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white no-underline transition hover:bg-white/10"
+                  >
+                    <span className="font-medium">Start with Resume Optimizer</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+
+                  <Link
+                    to="/interview"
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white no-underline transition hover:bg-white/10"
+                  >
+                    <span className="font-medium">Continue to Virtual Interview</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+
+                  <Link
+                    to="/dashboard"
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white no-underline transition hover:bg-white/10"
+                  >
+                    <span className="font-medium">Review Neural Analytics</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </div>
+            </GlassPanel>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="px-6 py-20 md:py-24">
+        <div className="mx-auto max-w-7xl">
+          <GlassPanel className="px-8 py-12 md:px-14 md:py-16 text-center">
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-400">
+              Ready to begin
+            </p>
+            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
+              Prepare with confidence using AI-guided tools
+            </h2>
+            <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-slate-400">
+              Build a stronger resume, sharpen your interview skills, and
+              understand your performance through one connected experience.
+            </p>
+
+            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+              <Link
+                to="/resume"
+                className="inline-flex items-center justify-center rounded-2xl bg-blue-500 px-7 py-4 text-sm font-bold text-white no-underline transition hover:bg-blue-400"
+              >
+                Get Started
+              </Link>
+              <Link
+                to="/dashboard"
+                className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-7 py-4 text-sm font-bold text-white no-underline transition hover:bg-white/10"
+              >
+                View Dashboard
+              </Link>
+            </div>
+          </GlassPanel>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className="border-t border-white/5 px-6 py-12">
+        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 md:flex-row">
+          <div>
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/20">
+                <Brain className="h-5 w-5 text-blue-300" />
+              </div>
+              <span className="text-2xl font-extrabold tracking-tight text-white">
+                HIRE<span className="text-blue-400">ME</span>
               </span>
             </div>
-            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-600">Personal Edition</p>
+            <p className="mt-3 text-sm text-slate-400">
+              AI-powered interview coaching and resume optimization.
+            </p>
           </div>
 
-          <div className="flex gap-12 text-[10px] font-black text-slate-500 tracking-[.25em] uppercase">
-            <span className="hover:text-white transition-colors cursor-pointer">Security Suite</span>
-            <span className="hover:text-white transition-colors cursor-pointer">Neural Policy</span>
-            <span className="hover:text-white transition-colors cursor-pointer">Gemini Edge</span>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-400">
+            <span>Resume Optimizer</span>
+            <span>Virtual Interview</span>
+            <span>Dashboard</span>
           </div>
 
-          <p className="text-[9px] font-black text-slate-700 tracking-widest flex items-center gap-2 uppercase">
-            Built for Excellence <Sparkles className="w-3 h-3 text-blue-500" /> 2026
+          <p className="flex items-center gap-2 text-sm text-slate-500">
+            Built for excellence <Sparkles className="h-4 w-4 text-blue-400" /> 2026
           </p>
         </div>
       </footer>
