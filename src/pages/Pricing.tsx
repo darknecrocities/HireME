@@ -29,7 +29,7 @@ const tiers = [
     features: [
       { name: 'AI Resume Optimization', limit: 'UNLIMITED', included: true },
       { name: 'AI Interview Practice', limit: 'UNLIMITED', included: true },
-      { name: 'Neural Job Search', limit: '10 DAILY', included: true },
+      { name: 'Neural Job Search', limit: '3 DAILY', included: true },
       { name: 'Real-time Analytics', included: true },
       { name: 'Personal Session History', included: true },
       { name: 'Advanced STAR Analysis', included: true },
