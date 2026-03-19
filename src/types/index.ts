@@ -105,3 +105,41 @@ export interface SessionChartData {
   gestures: number;
   overall: number;
 }
+
+// ===== Resume Enhancement Types =====
+export interface ResumePersonalInfo {
+  name: string;
+  email: string;
+  phone: string;
+  location: string;
+  linkedin?: string;
+  website?: string;
+}
+
+export interface ResumeExperience {
+  role: string;
+  company: string;
+  location: string;
+  duration: string;
+  bullets: string[];
+}
+
+export interface ResumeEducation {
+  degree: string;
+  school: string;
+  location: string;
+  duration: string;
+}
+
+export interface ResumeSkillCategory {
+  category: string;
+  items: string[];
+}
+
+export interface EnhancedResume {
+  personalInfo: ResumePersonalInfo;
+  summary: string;
+  experience: ResumeExperience[];
+  education: ResumeEducation[];
+  skills: ResumeSkillCategory[];
+}

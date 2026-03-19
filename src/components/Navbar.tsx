@@ -11,7 +11,8 @@ import {
   Sparkles,
   User,
   LogOut,
-  Zap
+  Zap,
+  Search
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
@@ -20,6 +21,7 @@ const navItems = [
   { path: '/', label: 'Home', icon: Home },
   { path: '/resume', label: 'Resume', icon: FileText },
   { path: '/interview', label: 'Interview', icon: Video },
+  { path: '/jobs', label: 'Jobs', icon: Search },
   { path: '/dashboard', label: 'Analytics', icon: BarChart3 },
   { path: '/pricing', label: 'Pricing', icon: Zap },
 ];
@@ -59,8 +61,8 @@ export default function Navbar() {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className="relative px-4 lg:px-6 py-2.5 rounded-xl text-xs lg:text-sm font-black no-underline transition-all duration-300 uppercase tracking-widest"
-                  style={{ 
+                   className="relative px-3 lg:px-5 py-2.5 rounded-xl text-[10px] lg:text-[11px] font-black no-underline transition-all duration-300 uppercase tracking-widest"
+                   style={{ 
                     color: isActive ? '#fff' : '#475569',
                     background: isActive ? 'rgba(59,130,246,0.1)' : 'transparent'
                   }}
