@@ -49,7 +49,7 @@ export default function ResumeOptimizer() {
   const handleAnalyze = async () => {
     if (hasReachedLimit('resume')) return;
     if (!resumeText.trim() || !jobDescription.trim()) {
-      setError('Neural scan requires both resume data and job description.');
+      setError('Analysis requires both resume data and job description.');
       return;
     }
     setError(null);
@@ -64,7 +64,7 @@ export default function ResumeOptimizer() {
         setCooldown(parseInt(retryMatch[1]));
         setError(`Quota limit reached. Please retry in ${retryMatch[1]}s.`);
       } else {
-        setError('Neural analysis failed. Please check your API quota.');
+        setError('Resume analysis failed. Please check your API quota.');
       }
       setResults(null);
     }
@@ -75,7 +75,7 @@ export default function ResumeOptimizer() {
   const handleEnhance = async () => {
     if (hasReachedLimit('resume')) return;
     if (!resumeText.trim()) {
-      setError('Neural enhancement requires resume data.');
+      setError('AI enhancement requires resume data.');
       return;
     }
     setError(null);
@@ -90,7 +90,7 @@ export default function ResumeOptimizer() {
         setCooldown(parseInt(retryMatch[1]));
         setError(`Quota limit reached. Please retry in ${retryMatch[1]}s.`);
       } else {
-        setError('Neural enhancement failed. Please check your API quota.');
+        setError('AI enhancement failed. Please check your API quota.');
       }
       setEnhancedResume(null);
     }
@@ -250,7 +250,7 @@ export default function ResumeOptimizer() {
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
     doc.setTextColor(30, 58, 138);
-    doc.text("SKILLS & COMMANDS", margin, y);
+    doc.text("SKILLS & EXPERTISE", margin, y);
     y += 4;
     addLine(y);
     y += 10;
@@ -294,9 +294,9 @@ export default function ResumeOptimizer() {
                 <Sparkles className="w-10 h-10 text-blue-400" />
               </div>
             </div>
-            <h2 className="text-3xl font-black text-white tracking-tighter mb-4 uppercase">Neural Trial Ended</h2>
+            <h2 className="text-3xl font-black text-white tracking-tighter mb-4 uppercase">Practice Limit Reached</h2>
             <p className="text-slate-400 font-medium text-sm leading-relaxed mb-10">
-              You've reached the 1-use limit for guest entities. To unlock unlimited neural optimization and save your progress, upgrade to the full system.
+              You've reached the 1-use limit for guest users. To unlock unlimited AI optimization and save your progress, upgrade to the full system.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <Link
@@ -331,7 +331,7 @@ export default function ResumeOptimizer() {
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-blue-300 mb-6">
             <Award className="w-4 h-4" />
-            Neural Achievement Matrix v4.0
+            AI Career Development Beta
           </div>
           <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
             PRO<span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">FILE</span> OPTIMIZER
@@ -396,7 +396,7 @@ export default function ResumeOptimizer() {
                   {isExtracting ? (
                     <div className="w-full h-80 flex flex-col items-center justify-center space-y-4 rounded-3xl bg-black/40 border border-white/5">
                       <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Neural Extraction in Progress...</p>
+                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Scanning Document...</p>
                     </div>
                   ) : (
                     <textarea
@@ -434,7 +434,7 @@ export default function ResumeOptimizer() {
                     ) : (
                       <Sparkles className="w-5 h-5" />
                     )}
-                    {loading ? 'CALIBRATING...' : `ACTIVATE NEURAL ${activeTab.toUpperCase()}`}
+                    {loading ? 'ANALYZING...' : `START AI ${activeTab.toUpperCase()}`}
                   </button>
                 </div>
               </div>
@@ -469,7 +469,7 @@ export default function ResumeOptimizer() {
                 </div>
 
                 <div className="flex-1 text-center md:text-left">
-                  <h2 className="text-3xl font-black text-white mb-2 tracking-tighter uppercase">NEURAL MATCH {results.score >= 80 ? 'EXCELLENT' : 'CALIBRATED'}</h2>
+                  <h2 className="text-3xl font-black text-white mb-2 tracking-tighter uppercase">ALIGNMENT SCORE: {results.score >= 80 ? 'EXCELLENT' : 'OPTIMIZED'}</h2>
                   <p className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">MATCH QUALITY ANALYSIS COMPLETED</p>
                   <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                     {results.missingKeywords.map((kw: string) => (
@@ -502,7 +502,7 @@ export default function ResumeOptimizer() {
                         <p className="text-xs text-white leading-relaxed font-medium">{s.original}</p>
                         <div className="my-4 border-t border-emerald-500/20" />
                         <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                          <Sparkles className="w-3 h-3" /> Optimized Neural Output
+                          <Sparkles className="w-3 h-3" /> Professional Optimization
                         </p>
                         <p className="text-sm text-emerald-400 leading-relaxed font-bold">{s.improved}</p>
                       </div>
@@ -527,7 +527,7 @@ export default function ResumeOptimizer() {
                     </p>
                     <div className="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
                       <div className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
-                        Protocol: Arron Kian v4.0.1
+                        Verified Performance Analysis
                       </div>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map(x => (
@@ -552,8 +552,8 @@ export default function ResumeOptimizer() {
                     <Award className="w-6 h-6" />
                   </div>
                   <div>
-                    <h2 className="text-sm font-black text-white uppercase tracking-widest mb-1">Enhanced Neural Template</h2>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Optimized & Rendered by Gemini</p>
+                    <h2 className="text-sm font-black text-white uppercase tracking-widest mb-1">Professional Resume Template</h2>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Optimized by Gemini AI</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
@@ -629,7 +629,7 @@ export default function ResumeOptimizer() {
                   {/* Skills Grid */}
                   <section className="space-y-8">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] whitespace-nowrap">Core Architecture (Skills)</h3>
+                      <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] whitespace-nowrap">Technical & Professional Skills</h3>
                       <div className="h-[2px] w-full bg-blue-600/10" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8">
@@ -651,7 +651,7 @@ export default function ResumeOptimizer() {
                   {/* Education */}
                   <section className="space-y-8">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] whitespace-nowrap">Foundation (Education)</h3>
+                      <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] whitespace-nowrap">Educational Background</h3>
                       <div className="h-[2px] w-full bg-blue-600/10" />
                     </div>
                     <div className="space-y-6">

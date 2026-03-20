@@ -50,7 +50,7 @@ export default function Navbar() {
                 HIRE<span className="text-blue-500">ME</span>
               </span>
               <span className="text-[8px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-0.5">
-                PREMIUM AI ENGINE
+                by TAIM TEAM
               </span>
             </div>
           </Link>
@@ -100,7 +100,7 @@ export default function Navbar() {
               ) : (
                 <Link to="/auth" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#030817] border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.2)] text-white text-[10px] font-bold tracking-[0.2em] transition-all hover:bg-blue-900/40 no-underline">
                   <User className="w-3.5 h-3.5 text-blue-400" />
-                  JOIN SYSTEM
+                  LOG IN / SIGN UP
                 </Link>
               )}
             </div>
@@ -153,7 +153,7 @@ export default function Navbar() {
                   className="flex items-center gap-4 px-6 py-4 rounded-2xl text-base font-black text-blue-500 bg-blue-500/10 no-underline"
                 >
                   <User className="w-5 h-5" />
-                  JOIN SYSTEM
+                  LOG IN / SIGN UP
                 </Link>
               )}
               

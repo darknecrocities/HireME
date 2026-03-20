@@ -18,21 +18,21 @@ const features = [
     icon: FileText,
     title: 'Resume Optimizer',
     description:
-      'Advanced neural analysis for ATS keyword matching and STAR method achievement mapping.',
+      'Advanced AI analysis for ATS keyword matching and STAR method achievement mapping.',
     path: '/resume',
   },
   {
     icon: Video,
     title: 'Virtual Interview',
     description:
-      'AI-driven behavioral practice with multi-point body language tracking and live mesh projection.',
+      'AI-driven behavioral practice with real-time body language tracking and performance feedback.',
     path: '/interview',
   },
   {
     icon: BarChart3,
-    title: 'Neural Analytics',
+    title: 'Career Analytics',
     description:
-      'Comprehensive performance breakdown across 20+ non-verbal and semantic metrics.',
+      'Comprehensive performance breakdown across 20+ communication and semantic metrics.',
     path: '/dashboard',
   },
 ];
@@ -40,26 +40,26 @@ const features = [
 const steps = [
   {
     step: '01',
-    title: 'Synchronize',
-    desc: 'Input your target role and resume to calibrate our neural AI engine to your specific career path.',
+    title: 'Personalize',
+    desc: 'Input your target role and resume to customize our AI tools to your specific career path.',
   },
   {
     step: '02',
-    title: 'Simulate',
-    desc: 'Engage in a high-fidelity interview session with real-time body language and audio monitoring.',
+    title: 'Practice',
+    desc: 'Engage in a realistic interview simulation with real-time body language and audio feedback.',
   },
   {
     step: '03',
-    title: 'Evolve',
-    desc: 'Receive a comprehensive breakdown of your performance with actionable STAR-method improvements.',
+    title: 'Improve',
+    desc: 'Receive a structured breakdown of your performance with actionable STAR-method insights.',
   },
 ];
 
 const capabilities = [
-  { t: 'Multi-Point Mesh', d: 'Tracking 468 landmarks for micro-expression analysis.' },
-  { t: 'STAR Alignment', d: 'Automated achievement mapping to top-tier hiring standards.' },
-  { t: 'Gemini 3.1 Edge', d: 'Ultra-fast semantic processing for real-time feedback loop.' },
-  { t: 'Privacy First', d: 'On-device biometric processing ensures data sovereignty.' },
+  { t: 'Interactive Analysis', d: 'Advanced tracking of non-verbal cues for comprehensive feedback.' },
+  { t: 'STAR Integration', d: 'Automated achievement mapping to professional hiring standards.' },
+  { t: 'Gemini AI Insights', d: 'Instant semantic analysis for real-time improvements.' },
+  { t: 'Privacy Focused', d: 'On-device data processing ensures your information remains secure.' },
 ];
 
 /* ─── Animations ─── */
@@ -217,8 +217,8 @@ export default function Home() {
                         <Brain className="h-6 w-6 text-blue-300" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white">HireME AI</p>
-                        <p className="text-xs text-slate-400">Career Readiness Platform</p>
+                        <p className="text-sm font-semibold text-white">HireME</p>
+                        <p className="text-xs text-slate-400">Career Development Platform</p>
                       </div>
                     </div>
 
@@ -353,7 +353,7 @@ export default function Home() {
                 Why Choose HireME
               </p>
               <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
-                Precision coaching for the digital hiring era
+                Professional coaching for the modern hiring landscape
               </h2>
               <p className="mt-6 text-sm leading-7 text-slate-400">
                 Our platform combines semantic analysis, interview simulation,
@@ -409,7 +409,7 @@ export default function Home() {
                     to="/dashboard"
                     className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white no-underline transition hover:bg-white/10"
                   >
-                    <span className="font-medium">Review Neural Analytics</span>
+                    <span className="font-medium">Review Career Analytics</span>
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
@@ -480,7 +480,7 @@ export default function Home() {
               Built for excellence <Sparkles className="h-4 w-4 text-blue-400" /> 2026
             </p>
             <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">
-              V1.0.4-STABLE • SECURE_NODE_ALPHA
+              V1.0.4-STABLE • SECURE & PRIVATE
             </p>
           </div>
         </div>

@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 export default function PracticeInterview() {
   const { user } = useAuth();
   const { hasReachedLimit, incrementUsage } = useUsageLimit();
-  const { videoRef, canvasRef, scores, isActive, showMesh, emotion, gesture, start, stop, toggleMesh } = useMediaPipe();
+  const { videoRef, canvasRef, scores, isActive, showMesh, emotion, gesture, start, stop, toggleMesh, setAudioValue: setMediaPipeAudio } = useMediaPipe();
   const { loading: aiLoading, getInterviewQuestion, getFullSessionAnalysis } = useAI();
   const { saveSession } = useFirestore();
 
@@ -77,24 +77,73 @@ export default function PracticeInterview() {
 
   const startListening = () => {
     if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      alert('Speech recognition is not supported in this browser.');
+      console.warn('Speech recognition is not supported in this browser.');
       return;
     }
+    
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        // Ignore stop errors
+      }
+    }
+
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-US';
+
     recognition.onresult = (event: any) => {
-      let transcriptText = '';
-      for (let i = 0; i < event.results.length; i++) transcriptText += event.results[i][0].transcript;
-      setUserInput(transcriptText);
+      let finalTranscript = '';
+      let interimTranscript = '';
+      
+      for (let i = event.resultIndex; i < event.results.length; ++i) {
+        if (event.results[i].isFinal) {
+          finalTranscript += event.results[i][0].transcript;
+        } else {
+          interimTranscript += event.results[i][0].transcript;
+        }
+      }
+      
+      // Update userInput with the full string (final + current interim)
+      // Since we use continuous=true, we might want to preserve previous final results
+      const currentFullText = Array.from(event.results)
+        .map((res: any) => res[0].transcript)
+        .join(' ');
+        
+      setUserInput(currentFullText);
     };
-    recognition.onerror = () => setIsListening(false);
-    recognition.onend = () => setIsListening(false);
-    recognition.start();
-    recognitionRef.current = recognition;
-    setIsListening(true);
+
+    recognition.onerror = (event: any) => {
+      console.error('Speech recognition error:', event.error);
+      if (event.error === 'not-allowed') {
+        setIsListening(false);
+      }
+    };
+
+    recognition.onend = () => {
+      // Auto-restart if we're still in the answering phase and supposed to be listening
+      if (isAnswering && sessionStarted && !showFeedback) {
+        try {
+          recognition.start();
+        } catch (e) {
+          setIsListening(false);
+        }
+      } else {
+        setIsListening(false);
+      }
+    };
+
+    try {
+      recognition.start();
+      recognitionRef.current = recognition;
+      setIsListening(true);
+    } catch (e) {
+      console.error('Failed to start recognition:', e);
+      setIsListening(false);
+    }
   };
 
   const stopListening = () => {
@@ -106,6 +155,7 @@ export default function PracticeInterview() {
 
   const toggleListening = () => {
     if (isListening) {
+      setIsListening(false);
       stopListening();
     } else {
       startListening();
@@ -173,9 +223,9 @@ export default function PracticeInterview() {
 
   useEffect(() => {
     if (sessionStarted && !showFeedback) {
-      scores.audio = audioScore;
+      setMediaPipeAudio(audioScore);
     }
-  }, [audioScore, sessionStarted, showFeedback, scores]);
+  }, [audioScore, sessionStarted, showFeedback, setMediaPipeAudio]);
 
   useEffect(() => {
     const updateVoices = () => {
@@ -294,7 +344,7 @@ export default function PracticeInterview() {
       setCountdown(15);
       speak(question);
     } else {
-      setMessages(prev => [...prev, { role: 'ai', content: "Great! We've covered the core topics. Click 'Complete Session' below to see your full neural analysis report.", timestamp: new Date() }]);
+      setMessages(prev => [...prev, { role: 'ai', content: "Great! We've covered the core topics. Click 'Complete Session' below to see your full interview feedback report.", timestamp: new Date() }]);
     }
   }, [userInput, aiLoading, role, industry, getInterviewQuestion, messages, questionCount]);
 
@@ -315,7 +365,7 @@ export default function PracticeInterview() {
             </div>
             <h2 className="text-3xl font-black text-white tracking-tighter mb-4 uppercase">Practice Limit Reached</h2>
             <p className="text-slate-400 font-medium text-sm leading-relaxed mb-10">
-              You've completed your 1-use guest trial. Secure your data and unlock unlimited AI-powered interview practice by joining the HireME system.
+              You've completed your 1-use guest trial. Secure your data and unlock unlimited AI-powered interview practice by signing up or logging in to your account.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <Link
@@ -375,32 +425,32 @@ export default function PracticeInterview() {
                   <CheckCircle2 className="w-10 h-10 text-blue-400" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Neural Interview Protocol</h2>
+                  <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Interview Practice Protocol</h2>
                   <p className="text-[10px] font-black text-slate-500 tracking-[0.4em] uppercase">Session Guidelines & Preparation</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full text-left">
                   <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
-                    <p className="text-[10px] font-black text-blue-400 mb-1 uppercase tracking-widest">01. PREPARATION</p>
-                    <p className="text-xs text-slate-400 font-bold leading-relaxed">Each question granted 15s preparation time with voice synchronization.</p>
+                    <p className="text-[10px] font-black text-blue-400 mb-1 uppercase tracking-widest">Step 1: Preparation</p>
+                    <p className="text-xs text-slate-400 font-bold leading-relaxed">You will have 15 seconds to prepare before answering each question.</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
-                    <p className="text-[10px] font-black text-violet-400 mb-1 uppercase tracking-widest">02. RESPONSE</p>
-                    <p className="text-xs text-slate-400 font-bold leading-relaxed">Maximum 30s response window per question for neural precision.</p>
+                    <p className="text-[10px] font-black text-violet-400 mb-1 uppercase tracking-widest">Step 2: Response</p>
+                    <p className="text-xs text-slate-400 font-bold leading-relaxed">You have up to 30 seconds to answer each question clearly and concisely.</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
-                    <p className="text-[10px] font-black text-emerald-400 mb-1 uppercase tracking-widest">03. DURATION</p>
-                    <p className="text-xs text-slate-400 font-bold leading-relaxed">Standardized 3-question evaluation path for diagnostic accuracy.</p>
+                    <p className="text-[10px] font-black text-emerald-400 mb-1 uppercase tracking-widest">Step 3: Duration</p>
+                    <p className="text-xs text-slate-400 font-bold leading-relaxed">The session consists of 3 standard interview questions.</p>
                   </div>
                   <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
-                    <p className="text-[10px] font-black text-rose-400 mb-1 uppercase tracking-widest">04. ANALYSIS</p>
-                    <p className="text-xs text-slate-400 font-bold leading-relaxed">Real-time body language and vocal tone biometric tracking.</p>
+                    <p className="text-[10px] font-black text-rose-400 mb-1 uppercase tracking-widest">Step 4: Analysis</p>
+                    <p className="text-xs text-slate-400 font-bold leading-relaxed">Receive real-time feedback on your body language and vocal tone.</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowInstructions(false)}
                   className="w-full py-5 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)]"
                 >
-                  INITIALIZE SYSTEM
+                  BEGIN PRACTICE SESSION
                 </button>
               </div>
             </div>
@@ -442,7 +492,7 @@ export default function PracticeInterview() {
                   style={{ border: 'none' }}
                 >
                   <Video className="w-5 h-5" />
-                  INITIATE AI SESSION
+                  START PRACTICE SESSION
                 </button>
               </div>
             </motion.div>
@@ -517,7 +567,7 @@ export default function PracticeInterview() {
                       return (
                         <motion.div key={i} initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }} animate={{ opacity: 1, x: 0 }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                           <div className={`max-w-[90%] rounded-2xl px-5 py-4 text-xs font-bold leading-relaxed ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white/5 text-slate-300 rounded-tl-none border border-white/10'}`}>
-                            {msg.role === 'ai' && <div className="text-[10px] font-black text-blue-400 mb-2 uppercase tracking-widest flex items-center gap-2"><Sparkles className="w-3 h-3" /> Digital Coach</div>}
+                            {msg.role === 'ai' && <div className="text-[10px] font-black text-blue-400 mb-2 uppercase tracking-widest flex items-center gap-2"><Sparkles className="w-3 h-3" /> AI Interviewer</div>}
                             {isLastAI && isTyping ? (
                               <div className="flex flex-col gap-2">
                                 <span>{displayedAIQuestion}</span>
@@ -586,8 +636,8 @@ export default function PracticeInterview() {
                         <div className="flex items-center gap-4">
                           <Sparkles className="w-10 h-10 text-blue-400" />
                           <div className="text-left">
-                            <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Neural Session Debrief</h3>
-                            <p className="text-[10px] font-black tracking-[.4em] text-slate-500 uppercase">AI Diagnostic Report</p>
+                            <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Session Debrief</h3>
+                            <p className="text-[10px] font-black tracking-[.4em] text-slate-500 uppercase">Analysis Report</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
@@ -618,7 +668,7 @@ export default function PracticeInterview() {
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 text-left">
                         <div className="md:col-span-2 rounded-3xl p-8 bg-blue-950/20 border border-blue-500/10">
-                          <p className="text-xs font-black text-blue-400 tracking-[0.2em] mb-4 uppercase">Neural Feedback Summary</p>
+                          <p className="text-xs font-black text-blue-400 tracking-[0.2em] mb-4 uppercase">Feedback Summary</p>
                           <p className="text-base font-bold text-slate-300 leading-relaxed italic">"{feedback?.summary || feedback?.feedback || 'Analyzing session data...'}"</p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
                             <div>
@@ -673,7 +723,7 @@ export default function PracticeInterview() {
 
                       <div className="mt-12 flex justify-center">
                         <button onClick={() => { setSessionStarted(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="px-10 py-5 rounded-3xl bg-white text-black font-black text-xs uppercase tracking-[.2em] hover:scale-[1.05] transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] cursor-pointer">
-                          RETURN TO READY STATE
+                          START NEW SESSION
                         </button>
                       </div>
                     </div>

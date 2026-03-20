@@ -63,7 +63,7 @@ export default function Dashboard() {
       <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="flex flex-col items-center gap-4">
           <Brain className="w-12 h-12 text-blue-500 animate-pulse" />
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">Syncing Neural Data...</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">Loading Performance Data...</p>
         </div>
       </div>
     );
@@ -82,9 +82,9 @@ export default function Dashboard() {
             animate={{ opacity: 1, x: 0 }}
           >
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg mb-4 text-[9px] font-black tracking-widest uppercase border border-blue-500/20 bg-blue-500/5 text-blue-400">
-              <ShieldCheck className="w-3 h-3" /> Secure Access: AK-PRJ-001
+              <ShieldCheck className="w-3 h-3" /> Authorized Access Only
             </div>
-            <h1 className="text-5xl font-black text-white tracking-tighter mb-2">NEURAL <span className="gradient-text">ANALYTICS</span></h1>
+            <h1 className="text-5xl font-black text-white tracking-tighter mb-2">CAREER <span className="gradient-text">ANALYTICS</span></h1>
             <p className="text-xs font-bold uppercase tracking-[0.4em] text-slate-500">Performance Control</p>
           </motion.div>
           
@@ -104,7 +104,7 @@ export default function Dashboard() {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8 sm:mb-12">
           <ScoreCard label="TOTAL SESSIONS" value={stats.totalSessions} maxValue={50} icon={BarChart3} color="blue" />
-          <ScoreCard label="NEURAL AVERAGE" value={stats.avgScore} maxValue={100} icon={Target} color="violet" />
+          <ScoreCard label="COMPOSITE AVERAGE" value={stats.avgScore} maxValue={100} icon={Target} color="violet" />
           <ScoreCard label="PEAK PERFORMANCE" value={stats.bestScore} maxValue={100} icon={Award} color="emerald" />
           <ScoreCard label="GROWTH CURVE" value={Number(stats.improvement)} maxValue={20} icon={TrendingUp} color="amber" />
         </div>
@@ -118,7 +118,7 @@ export default function Dashboard() {
           >
             <h3 className="text-xs font-black text-white uppercase tracking-widest mb-10 flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]" />
-              Neural Score Projection
+              Performance Trends
             </h3>
             <div className="h-64 sm:h-80 w-full min-h-[250px]">
               <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
@@ -145,7 +145,7 @@ export default function Dashboard() {
           >
             <h3 className="text-xs font-black text-white uppercase tracking-widest mb-10 flex items-center gap-2">
               <Smile className="w-4 h-4 text-blue-500" />
-              Emotional Quotient
+              Communication Insights
             </h3>
             <div className="h-48 sm:h-60 w-full mb-6 min-h-[200px]">
               <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={150}>
@@ -218,16 +218,16 @@ export default function Dashboard() {
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 w-full sm:w-auto mt-4 sm:mt-0">
                     <div className="flex flex-row sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto">
                       <span className="text-xl font-black text-white">{session.type === 'interview' ? session.aiAnalysis.interviewScore : session.aiAnalysis.resumeScore}</span>
-                      <span className="text-[9px] font-black text-slate-600 uppercase">Neural Score</span>
+                      <span className="text-[9px] font-black text-slate-600 uppercase">Overall Score</span>
                     </div>
                     <div className="hidden sm:flex flex-col items-center">
                       <div className="flex gap-1 h-1.5 w-16 bg-white/5 rounded-full overflow-hidden">
                         <div className="bg-blue-500 h-full" style={{ width: `${session.type === 'interview' ? session.aiAnalysis.interviewScore : session.aiAnalysis.resumeScore}%` }} />
                       </div>
-                      <span className="text-[8px] font-black text-slate-700 mt-2 uppercase">Integrity</span>
+                      <span className="text-[8px] font-black text-slate-700 mt-2 uppercase">Score Consistency</span>
                     </div>
                     <div className={`px-4 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest ${(session.type === 'interview' ? session.aiAnalysis.interviewScore : session.aiAnalysis.resumeScore) >= 80 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'}`}>
-                      {(session.type === 'interview' ? session.aiAnalysis.interviewScore : session.aiAnalysis.resumeScore) >= 80 ? 'Elite' : 'Stable'}
+                      {(session.type === 'interview' ? session.aiAnalysis.interviewScore : session.aiAnalysis.resumeScore) >= 80 ? 'Advanced' : 'Developing'}
                     </div>
                   </div>
                 </div>

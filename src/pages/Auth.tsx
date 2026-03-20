@@ -78,7 +78,7 @@ export default function Auth() {
             style={{ background: 'rgba(30, 58, 138, 0.4)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}
           >
             <ShieldCheck className="w-4 h-4" />
-            Neural Security Protocol Active
+            Secure Authentication Active
           </motion.div>
           
           <div className="flex justify-center mb-6">
@@ -87,8 +87,8 @@ export default function Auth() {
             </div>
           </div>
           
-          <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">Neural Gateway</h1>
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Identity Authentication Sync</p>
+          <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">Account Portal</h1>
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Identity Verification Service</p>
         </div>
 
         {/* Auth Card */}
@@ -112,10 +112,10 @@ export default function Auth() {
             >
               <div className="text-left">
                 <h2 className="text-2xl font-black text-white uppercase tracking-tight">
-                  {mode === 'login' ? 'System Access' : mode === 'signup' ? 'Create Identity' : 'Restore Link'}
+                  {mode === 'login' ? 'System Access' : mode === 'signup' ? 'Create Account' : 'Restore Link'}
                 </h2>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">
-                  {mode === 'login' ? 'Please provide your credentials' : mode === 'signup' ? 'Join the neural ecosystem' : 'Enter your registered email'}
+                  {mode === 'login' ? 'Please provide your credentials' : mode === 'signup' ? 'Join our career platform' : 'Enter your registered email'}
                 </p>
               </div>
 
@@ -211,7 +211,7 @@ export default function Auth() {
                 >
                   <div className="absolute inset-0 bg-blue-500 translate-y-full group-hover:translate-y-0 transition-transform duration-300 opacity-10" />
                   {mode === 'login' ? <LogIn className="w-4 h-4" /> : mode === 'signup' ? <UserPlus className="w-4 h-4" /> : <Sparkles className="w-4 h-4" />}
-                  {loading ? 'PROCESSING...' : mode === 'login' ? 'AUTHORIZE ACCESS' : mode === 'signup' ? 'REGISTER ENTITY' : 'INITIATE RECOVERY'}
+                  {loading ? 'PROCESSING...' : mode === 'login' ? 'AUTHORIZE ACCESS' : mode === 'signup' ? 'CREATE ACCOUNT' : 'INITIATE RECOVERY'}
                 </button>
 
                 {(mode === 'login' || mode === 'signup') && (
@@ -260,7 +260,7 @@ export default function Auth() {
                       onClick={() => setMode('signup')}
                       className="text-[10px] font-black text-slate-400 uppercase tracking-widest hover:text-blue-400 text-center transition-colors cursor-pointer"
                     >
-                      New Entity? <span className="text-blue-500 underline decoration-2 underline-offset-4">Create Profile</span>
+                      New User? <span className="text-blue-500 underline decoration-2 underline-offset-4">Create Profile</span>
                     </button>
                     <button
                       onClick={() => setMode('forgot')}
@@ -284,7 +284,7 @@ export default function Auth() {
 
         {/* Footer Info */}
         <p className="mt-8 text-center text-[8px] font-black text-slate-700 uppercase tracking-[0.5em]">
-          End-to-End Neural Encryption Enabled • V1.0.4-STABLE
+          End-to-End Secure Encryption Active • V1.0.4-STABLE
         </p>
       </motion.div>
     </div>

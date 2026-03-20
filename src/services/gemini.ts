@@ -6,7 +6,7 @@ const GEMINI_ENABLED = !!API_KEY;
 
 // Initialize the SDK
 const genAI = GEMINI_ENABLED ? new GoogleGenerativeAI(API_KEY) : null;
-const MODEL_NAME = "gemini-3-flash-preview";
+const MODEL_NAME = "gemini-3.1-flash-lite-preview";
 
 /**
  * Helper to try multiple models for a prompt.
@@ -22,9 +22,14 @@ async function generateWithFallback<T>(prompt: string, models: string[]): Promis
       const response = await result.response;
       const text = response.text();
       
+      if (!text) throw new Error("Empty response from model.");
+      
       const startIdx = text.indexOf('{');
       const endIdx = text.lastIndexOf('}');
-      if (startIdx === -1 || endIdx === -1) throw new Error("Invalid format.");
+      if (startIdx === -1 || endIdx === -1) {
+        console.error("Model returned non-JSON text:", text);
+        throw new Error("AI returned invalid data format. Please try again.");
+      }
       
       const cleaned = text.substring(startIdx, endIdx + 1);
       return JSON.parse(cleaned) as T;
@@ -74,7 +79,7 @@ export async function analyzeResume(
 ): Promise<ResumeAnalysisResult> {
   if (!genAI) return getMockResumeAnalysis();
 
-  const models = ["gemini-3-flash-preview", "gemini-3.1-flash-preview"];
+  const models = [MODEL_NAME, "gemini-1.5-flash"];
   const prompt = `Analyze this resume against the job description. Return ONLY valid JSON (no markdown fences) in this exact format:
 {
   "score": <0-100>,
@@ -122,7 +127,7 @@ export async function analyzeFullSession(
   scores: { eyeContact: number; posture: number; gestures: number; confidence: number; audio: number },
   role: string
 ): Promise<any> {
-  const models = ["gemini-3-flash-preview", "gemini-1.5-flash"];
+  const models = [MODEL_NAME, "gemini-1.5-flash"];
   const prompt = `Analyze this interview for ${role}.
   TRANSCRIPT: ${JSON.stringify(transcript)}
   METRICS: ${JSON.stringify(scores)}
@@ -155,7 +160,7 @@ export async function analyzeFullSession(
 export async function generateEnhancedResume(resumeText: string, targetJob?: string): Promise<EnhancedResume> {
   if (!genAI) return getMockEnhancedResume();
 
-  const models = ["gemini-3-flash-preview", "gemini-1.5-flash"];
+  const models = [MODEL_NAME, "gemini-1.5-flash"];
   const prompt = `Enhance resume for job: ${targetJob || 'formalized'}. 
   Return JSON ONLY: { "personalInfo": { "name": "", "email": "", "phone": "", "location": "", "linkedin": "", "website": "" }, "summary": "", "experience": [{ "role": "", "company": "", "location": "", "duration": "", "bullets": [] }], "education": [{ "degree": "", "school": "", "location": "", "duration": "" }], "skills": [{ "category": "", "items": [] }] }
   Content must be formal, board-ready, STAR bullets. 
