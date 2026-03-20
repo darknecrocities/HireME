@@ -82,16 +82,28 @@ The core differentiator of HireME is its **Resonance matching** algorithm.
 - **TypeScript**: Ensuring type-safe neural data processing through the entire application cycle.
 - **Framer Motion 12**: Luxurious micro-animations that make the interface feel alive.
 - **Tailwind CSS 4**: Next-gen styling with 0-runtime overhead, optimized for our signature "HireME Blue" aesthetic.
+- **Lucide React & Recharts**: Premium iconography and data visualization for performance tracking.
 
 ### **AI & Machine Learning Infrastructure**
-- **Model Orchestration**: Dual-model strategy using `gemini-3-flash-preview` for complex reasoning and `gemini-2.5-flash` for high-reliability fallbacks.
-- **Computer Vision (CV)**: **MediaPipe** for real-time, 60+ FPS client-side body language tracking.
+- **Model Orchestration**: Dual-model strategy using `gemini-3.1-flash-lite-preview` for complex reasoning and `gemini-3.1-pro` for high-reliability fallbacks.
+- **Computer Vision (CV)**: **MediaPipe Holistic** for real-time, 60+ FPS client-side body language tracking.
 - **Data Visualization**: **Recharts** for visualizing performance trends and resonance growth.
 
 ### **Services & Security**
 - **Firebase Firestore**: Real-time persistence for your career pathway and saved nodes.
 - **Firebase Auth**: Secure, seamless Google and Email identity management.
+- **TheirStack API**: High-fidelity job node mapping from 10M+ global listings.
 - **Zero-Trust Video**: No camera data is ever stored; analysis is performed entirely in RAM and discarded instantly.
+
+### **Development & AI Orchestration**
+- **Google Colab**: High-performance playground for MediaPipe landmark testing and CV model validation.
+- **OpenClaw**: Specialized AI orchestration layer for rapid feature prototyping and scaling.
+- **Antigravity**: The lead agentic AI coding assistant, driving the core neural architecture.
+- **Claude Code**: Advanced CLI interface for AI-driven development and codebase management.
+
+### **Deployment**
+- **Vercel**: High-performance edge deployment for the React frontend.
+- **Firebase Hosting**: Global CDN for static assets and Firebase SDK integration.
 
 ---
 
@@ -129,6 +141,15 @@ The core differentiator of HireME is its **Resonance matching** algorithm.
    ```bash
    npm run dev
    ```
+
+---
+
+## 🛠 Project Structure
+
+- `/src/hooks`: Custom React hooks for MediaPipe, Auth, and API interactions.
+- `/src/services`: Core service implementations for Gemini and Firebase.
+- `/src/pages`: Main application views (Practice Interview, Resume Enhancer, Job Feed).
+- `/public`: Static assets and MediaPipe model files.
 
 ---
 
