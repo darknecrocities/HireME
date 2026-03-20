@@ -3,7 +3,7 @@ import type { BodyLanguageScores } from '../types';
 
 // Accessing MediaPipe from window globals because direct ESM imports
 // in Vite 8 are incompatible with these UMD bundles.
-const { FaceMesh, FACEMESH_TESSELATION, FACEMESH_RIGHT_EYE, FACEMESH_LEFT_EYE, FACEMESH_LEFT_EYEBROW, FACEMESH_RIGHT_EYEBROW, FACEMESH_LIPS, FACEMESH_FACE_OVAL } = (window as any);
+const { FaceMesh, FACEMESH_TESSELATION, FACEMESH_RIGHT_EYE, FACEMESH_LEFT_EYE } = (window as any);
 const { Pose, POSE_CONNECTIONS } = (window as any);
 const { Hands, HAND_CONNECTIONS } = (window as any);
 const { Camera } = (window as any);
