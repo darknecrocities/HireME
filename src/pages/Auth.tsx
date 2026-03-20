@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, Mail, Lock, UserPlus, LogIn, ArrowLeft, Sparkles, User, Calendar, Briefcase, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useNavigate, Link } from 'react-router-dom';
+import logo from '../assets/Hireme.png';
 
 type AuthMode = 'login' | 'signup' | 'forgot';
 
@@ -79,8 +80,15 @@ export default function Auth() {
             <ShieldCheck className="w-4 h-4" />
             Neural Security Protocol Active
           </motion.div>
-          <h1 className="text-5xl font-black text-white tracking-tighter mb-2">HIRE<span className="gradient-text">ME</span></h1>
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Identity Authentication Gateway</p>
+          
+          <div className="flex justify-center mb-6">
+            <div className="w-24 h-24 rounded-3xl bg-blue-600/10 p-4 border border-blue-500/20 shadow-[0_0_50px_rgba(37,99,235,0.2)]">
+              <img src={logo} alt="HireMe" className="w-full h-full object-contain" />
+            </div>
+          </div>
+          
+          <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">Neural Gateway</h1>
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Identity Authentication Sync</p>
         </div>
 
         {/* Auth Card */}
@@ -209,7 +217,7 @@ export default function Auth() {
                 {(mode === 'login' || mode === 'signup') && (
                   <>
                     <div className="relative flex items-center gap-4 my-2">
-                      <div className="h-[1px] flex-1 bg-white/5" />
+                       <div className="h-[1px] flex-1 bg-white/5" />
                       <span className="text-[8px] font-black text-slate-700 uppercase tracking-widest">OR</span>
                       <div className="h-[1px] flex-1 bg-white/5" />
                     </div>

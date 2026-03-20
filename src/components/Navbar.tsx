@@ -8,13 +8,14 @@ import {
   BarChart3,
   Menu,
   X,
-  User,
   LogOut,
   Zap,
-  Search
+  Search,
+  User
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
+import logo from '../assets/Hireme.png';
 
 const navItems = [
   { path: '/', label: 'Home', icon: Home },
@@ -37,11 +38,13 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-full">
           {/* Logo & Branding */}
           <Link to="/" className="flex items-center gap-3 no-underline group flex-shrink-0">
-            <img 
-              src="/mediapipe-assets/HireMeLogo.png" 
-              alt="HireME" 
-              className="w-10 h-10 rounded-xl object-contain group-hover:scale-110 transition-all duration-500"
-            />
+            <div className="w-10 h-10 rounded-xl bg-blue-600/10 overflow-hidden flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-all duration-500">
+               <img 
+                src={logo} 
+                alt="HireME" 
+                className="w-7 h-7 object-contain"
+              />
+            </div>
             <div className="flex flex-col justify-center">
               <span className="text-[17px] font-black text-white tracking-tighter leading-none mt-1">
                 HIRE<span className="text-blue-500">ME</span>
@@ -96,7 +99,7 @@ export default function Navbar() {
                 </div>
               ) : (
                 <Link to="/auth" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#030817] border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.2)] text-white text-[10px] font-bold tracking-[0.2em] transition-all hover:bg-blue-900/40 no-underline">
-                  <X className="w-3 h-3 text-slate-400" />
+                  <User className="w-3.5 h-3.5 text-blue-400" />
                   JOIN SYSTEM
                 </Link>
               )}

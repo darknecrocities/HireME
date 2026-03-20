@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
+<<<<<<< HEAD
 import {
   FileText,
   Video,
@@ -10,6 +11,10 @@ import {
   ShieldCheck,
   CheckCircle2,
 } from 'lucide-react';
+=======
+import { FileText, Video, BarChart3, ArrowRight, Sparkles, Brain, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import logo from '../assets/Hireme.png';
+>>>>>>> ec5ece7 (style: integrate custom Hireme branding and favicon)
 
 /* ─── Data ─── */
 const features = [
@@ -343,6 +348,7 @@ export default function Home() {
         </div>
       </section>
 
+<<<<<<< HEAD
       {/* CAPABILITIES */}
       <section className="px-6 py-20 md:py-24">
         <div className="mx-auto max-w-7xl">
@@ -372,6 +378,15 @@ export default function Home() {
                     </div>
                   </div>
                 ))}
+=======
+      {/* ═══════════════════  FOOTER  ═════════════════ */}
+      <footer className="w-full border-t border-white/5 bg-black py-16 px-6">
+        <div className="max-w-7xl mx-auto w-full flex flex-col items-center md:flex-row md:items-start justify-between gap-10">
+          <div className="flex flex-col items-center md:items-start">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-8 h-8 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center overflow-hidden">
+                <img src={logo} alt="HireMe" className="w-5 h-5 object-contain" />
+>>>>>>> ec5ece7 (style: integrate custom Hireme branding and favicon)
               </div>
             </GlassPanel>
 
