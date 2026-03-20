@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-<<<<<<< HEAD
 import {
   FileText,
   Video,
@@ -11,10 +10,7 @@ import {
   ShieldCheck,
   CheckCircle2,
 } from 'lucide-react';
-=======
-import { FileText, Video, BarChart3, ArrowRight, Sparkles, Brain, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import logo from '../assets/Hireme.png';
->>>>>>> ec5ece7 (style: integrate custom Hireme branding and favicon)
 
 /* ─── Data ─── */
 const features = [
@@ -179,7 +175,7 @@ export default function Home() {
                 >
                   <Link
                     to="/resume"
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-7 py-4 text-sm font-bold text-white transition hover:bg-blue-400"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-7 py-4 text-sm font-bold text-white transition hover:bg-blue-400 no-underline"
                   >
                     Optimize Resume
                     <ArrowRight className="h-4 w-4" />
@@ -187,7 +183,7 @@ export default function Home() {
 
                   <Link
                     to="/interview"
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-7 py-4 text-sm font-bold text-white transition hover:bg-white/10"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-7 py-4 text-sm font-bold text-white transition hover:bg-white/10 no-underline"
                   >
                     Practice Interview
                   </Link>
@@ -348,12 +344,11 @@ export default function Home() {
         </div>
       </section>
 
-<<<<<<< HEAD
-      {/* CAPABILITIES */}
+      {/* CAPABILITIES & START HERE */}
       <section className="px-6 py-20 md:py-24">
         <div className="mx-auto max-w-7xl">
-          <div className="grid items-center gap-10 lg:grid-cols-2">
-            <GlassPanel className="p-8 md:p-10">
+          <div className="grid items-stretch gap-10 lg:grid-cols-2">
+            <GlassPanel className="p-8 md:p-10 flex flex-col h-full">
               <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-400">
                 Why Choose HireME
               </p>
@@ -378,20 +373,10 @@ export default function Home() {
                     </div>
                   </div>
                 ))}
-=======
-      {/* ═══════════════════  FOOTER  ═════════════════ */}
-      <footer className="w-full border-t border-white/5 bg-black py-16 px-6">
-        <div className="max-w-7xl mx-auto w-full flex flex-col items-center md:flex-row md:items-start justify-between gap-10">
-          <div className="flex flex-col items-center md:items-start">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-8 h-8 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center overflow-hidden">
-                <img src={logo} alt="HireMe" className="w-5 h-5 object-contain" />
->>>>>>> ec5ece7 (style: integrate custom Hireme branding and favicon)
               </div>
             </GlassPanel>
 
-            <GlassPanel className="p-8 md:p-10">
-              <div className="rounded-[24px] border border-white/10 bg-gradient-to-br from-[#0a1328] to-[#050b18] p-8">
+            <GlassPanel className="p-8 md:p-10 flex flex-col h-full">
                 <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-400">
                   Start Here
                 </p>
@@ -428,7 +413,6 @@ export default function Home() {
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
-              </div>
             </GlassPanel>
           </div>
         </div>
@@ -467,32 +451,38 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="border-t border-white/5 px-6 py-12">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 md:flex-row">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/20">
-                <Brain className="h-5 w-5 text-blue-300" />
+      {/* ═══════════════════  FOOTER  ═════════════════ */}
+      <footer className="w-full border-t border-white/5 bg-black py-16 px-6">
+        <div className="max-w-7xl mx-auto w-full flex flex-col items-center md:flex-row md:items-start justify-between gap-10">
+          <div className="flex flex-col items-center md:items-start">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-blue-600/10 border border-blue-500/20 flex items-center justify-center overflow-hidden">
+                <img src={logo} alt="HireMe" className="w-7 h-7 object-contain" />
               </div>
               <span className="text-2xl font-extrabold tracking-tight text-white">
                 HIRE<span className="text-blue-400">ME</span>
               </span>
             </div>
-            <p className="mt-3 text-sm text-slate-400">
-              AI-powered interview coaching and resume optimization.
+            <p className="text-sm text-slate-400 max-w-[300px] text-center md:text-left">
+              AI-powered interview coaching and resume optimization designed for the modern hiring landscape.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-400">
-            <span>Resume Optimizer</span>
-            <span>Virtual Interview</span>
-            <span>Dashboard</span>
+          <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-slate-400 uppercase tracking-widest font-bold">
+            <Link to="/resume" className="no-underline text-inherit hover:text-white transition-colors">Resume</Link>
+            <Link to="/interview" className="no-underline text-inherit hover:text-white transition-colors">Interview</Link>
+            <Link to="/jobs" className="no-underline text-inherit hover:text-white transition-colors">Jobs</Link>
+            <Link to="/dashboard" className="no-underline text-inherit hover:text-white transition-colors">Analytics</Link>
           </div>
 
-          <p className="flex items-center gap-2 text-sm text-slate-500">
-            Built for excellence <Sparkles className="h-4 w-4 text-blue-400" /> 2026
-          </p>
+          <div className="flex flex-col items-center md:items-end gap-2">
+            <p className="flex items-center gap-2 text-sm text-slate-500 uppercase tracking-tighter font-black">
+              Built for excellence <Sparkles className="h-4 w-4 text-blue-400" /> 2026
+            </p>
+            <p className="text-[10px] text-slate-600 font-bold uppercase tracking-[0.2em]">
+              V1.0.4-STABLE • SECURE_NODE_ALPHA
+            </p>
+          </div>
         </div>
       </footer>
     </div>
