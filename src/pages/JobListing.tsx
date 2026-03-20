@@ -96,12 +96,12 @@ export default function JobListing() {
   };
 
   return (
-    <div className="min-h-screen bg-[#020617] pt-24 pb-12 px-4 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-[#030817] text-white pt-36 pb-20 px-6 relative overflow-hidden flex flex-col items-center">
       {/* Background Decorative Elements */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="w-full max-w-6xl mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
           <motion.div
@@ -116,15 +116,15 @@ export default function JobListing() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl font-black text-white mb-4 tracking-tighter"
+            className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4"
           >
-            PIONEER YOUR <span className="gradient-text">PATHWAY</span>
+            PIONEER YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-500">PATHWAY</span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-500 font-bold uppercase tracking-[0.3em] text-[10px] mb-12"
+            className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500 mb-12"
           >
             Search jobs with high-fidelity filtering
           </motion.p>
@@ -177,7 +177,7 @@ export default function JobListing() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="glass-card p-5 border-blue-500/10 hover:border-blue-500/40 text-left group transition-all"
+                    className="rounded-[28px] border border-blue-500/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] p-5 hover:border-blue-500/40 text-left group transition-all"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
@@ -203,11 +203,11 @@ export default function JobListing() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ delay: 0.3 }}
-              className="glass-card mb-12 p-8 border-white/5 shadow-2xl"
+              className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] mb-12 p-8"
             >
               <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
                 <div className="md:col-span-5 space-y-2 text-left">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
                     <Briefcase className="w-3 h-3" /> Job Title
                   </label>
                   <input
@@ -215,11 +215,11 @@ export default function JobListing() {
                     placeholder="Software Engineer, Product Designer..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-mono"
+                    className="w-full bg-[#081124] border border-white/10 rounded-xl px-5 py-4 text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div className="md:col-span-4 space-y-2 text-left">
-                  <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest flex items-center gap-2 mb-2">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
                     <MapPin className="w-3 h-3" /> Location
                   </label>
                   <input
@@ -227,7 +227,7 @@ export default function JobListing() {
                     placeholder="New York, San Francisco, Remote..."
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-mono"
+                    className="w-full bg-[#081124] border border-white/10 rounded-xl px-5 py-4 text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
                   />
                 </div>
                 <div className="md:col-span-3">
@@ -235,8 +235,8 @@ export default function JobListing() {
                     <button
                       type="button"
                       onClick={() => setRemote(!remote)}
-                      className={`flex-1 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
-                        remote ? 'bg-blue-600 border-blue-400 text-white' : 'bg-white/5 border-white/10 text-slate-500'
+                      className={`flex-1 py-4 rounded-xl text-[10px] font-bold uppercase tracking-[0.2em] transition-all border ${
+                        remote ? 'bg-[#081124] border-blue-500 border-2 text-white' : 'bg-transparent border-white/10 text-slate-500 hover:text-white hover:border-white/30'
                       }`}
                     >
                       <div className="flex items-center justify-center gap-2">
@@ -304,7 +304,7 @@ export default function JobListing() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ delay: i * 0.05 }}
-                    className="glass-card p-8 border-white/5 group hover:border-blue-500/30 transition-all"
+                    className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] p-8 group hover:border-blue-500/30 transition-all mb-6"
                   >
                     <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
                       <div className="w-14 h-14 rounded-2xl bg-blue-900/20 border border-blue-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -397,12 +397,12 @@ export default function JobListing() {
                 return (
                   <div key="placeholders" className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[1,2,3].map(item => (
-                      <div key={item} className="glass-card p-10 border-white/5 text-left group">
+                      <div key={item} className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] p-10 text-left group">
                         <div className="w-10 h-10 rounded-xl bg-blue-900/20 border border-blue-500/20 flex items-center justify-center mb-6">
                           <Target className="w-5 h-5 text-blue-500" />
                         </div>
-                        <h4 className="text-white font-black uppercase tracking-widest text-xs mb-2">Neural Recommendation</h4>
-                        <p className="text-slate-500 text-[10px] uppercase font-bold tracking-widest">Search roles matching your neural profile.</p>
+                        <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-2">Neural Recommendation</h4>
+                        <p className="text-slate-500 text-[10px] uppercase font-bold tracking-[0.1em]">Search roles matching your neural profile.</p>
                       </div>
                     ))}
                   </div>

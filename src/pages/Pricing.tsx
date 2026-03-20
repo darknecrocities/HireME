@@ -46,12 +46,12 @@ export default function Pricing() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-[calc(100vh-var(--nav-h))] bg-black py-20 px-6 relative overflow-hidden">
+    <div className="min-h-screen w-full bg-[#030817] text-white pt-36 pb-20 px-6 relative overflow-hidden flex flex-col items-center">
       {/* Background Ambience */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '2s' }} />
 
-      <div className="max-w-6xl mx-auto relative z-10">
+      <div className="w-full max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -65,15 +65,15 @@ export default function Pricing() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-6 uppercase"
+            className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4 uppercase"
           >
-            SELECT YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-400">IDENTITY TIER</span>
+            SELECT YOUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-500">IDENTITY TIER</span>
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-slate-500 max-w-2xl mx-auto text-sm font-medium leading-relaxed"
+            className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500 max-w-2xl mx-auto"
           >
             Whether you're exploring the interface or ready to optimize your career at scale, choose the tier that matches your professional trajectory.
           </motion.p>
@@ -86,11 +86,10 @@ export default function Pricing() {
               initial={{ opacity: 0, x: idx === 0 ? -20 : 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 + idx * 0.1 }}
-              className={`relative group rounded-3xl p-[1px] ${tier.highlight ? 'bg-gradient-to-b from-blue-500/40 to-violet-500/40' : 'bg-white/5'}`}
+              className={`relative group flex flex-col p-8 rounded-[28px] border backdrop-blur-xl transition-all duration-300 ${tier.highlight ? 'border-blue-500/50 bg-blue-500/[0.05] shadow-[0_10px_40px_rgba(37,99,235,0.2)]' : 'border-white/10 bg-white/[0.03] shadow-[0_10px_40px_rgba(0,0,0,0.28)]'}`}
             >
-              <div className="relative h-full bg-[#050505] rounded-[23px] overflow-hidden p-8 flex flex-col">
                 {/* Card Glow */}
-                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 bg-gradient-to-br ${tier.highlight ? 'from-blue-600/5 to-violet-600/5' : 'from-white/5 to-transparent'}`} />
+                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 rounded-[28px] transition-opacity duration-700 pointer-events-none bg-gradient-to-br ${tier.highlight ? 'from-blue-600/5 to-violet-600/5' : 'from-white/5 to-transparent'}`} />
                 
                 <div className="relative z-10 flex flex-col h-full">
                   <div className="flex items-start justify-between mb-8">
@@ -144,7 +143,6 @@ export default function Pricing() {
                     {user && tier.link === '/auth' ? 'CURRENTLY ACTIVE' : tier.cta}
                   </Link>
                 </div>
-              </div>
             </motion.div>
           ))}
         </div>
@@ -155,9 +153,9 @@ export default function Pricing() {
           transition={{ delay: 1 }}
           className="mt-20 text-center"
         >
-          <div className="inline-flex items-center gap-4 p-6 rounded-3xl bg-white/[0.02] border border-white/5 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-4 p-6 rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)]">
             <Zap className="w-5 h-5 text-blue-400" />
-            <span className="text-xs font-bold text-slate-500 tracking-wide">
+            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 text-left">
               All tiers include global CDN delivery, security audits, and neural network updates.
             </span>
           </div>
