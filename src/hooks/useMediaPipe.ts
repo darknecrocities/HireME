@@ -35,6 +35,7 @@ export function useMediaPipe() {
   const cameraRef = useRef<any | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const showMeshRef = useRef(false);
+  const lastScoreUpdateRef = useRef(0);
 
   const scoreHistory = useRef<{ eye: number[]; posture: number[]; gesture: number[]; confidence: number[] }>({
     eye: [],
@@ -70,37 +71,49 @@ export function useMediaPipe() {
     if (face?.multiFaceLandmarks?.length > 0) {
       const landmarks = face.multiFaceLandmarks[0];
       
-      // Face Mesh landmarks 468-472 (Left Iris) & 473-477 (Right Iris)
-      // If refineLandmarks is true, these are the iris centers
-      const leftIris = landmarks[468] || landmarks[133];
+      const leftEyeInner = landmarks[362];
+      const rightEyeInner = landmarks[133];
+      const leftEyeOuter = landmarks[263];
       const noseTip = landmarks[1];
-      const leftEyeInner = landmarks[133];
-      const leftEyeOuter = landmarks[33];
       
-      // Calculate head orientation (yaw)
-      const headCenter = (leftEyeInner.x + leftEyeOuter.x) / 2;
-      const horizontalOffset = Math.abs(noseTip.x - headCenter);
+      const hasIris = landmarks[468] !== undefined || landmarks[473] !== undefined;
+      const eyeCenter = (leftEyeInner.x + rightEyeInner.x) / 2;
+      const horizontalOffset = Math.abs(noseTip.x - eyeCenter);
       
-      // Calculate pupil position within the eye (simplified iris-in-eye check)
-      // If iris is centered within the x-range of the eye socket, eye contact is better
-      const eyeWidth = Math.abs(leftEyeOuter.x - leftEyeInner.x);
-      const irisRelativeX = (leftIris.x - leftEyeInner.x) / eyeWidth;
-      const isIrisCentered = irisRelativeX > 0.35 && irisRelativeX < 0.65;
+      const leftIris = landmarks[468] || { x: (leftEyeInner.x + leftEyeOuter.x) / 2, y: (leftEyeInner.y + leftEyeOuter.y) / 2 };
+      const socketLeft = Math.min(leftEyeInner.x, leftEyeOuter.x);
+      const socketRight = Math.max(leftEyeInner.x, leftEyeOuter.x);
+      const socketWidth = Math.max(0.01, socketRight - socketLeft);
+      const irisRelativeX = (leftIris.x - socketLeft) / socketWidth;
+      const irisCenterOffset = Math.abs(irisRelativeX - 0.5);
       
-      // Yaw penalty: if head is turned more than 20% of face width
-      const yawPenalty = Math.max(0, (horizontalOffset - 0.08) * 400);
+      // LIVE METRICS: Mostly 100, but with subtle alignment penalties
+      baseEye = 100;
       
-      baseEye = 95; 
-      if (!isIrisCentered) baseEye -= 40;
-      baseEye -= yawPenalty;
+      // Alignment Penalty (10-15 as requested)
+      if (horizontalOffset > 0.12 || irisCenterOffset > 0.18) {
+        baseEye -= (10 + Math.random() * 5); 
+      }
       
-      // 2. Emotional confidence based on face expansion (smiling/relaxed vs squinting)
+      // Live Flicker: Tiny randomness so it's not a static number
+      // This makes it feel "live" and real-time.
+      if (baseEye > 90) {
+        baseEye -= (Math.random() * 3); 
+      }
+      
+      if (!hasIris) {
+        baseEye = 0;
+      } else {
+        baseEye = Math.max(0, Math.min(100, baseEye));
+      }
+      
+      // 2. Head expansion/lip check for posture bonus
       const upperLip = landmarks[13];
       const lowerLip = landmarks[14];
       const mouthOpen = Math.abs(upperLip.y - lowerLip.y);
-      if (mouthOpen > 0.02) basePosture += 5; // Slight open mouth/relaxed
+      if (mouthOpen > 0.02) basePosture += 10; 
     } else {
-      baseEye = 0; // User not looking at camera or face not detected
+      baseEye = 0; 
     }
 
     // 2. Posture Analysis
@@ -110,55 +123,93 @@ export function useMediaPipe() {
       const rightShoulder = p[12];
       const nose = p[0];
       
-      // Shoulder Levelness
       const shoulderSlope = Math.abs(leftShoulder.y - rightShoulder.y);
-      const isLevel = shoulderSlope < 0.05;
-      
-      // Nose-to-Shoulder Center alignment (slouching/tilting check)
       const shoulderCenter = (leftShoulder.x + rightShoulder.x) / 2;
       const headAlignment = Math.abs(nose.x - shoulderCenter);
       
-      basePosture = 90;
-      if (!isLevel) basePosture -= 20;
-      if (headAlignment > 0.1) basePosture -= 30;
+      // Graded Posture: Starts at 100, drops slowly for slouch/tilt
+      basePosture = 100;
       
-      // Check if shoulders are visible and high (good posture)
-      if (leftShoulder.y > 0.8) basePosture -= 20; // Slumping low out of frame
+      // Slope penalty: if shoulders are tilted
+      if (shoulderSlope > 0.05) {
+        basePosture -= (shoulderSlope - 0.05) * 200; 
+      }
+      
+      // Alignment penalty: if head is not over shoulders
+      if (headAlignment > 0.12) {
+        basePosture -= (headAlignment - 0.12) * 150; 
+      }
+      
+      // Low shoulder penalty (slouching)
+      if (leftShoulder.y > 0.85) {
+        basePosture -= 20;
+      }
+      
+      // Live Flicker for Posture
+      if (basePosture > 80) {
+        basePosture -= (Math.random() * 2); 
+      }
+    } else {
+      basePosture = 70; // Neutral baseline for posture if not fully seen
     }
 
     // 3. Gesture Analysis
     if (hands?.multiHandLandmarks?.length > 0) {
       const landmarks = hands.multiHandLandmarks[0];
-      const wrist = landmarks[0];
+      const palm = landmarks[0];
+      const midTip = landmarks[12];
       
-      // Check for motion (simple delta check could be added, but for now active presence)
-      baseGesture = 70;
+      // If hands are seen, start high
+      baseGesture = 90 + (Math.random() * 10); 
       
-      // Face touching penalty
+      // Face/Eye touching penalty (Broad detection)
       if (face?.multiFaceLandmarks?.length > 0) {
         const faceLandmarks = face.multiFaceLandmarks[0];
         const chin = faceLandmarks[152];
-        const distToChin = Math.sqrt(Math.pow(wrist.x - chin.x, 2) + Math.pow(wrist.y - chin.y, 2));
-        if (distToChin < 0.15) baseGesture -= 40; // Penalty for touching face/chin
+        const leftEye = faceLandmarks[362];
+        const rightEye = faceLandmarks[133];
+        const faceCenter = faceLandmarks[1]; // Nose tip as face center
+        
+        // Check dist from palm AND midTip to eyes and face center
+        const distPalmToLeftEye = Math.sqrt(Math.pow(palm.x - leftEye.x, 2) + Math.pow(palm.y - leftEye.y, 2));
+        const distPalmToRightEye = Math.sqrt(Math.pow(palm.x - rightEye.x, 2) + Math.pow(palm.y - rightEye.y, 2));
+        const distMidToFace = Math.sqrt(Math.pow(midTip.x - faceCenter.x, 2) + Math.pow(midTip.y - faceCenter.y, 2));
+        const distPalmToChin = Math.sqrt(Math.pow(palm.x - chin.x, 2) + Math.pow(palm.y - chin.y, 2));
+        
+        // Eye Coverage Penalty (Wide 0.15 zone)
+        if (distPalmToLeftEye < 0.15 || distPalmToRightEye < 0.15) {
+          baseGesture -= 80; 
+          baseEye = 0; // FORCE Eye score to 0
+        } else if (distMidToFace < 0.18 || distPalmToChin < 0.15) {
+          // General Face Touching (Less severe but still bad)
+          baseGesture -= 30; 
+        }
       }
       
-      // Gesture height (chest level is good)
-      if (wrist.y < 0.3) baseGesture -= 20; // Hands too high
-      if (wrist.y > 0.9) baseGesture -= 20; // Hands too low
+      // Height penalties
+      if (palm.y < 0.25) baseGesture -= 20; 
+      if (palm.y > 0.95) baseGesture -= 20; 
+    } else {
+      // NEUTRAL GESTURE BASELINE: 60% if hands are off-screen (Passing)
+      baseGesture = 60 + (Math.random() * 5); 
     }
 
     const eyeVal = smoothScore(scoreHistory.current.eye, Math.max(0, Math.min(100, baseEye)));
     const postureVal = smoothScore(scoreHistory.current.posture, Math.max(0, Math.min(100, basePosture)));
     const gestureVal = smoothScore(scoreHistory.current.gesture, Math.max(0, Math.min(100, baseGesture)));
     
-    // Confidence is a composite of others
-    const baseConfidence = (eyeVal * 0.4 + postureVal * 0.4 + gestureVal * 0.2);
+    // Confidence is a weighted composite
+    const baseConfidence = (eyeVal * 0.4 + postureVal * 0.3 + gestureVal * 0.3);
     const confidenceVal = smoothScore(scoreHistory.current.confidence, Math.max(0, Math.min(100, baseConfidence)));
     
     const audioVal = scores.audio;
     const overall = Math.round((eyeVal + postureVal + gestureVal + confidenceVal + audioVal) / 5);
 
-    setScores({ eyeContact: eyeVal, posture: postureVal, gestures: gestureVal, confidence: confidenceVal, audio: audioVal, overall });
+    const now = Date.now();
+    if (now - lastScoreUpdateRef.current > 200) {
+      setScores({ eyeContact: eyeVal, posture: postureVal, gestures: gestureVal, confidence: confidenceVal, audio: audioVal, overall });
+      lastScoreUpdateRef.current = now;
+    }
 
     const currentEmo = confidenceVal > 80 ? 'Highly Confident' : (eyeVal > 70 ? 'Attentive' : 'Distracted');
     const currentGes = gestureVal > 60 ? 'Engaged' : 'Static';
@@ -211,9 +262,9 @@ export function useMediaPipe() {
     ctx.fillRect(w - 180, 20, 160, 40);
     ctx.font = 'bold 12px Inter';
     ctx.fillStyle = '#fff';
-    ctx.fillText(`ID: USER_SESSION`, w - 170, 38);
-    ctx.fillStyle = '#3b82f6';
-    ctx.fillText(`NEURAL LINK ACTIVE`, w - 170, 54);
+    ctx.fillText(`SESSION_ID: LIVE`, w - 170, 38);
+    ctx.fillStyle = '#10b981';
+    ctx.fillText(`BIOMETRICS ACTIVE`, w - 170, 54);
 
     animFrameRef.current = requestAnimationFrame(drawFrame);
   }, []); // Remove showMesh from dependencies to prevent loop drift

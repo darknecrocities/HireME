@@ -9,6 +9,9 @@ export function useAudioAnalysis(isActive: boolean) {
   const analyserRef = useRef<AnalyserNode | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animationFrameRef = useRef<number | null>(null);
+  const speakingFramesRef = useRef(0);
+  const totalFramesRef = useRef(0);
+  const lastUpdateRef = useRef(0);
 
   const startAudio = useCallback(async () => {
     try {
@@ -28,38 +31,39 @@ export function useAudioAnalysis(isActive: boolean) {
       const bufferLength = analyser.frequencyBinCount;
       const dataArray = new Uint8Array(bufferLength);
       
-      let speakingFrames = 0;
-      let totalFrames = 0;
-
       const updateAudio = () => {
         if (!analyserRef.current) return;
         analyserRef.current.getByteFrequencyData(dataArray);
         
+        const now = Date.now();
+        // Calculate raw metrics on every frame for accuracy
         let sum = 0;
         for (let i = 0; i < bufferLength; i++) {
           sum += dataArray[i];
         }
         const average = sum / bufferLength;
         const normalizedVol = Math.min(100, Math.round((average / 128) * 100));
-        setVolume(normalizedVol);
         
         const speaking = normalizedVol > 15;
-        setIsSpeaking(speaking);
-        
-        totalFrames++;
-        if (speaking) speakingFrames++;
-        
-        // Calculate audio score based on consistency (avoiding long silences or constant noise)
-        const consistency = (speakingFrames / totalFrames) * 100;
-        // Ideal consistency for an interview is around 40-70% (alternating between question and answer)
-        let score = 0;
-        if (consistency > 30 && consistency < 80) {
-          score = 90 - Math.abs(50 - consistency);
-        } else {
-          score = Math.max(0, 50 - Math.abs(50 - consistency));
+        totalFramesRef.current++;
+        if (speaking) speakingFramesRef.current++;
+
+        // Only update React state every 200ms
+        if (now - lastUpdateRef.current > 200) {
+          setVolume(normalizedVol);
+          setIsSpeaking(speaking);
+          
+          const consistency = (speakingFramesRef.current / totalFramesRef.current) * 100;
+          let score = 0;
+          if (consistency > 30 && consistency < 80) {
+            score = 90 - Math.abs(50 - consistency);
+          } else {
+            score = Math.max(0, 50 - Math.abs(50 - consistency));
+          }
+          
+          setAudioScore(Math.round(score));
+          lastUpdateRef.current = now;
         }
-        
-        setAudioScore(Math.round(score));
         animationFrameRef.current = requestAnimationFrame(updateAudio);
       };
       
@@ -79,6 +83,8 @@ export function useAudioAnalysis(isActive: boolean) {
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
+    speakingFramesRef.current = 0;
+    totalFramesRef.current = 0;
     setAudioScore(0);
     setVolume(0);
     setIsSpeaking(false);
