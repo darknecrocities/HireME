@@ -431,7 +431,7 @@ export default function PracticeInterview() {
                     onChange={(e) => setIndustry(e.target.value)}
                     className="w-full px-5 py-4 rounded-xl text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none bg-[#081124] border border-white/10"
                   >
-                    {['Technology', 'Finance', 'Healthcare', 'Consulting', 'Marketing', 'Education'].map(i => (
+                    {['Technology', 'Finance', 'Healthcare', 'Consulting', 'Marketing', 'Education', 'Food and Beverage', 'Retail', 'Hospitality', 'Manufacturing', 'Real Estate'].map(i => (
                       <option key={i} value={i} style={{ background: '#081124' }}>{i}</option>
                     ))}
                   </select>
