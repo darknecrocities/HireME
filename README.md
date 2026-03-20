@@ -34,104 +34,102 @@ graph TD
 
 ---
 
-## 🧠 Technical Deep-Dive: The HireME Engine
+## 🧠 Technical Deep-Dive & Module Breakdown
 
-### 🔍 Automated Neural Resume Enhancement
-> **The Transformation Pipeline**: From Raw Experience to Board-Ready Professionalism.
+### 🔍 1. Automated Neural Resume Optimization
+> **From Raw Experience to Board-Ready Professionalism**.
 
 Our **Automated Resume Enhancer** does not merely swap words; it performs a multi-stage semantic transformation:
-1.  **Extraction & Parsing**: Using `pdf.js-dist` to extract high-fidelity text from user-uploaded PDFs, preserving structure and context.
-2.  **Semantic Analysis**: The `gemini-3-flash-preview` core analyzes the text for *impact density*. It identifies where the user has described "tasks" rather than "achievements".
-3.  **STAR-Bullet Synthesis**: The engine automatically refactors bullet points into the **S**ituation, **T**ask, **A**ction, and **R**esult (STAR) framework. It proactively suggests quantitative metrics (e.g., "Increased revenue by 25%") based on the context of the role.
-4.  **Formalized Formatting**: The final output is an **EnhancedResume** object, structured for board-ready presentation. This includes a professional summary, categorized skill nodes, and chronologically optimized experience blocks.
-5.  **One-Click Neural Export**: Using `jsPDF`, the system generates a formalized, clean, and ATS-friendly PDF that matches the high-prestige aesthetic of the HireME platform.
+*   **Semantic Impact Scan**: The `gemini-3-flash-preview` core performs a 0.2s scan of your resume text, identifying low-impact verbs and non-quantifiable achievements.
+*   **STAR-Bullet Synthesis**: The system automatically refactors every bullet point using the **S**ituation, **T**ask, **A**ction, and **R**esult framework. It proactively suggests metrics based on industry benchmarks for your specific role.
+*   **One-Click Neural Enhancement**: A specialized "Neural Profile" model re-architects your entire layout into a premium, board-ready professional template. This isn't just a style change; it's a semantic restructuring focused on **impact density** and token-efficient readability.
+*   **Keyword Resonance Checklist**: HireME cross-references your resume with modern job requirements to provide a real-time "Missing Nodes" list, allowing you to bridge technical skill gaps before you apply.
 
-### 🎭 AI Interview Suite: The Coach in the Machine
-> **MediaPipe Computer Vision & Gemini LLM Orchestration**.
+### 🎭 2. AI Interview Suite: The Coach in the Machine
+> **High-Fidelity Computer Vision & Recursive LLM Orchestration**.
 
-The **Practice Interview** module is a breakthrough in client-side AI performance, utilizing a dual-engine approach to behavioral and technical coaching.
+The **Practice Interview** module is a breakthrough in client-side AI, performing localized computer vision analysis at 60+ FPS.
 
-#### **I. MediaPipe Vision Architecture**
-HireME integrates the **MediaPipe Holistic Ecosystem** (Face Mesh, Hands, and Pose) to track 468+ facial landmarks and full-body posture:
-*   **Eye Contact Resonance**: By tracking the iris and eyelid landmarks, the system calculates the frequency and duration of eye contact with the camera, alerting the user to "camera engagement" levels.
-*   **Gestural Dynamics**: Using hand landmark tracking, the system differentiates between "open/confident" gestures and "nervous/constricted" movements.
-*   **Body Posture Tracking**: Pose detection ensures the candidate maintains an upright, authoritative posture, providing a live "Professional Presence" score.
-*   **0-Latency Processing**: All CV processing happens on the client-side, ensuring data privacy and a responsive UI experience at 60+ FPS.
+#### **MediaPipe Vision Engine**
+Integrating **MediaPipe Holistic** (Face Mesh, Hands, and Pose), HireME tracks:
+*   **Eye Contact Resonance**: Tracks the iris and eyelid landmarks to calculate constant "Engagement Score" with the camera.
+*   **Gestural Fluidity**: Distinguishes between confident hand gestures and nervous/repetitive movements.
+*   **Body Posture Tracking**: Detects slouching or energy shifts in real-time, providing immediate haptic or visual feedback.
+*   **Privacy-First CV**: All landmark processing occurs on the client, ensuring your camera feed is never transmitted to a server.
 
-#### **II. High-Fidelity Gemini Brain**
-The interview logic is powered by **Google Gemini API**, utilizing a recursive prompt engineering strategy:
-*   **Recursive Context Windows**: The AI doesn't just ask static questions. It follows up on the candidate's last answer, probing for deeper technical detail or "S.T.A.R" clarity.
-*   **Dynamic Role-Playing**: Based on the target role (e.g., "Senior Blockchain Architect"), the AI shifts its persona—adjusting its vocabulary, pressure levels, and technical depth.
-*   **Consolidated Neural Analysis**: Post-session, the Gemini engine analyzes the full transcript alongside the MediaPipe metrics to provide a multi-dimensional performance report.
+#### **Recursive Gemini Brain**
+*   **Adaptive Follow-Ups**: The AI interviewer uses a recursive context window to ask detailed follow-up questions based *specifically* on your previous answer, simulating the pressure of a live expert interview.
+*   **Persona Calibration**: The interviewer shifts its tone and difficulty (from "Empathetic Coach" to "Rigorous Architect") based on your performance level.
+*   **Consolidated Feedback**: Provides a multi-dimensional performance report covering technical accuracy, vocal resonance, and confidence metrics.
 
-### 🔍 Hyper-Personalized Neural Job Feed
-> **Bridging Practice and Placement**.
+### 🔍 3. Hyper-Personalized Neural Job Feed
+> **The Resonance Link between Practice and Placement**.
 
-HireME closes the loop by mapping your practice data to real-world opportunities:
-*   **Neural Resonance Matching**: The system cross-references your soft-skill scores (compiled from MediaPipe) and technical scores (compiled from Gemini) with live job nodes.
-*   **The Resume-Job Resonance**: It analyzes your latest resume against the current job market to find roles with the highest "profile resonance".
-*   **TheirStack API Integration**: Access to 10M+ job nodes through a high-concurrency search panel, providing real-time data on remote availability, tech stacks, and company culture.
+The core differentiator of HireME is its **Resonance matching** algorithm. 
+*   **Neural Profile Linkage**: Your performance metrics from the Interview Suite are combined with your Resume data to create a "Consolidated Neural Profile".
+*   **Job Node Mapping**: Using the **TheirStack API**, the system maps your unique profile to 10M+ real-time job nodes. It doesn't just look for titles; it looks for **cultural and technical resonance**.
+*   **Hyper-Personalization**: 
+    *   If you excel at technical architecture but struggle with soft-skill delivery, the system might suggest roles that prioritize deep engineering.
+    *   It provides a "Reason for Resonance" for every recommendation (e.g., "Your STAR-compliant explanation of Bloom Filters matches the technical rigour of this Backend Arch role").
+*   **Node Persistence**: Save and track your career nodes in a localized Firestore environment, synchronized across all your devices.
 
 ---
 
 ## 🛠 Tech Stack: A High-Fidelity Foundation
 
 ### **Frontend & UI Core**
-- **React 19 & Vite 8**: The cutting edge of modern web performance, delivering sub-200ms hydration and ultra-fast transitions.
-- **TypeScript**: Ensuring type-safe neural data processing through every component.
-- **Framer Motion 12**: Luxurious micro-animations that make the interface feel alive and responsive.
-- **Tailwind CSS 4**: Next-gen utility-first styling with zero runtime overhead, optimized for the "HireME Blue" glassmorphic aesthetic.
+- **React 19 & Vite 8**: Delivering ultra-fast hydration and high-performance routing.
+- **TypeScript**: Ensuring type-safe neural data processing through the entire application cycle.
+- **Framer Motion 12**: Luxurious micro-animations that make the interface feel alive.
+- **Tailwind CSS 4**: Next-gen styling with 0-runtime overhead, optimized for our signature "HireME Blue" aesthetic.
 
 ### **AI & Machine Learning Infrastructure**
-- **Model Orchestration**: Dual-model strategy using `gemini-3-flash-preview` for complex reasoning and `gemini-2.5-flash` for high-availability fallbacks.
-- **Computer Vision (CV)**: MediaPipe for real-time, client-side body language and landmark tracking.
-- **Data Visualization**: `Recharts` for visualizing performance trends and "Neural Resonance" growth.
+- **Model Orchestration**: Dual-model strategy using `gemini-3-flash-preview` for complex reasoning and `gemini-2.5-flash` for high-reliability fallbacks.
+- **Computer Vision (CV)**: **MediaPipe** for real-time, 60+ FPS client-side body language tracking.
+- **Data Visualization**: **Recharts** for visualizing performance trends and resonance growth.
 
 ### **Services & Security**
 - **Firebase Firestore**: Real-time persistence for your career pathway and saved nodes.
 - **Firebase Auth**: Secure, seamless Google and Email identity management.
-- **Privacy-First Processing**: Sensitive document text and vision analysis remain on the client, ensuring maximum data sovereignty.
+- **Zero-Trust Video**: No camera data is ever stored; analysis is performed entirely in RAM and discarded instantly.
 
 ---
 
 ## 👥 The Neural Team
 
-| Name | Role & Strategic Responsibility | Core Technical Focus |
+| Name | Role | Core Responsibility |
 | :--- | :--- | :--- |
-| **Arron** | Lead Developer & Pitch Architect | High-Fidelity Infrastructure & Strategy |
+| **Arron** | Lead Developer | Neural Architecture & Business Strategy |
 | **Reshley** | Narrative Lead | Product Storytelling & Pitch Manuscript |
-| **Gion** | Technical Producer | Video Production & Frontend UI Logic |
-| **Alex** | AI Engineering Specialist | LLM Orchestration & Backend Sync |
+| **Gion** | Technical Editor | Video Production & Frontend UI Logic |
+| **Alex** | AI Developer | LLM Orchestration & Backend Sync |
 | **Masato** | Pitch Specialist | Market Delivery & Growth Positioning |
 
 ---
 
 ## 🚀 Installation & Neural Setup
 
-1. **Clone the Node**:
+1. **Clone the matrix**:
    ```bash
    git clone https://github.com/darknecrocities/HireME.git
    cd HireME
    ```
-
-2. **Initialize Dependencies**:
+2. **Initialize Node Modules**:
    ```bash
    npm install
    ```
-
-3. **Configure Neural Links**:
-   Create a `.env` file in the project root:
+3. **Environment Calibration**:
+   Create a `.env` file from the example:
    ```env
    VITE_FIREBASE_API_KEY=your_key
    VITE_GEMINI_API_KEY=your_key
+   VITE_THEIRSTACK_API_KEY=your_key
    ```
-
-4. **Launch Application**:
+4. **Ignite the Engine**:
    ```bash
    npm run dev
-   # Access your path at http://localhost:5173
    ```
 
 ---
 
-*Built with ❤️ for the future of digital hiring. Pioneer your Pathway with HireME.*
+*Engineered with precision for the next generation of professionals. ✨ 2026 TAIM TEAM*
