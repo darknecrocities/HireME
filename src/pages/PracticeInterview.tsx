@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Video, Mic, MicOff, Clock, CheckCircle2, Send, Sparkles, StopCircle, Eye, Target } from 'lucide-react';
+import { Video, Mic, MicOff, Clock, CheckCircle2, Send, Sparkles, StopCircle, Eye, Target, X } from 'lucide-react';
 import { useMediaPipe } from '../hooks/useMediaPipe';
 import { useAI } from '../hooks/useAI';
 import { useAuth } from '../hooks/useAuth';
@@ -299,7 +299,7 @@ export default function PracticeInterview() {
   }, [userInput, aiLoading, role, industry, getInterviewQuestion, messages, questionCount]);
 
   return (
-    <div className="flex-1 w-full px-4 py-12 flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen w-full bg-[#030817] text-white pt-36 pb-20 px-6 relative overflow-hidden flex flex-col items-center">
       {hasReachedLimit('interview') && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
@@ -347,10 +347,10 @@ export default function PracticeInterview() {
             <Target className="w-3.5 h-3.5" />
             AI Interview Engine Powered by Gemini
           </div>
-          <h1 className="text-4xl font-black text-white mb-2 tracking-tight">
-            PRACTICE <span className="gradient-text">SESSION</span>
+          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
+            PRACTICE <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-500">SESSION</span>
           </h1>
-          <p className="text-sm font-bold uppercase tracking-widest text-slate-500">Personal Edition</p>
+          <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">PERSONAL EDITION</p>
         </motion.div>
 
       <AnimatePresence mode="wait">
@@ -363,8 +363,13 @@ export default function PracticeInterview() {
             className="fixed inset-0 z-[110] flex items-center justify-center px-4"
           >
             <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
-            <div className="relative w-full max-w-2xl glass-card p-10 border-blue-900/30 overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
+            <div className="relative w-full max-w-2xl rounded-[28px] bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] p-10 overflow-hidden">
+              <button 
+                onClick={() => setShowInstructions(false)}
+                className="absolute top-6 right-6 p-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all cursor-pointer z-10"
+              >
+                <X className="w-5 h-5" />
+              </button>
               <div className="flex flex-col items-center text-center space-y-6">
                 <div className="w-20 h-20 rounded-3xl bg-blue-600/10 flex items-center justify-center border border-blue-500/20 ring-1 ring-blue-500/10">
                   <CheckCircle2 className="w-10 h-10 text-blue-400" />
@@ -406,37 +411,35 @@ export default function PracticeInterview() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="w-full max-w-2xl glass-card p-10 border-blue-900/20 shadow-2xl"
+              className="w-full max-w-2xl rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-10"
             >
-              <h2 className="text-xl font-black text-white mb-8 border-b border-white/5 pb-4">Session Parameters</h2>
+              <h2 className="text-xl font-bold text-white mb-8 border-b border-white/10 pb-4">Session Parameters</h2>
               <div className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Goal Role</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-2">Goal Role</label>
                   <input
                     type="text"
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
-                    className="w-full px-5 py-4 rounded-2xl text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all font-mono"
-                    style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.05)' }}
+                    className="w-full px-5 py-4 rounded-xl text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all bg-[#081124] border border-white/10"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2">Target Industry</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-2">Target Industry</label>
                   <select
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full px-5 py-4 rounded-2xl text-sm font-bold text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 appearance-none font-mono"
-                    style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.05)' }}
+                    className="w-full px-5 py-4 rounded-xl text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none bg-[#081124] border border-white/10"
                   >
                     {['Technology', 'Finance', 'Healthcare', 'Consulting', 'Marketing', 'Education'].map(i => (
-                      <option key={i} value={i} style={{ background: '#000' }}>{i}</option>
+                      <option key={i} value={i} style={{ background: '#081124' }}>{i}</option>
                     ))}
                   </select>
                 </div>
                 <button
                   onClick={startSession}
-                  className="w-full flex items-center justify-center gap-3 px-8 py-5 rounded-3xl text-white font-black text-base transition-all hover:scale-[1.02] shadow-[0_10px_30px_rgba(37,99,235,0.3)]"
-                  style={{ background: 'linear-gradient(135deg, #1e3a8a, #3b82f6)', border: 'none', cursor: 'pointer' }}
+                  className="w-full flex items-center justify-center gap-3 px-8 py-5 mt-8 rounded-2xl bg-blue-500 text-white font-bold text-sm tracking-[0.2em] uppercase transition hover:bg-blue-400 shadow-[0_10px_30px_rgba(59,130,246,0.3)] cursor-pointer"
+                  style={{ border: 'none' }}
                 >
                   <Video className="w-5 h-5" />
                   INITIATE AI SESSION

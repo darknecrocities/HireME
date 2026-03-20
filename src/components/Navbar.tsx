@@ -8,14 +8,14 @@ import {
   BarChart3,
   Menu,
   X,
-  Sparkles,
-  User,
   LogOut,
   Zap,
-  Search
+  Search,
+  User
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useProfile } from '../hooks/useProfile';
+import logo from '../assets/Hireme.png';
 
 const navItems = [
   { path: '/', label: 'Home', icon: Home },
@@ -33,27 +33,30 @@ export default function Navbar() {
   const { profile } = useProfile();
 
   return (
-    <nav className="sticky top-0 w-full z-50 border-b border-white/5"
-      style={{ background: 'rgba(0, 0, 0, 0.8)', backdropFilter: 'blur(30px)', height: 'var(--nav-h)' }}>
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="flex items-center justify-between h-20">
+    <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-[1100px]">
+      <nav className="w-full h-16 rounded-full border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-md bg-white/[0.03] px-6 transition-all">
+        <div className="flex items-center justify-between h-full">
           {/* Logo & Branding */}
-          <Link to="/" className="flex items-center gap-4 no-underline group flex-shrink-0">
-            <div className="w-12 h-12 rounded-2xl bg-blue-600 flex items-center justify-center shadow-[0_0_30px_rgba(37,99,235,0.4)] group-hover:scale-110 transition-all duration-500">
-              <Sparkles className="w-7 h-7 text-white" />
+          <Link to="/" className="flex items-center gap-3 no-underline group flex-shrink-0">
+            <div className="w-10 h-10 rounded-xl bg-blue-600/10 overflow-hidden flex items-center justify-center border border-blue-500/20 group-hover:scale-110 transition-all duration-500">
+               <img 
+                src={logo} 
+                alt="HireME" 
+                className="w-7 h-7 object-contain"
+              />
             </div>
-            <div className="flex flex-col">
-              <span className="text-2xl font-black text-white tracking-tighter leading-none">
+            <div className="flex flex-col justify-center">
+              <span className="text-[17px] font-black text-white tracking-tighter leading-none mt-1">
                 HIRE<span className="text-blue-500">ME</span>
               </span>
-              <span className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.4em] mt-1">
+              <span className="text-[8px] text-slate-500 font-bold uppercase tracking-[0.3em] mt-0.5">
                 PREMIUM AI ENGINE
               </span>
             </div>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-2 lg:gap-6">
+          <div className="hidden md:flex items-center gap-1 lg:gap-2">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
@@ -61,50 +64,43 @@ export default function Navbar() {
                 <Link
                   key={item.path}
                   to={item.path}
-                   className="relative px-3 lg:px-5 py-2.5 rounded-xl text-[10px] lg:text-[11px] font-black no-underline transition-all duration-300 uppercase tracking-widest"
-                   style={{ 
-                    color: isActive ? '#fff' : '#475569',
-                    background: isActive ? 'rgba(59,130,246,0.1)' : 'transparent'
-                  }}
+                   className={`relative px-4 py-2 rounded-full text-[10px] lg:text-[11px] font-bold no-underline transition-all duration-300 uppercase tracking-widest flex items-center gap-2 ${
+                     isActive ? 'text-white bg-white/5' : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
+                   }`}
                 >
-                  <span className="flex items-center gap-2">
-                    <Icon className="w-4 h-4" />
-                    {item.label}
-                  </span>
+                  <Icon className="w-3.5 h-3.5" />
+                  {item.label}
                   {isActive && (
                     <motion.div
                       layoutId="nav-glow"
-                      className="absolute -bottom-[1px] left-4 right-4 h-[2px] bg-blue-500 shadow-[0_0_15px_#3b82f6]"
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[2px] bg-blue-500 rounded-full shadow-[0_0_12px_rgba(59,130,246,0.8)]"
                     />
                   )}
                 </Link>
               );
             })}
             
-            <div className="w-px h-8 bg-white/10 mx-2 lg:mx-4" />
+            <div className="w-[1px] h-6 bg-white/10 mx-2" />
             
             <div className="flex items-center gap-4">
               {user ? (
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <div className="flex flex-col items-end">
-                    <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">{profile?.occupation || 'Digital Entity'}</span>
-                    <span className="text-[10px] font-bold text-white max-w-[150px] truncate">{profile?.fullName || user.email}</span>
+                     <span className="text-[8px] font-bold text-blue-500 uppercase tracking-widest">{profile?.occupation || 'Entity'}</span>
+                    <span className="text-[10px] font-bold text-white max-w-[100px] truncate">{profile?.fullName || user.email}</span>
                   </div>
                   <button 
                     onClick={() => logout()}
-                    className="p-2.5 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer"
+                    className="p-2 rounded-full border border-white/10 bg-[#030817] text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer shadow-[0_0_15px_rgba(0,0,0,0.5)]"
                     title="Sign Out"
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
                 </div>
               ) : (
-                <Link to="/auth" className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-violet-600 rounded-xl blur opacity-30 group-hover:opacity-100 transition duration-500"></div>
-                  <div className="relative flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black text-white text-[10px] font-black tracking-[0.2em] hover:bg-blue-600/10 transition-all border border-blue-500/30">
-                    <User className="w-3.5 h-3.5 text-blue-400 group-hover:animate-pulse" />
-                    JOIN SYSTEM
-                  </div>
+                <Link to="/auth" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#030817] border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.2)] text-white text-[10px] font-bold tracking-[0.2em] transition-all hover:bg-blue-900/40 no-underline">
+                  <User className="w-3.5 h-3.5 text-blue-400" />
+                  JOIN SYSTEM
                 </Link>
               )}
             </div>
@@ -118,7 +114,6 @@ export default function Navbar() {
             {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
-      </div>
 
       {/* Mobile Menu */}
       <AnimatePresence>
@@ -127,8 +122,8 @@ export default function Navbar() {
             initial={{ opacity: 0, scale: 0.95, y: -20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className="md:hidden border-t border-white/5 overflow-hidden origin-top"
-            style={{ background: 'rgba(0, 0, 0, 0.98)' }}
+            className="md:hidden absolute top-[76px] left-0 right-0 rounded-[24px] border border-white/10 overflow-hidden origin-top shadow-2xl"
+            style={{ background: 'rgba(5, 10, 24, 0.95)', backdropFilter: 'blur(20px)' }}
           >
             <div className="px-4 py-6 space-y-2">
               {navItems.map((item) => {
@@ -176,5 +171,6 @@ export default function Navbar() {
         )}
       </AnimatePresence>
     </nav>
+    </div>
   );
 }

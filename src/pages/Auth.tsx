@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, Mail, Lock, UserPlus, LogIn, ArrowLeft, Sparkles, User, Calendar, Briefcase } from 'lucide-react';
+import { ShieldCheck, Mail, Lock, UserPlus, LogIn, ArrowLeft, Sparkles, User, Calendar, Briefcase, X } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import logo from '../assets/Hireme.png';
 
 type AuthMode = 'login' | 'signup' | 'forgot';
 
@@ -79,13 +80,27 @@ export default function Auth() {
             <ShieldCheck className="w-4 h-4" />
             Neural Security Protocol Active
           </motion.div>
-          <h1 className="text-5xl font-black text-white tracking-tighter mb-2">HIRE<span className="gradient-text">ME</span></h1>
-          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Identity Authentication Gateway</p>
+          
+          <div className="flex justify-center mb-6">
+            <div className="w-24 h-24 rounded-3xl bg-blue-600/10 p-4 border border-blue-500/20 shadow-[0_0_50px_rgba(37,99,235,0.2)]">
+              <img src={logo} alt="HireMe" className="w-full h-full object-contain" />
+            </div>
+          </div>
+          
+          <h1 className="text-4xl font-black text-white tracking-tighter mb-2 uppercase">Neural Gateway</h1>
+          <p className="text-[10px] font-black text-slate-500 uppercase tracking-[0.5em]">Identity Authentication Sync</p>
         </div>
 
         {/* Auth Card */}
         <div className="glass-card p-10 relative overflow-hidden border-blue-900/30">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50" />
+          
+          <Link 
+            to="/"
+            className="absolute top-6 right-6 p-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all cursor-pointer z-10"
+          >
+            <X className="w-5 h-5" />
+          </Link>
           
           <AnimatePresence mode="wait">
             <motion.div
@@ -202,7 +217,7 @@ export default function Auth() {
                 {(mode === 'login' || mode === 'signup') && (
                   <>
                     <div className="relative flex items-center gap-4 my-2">
-                      <div className="h-[1px] flex-1 bg-white/5" />
+                       <div className="h-[1px] flex-1 bg-white/5" />
                       <span className="text-[8px] font-black text-slate-700 uppercase tracking-widest">OR</span>
                       <div className="h-[1px] flex-1 bg-white/5" />
                     </div>
