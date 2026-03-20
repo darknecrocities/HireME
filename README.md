@@ -85,9 +85,9 @@ The core differentiator of HireME is its **Resonance matching** algorithm.
 - **Lucide React & Recharts**: Premium iconography and data visualization for performance tracking.
 
 ### **AI & Machine Learning Infrastructure**
-- **Model Orchestration**: Dual-model strategy using `gemini-3.1-flash-lite-preview` for complex reasoning and `gemini-3.1-pro` for high-reliability fallbacks.
-- **Computer Vision (CV)**: **MediaPipe Holistic** for real-time, 60+ FPS client-side body language tracking.
-- **Data Visualization**: **Recharts** for visualizing performance trends and resonance growth.
+- **Model Orchestration (Gemini LLM)**: Dual-model strategy using `gemini-3.1-flash-lite-preview` for complex reasoning and `gemini-3.1-pro` for high-reliability fallbacks.
+- **Computer Vision (Mediapipe ML Framework)**: **MediaPipe Holistic** for real-time, 60+ FPS client-side body language tracking.
+- **Data Visualization (Recharts)**: **Recharts** for visualizing performance trends and resonance growth.
 
 ### **Services & Security**
 - **Firebase Firestore**: Real-time persistence for your career pathway and saved nodes.
