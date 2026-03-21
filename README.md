@@ -1,11 +1,20 @@
-# 🚀 HireME: AI-Enhanced Neural Career Pathway
+# HireMe
 
 [![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
 [![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white)](https://firebase.google.com/)
 [![Gemini](https://img.shields.io/badge/Gemini-8E75B2?style=for-the-badge&logo=Google%20Gemini&logoColor=white)](https://ai.google.dev/)
 
-**HireME** is a high-fidelity, AI-driven recruitment ecosystem designed to bridge the gap between candidate potential and global industry demand. Built with a "Neural First" philosophy, it combines real-time computer vision, large language models (LLMs), and high-prestige UI to provide a board-ready career preparation lifecycle.
+**HireMe** is a web application that gives every job seeker a professional-grade preparation system directly in their browser — HireMe acts as your personal coach. It combines **Generative AI** and **Computer Vision** to simulate a real recruitment experience.
+
+The platform has four core modules:
+- **AI Resume Optimizer** – Rewrites your resume to help it pass global ATS (Applicant Tracking System) filters.  
+- **AI Virtual Interviewer** – Powered by Google Gemini, this module adapts follow-up questions based on your answers.  
+- **Body Language Analyzer** – Tracks your posture, eye contact, and gestures in real time using your camera.  
+- **Personalized Job Feed** – Matches your performance data with live global job listings.  
+
+Together, these modules create a complete and safe practice loop —  
+a space where you can fail, learn, improve, and iterate until you are ready.
 
 ---
 
@@ -153,4 +162,4 @@ The core differentiator of HireME is its **Resonance matching** algorithm.
 
 ---
 
-*Engineered with precision for the next generation of professionals. ✨ 2026 TAIM TEAM*
+*We are the TAIM Team — and we believe Filipino talent shouldn’t just be skilled; they should be future-ready, opportunity-ready, and HireMe-ready!*
