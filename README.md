@@ -13,8 +13,7 @@ The platform has four core modules:
 - **Body Language Analyzer** – Tracks your posture, eye contact, and gestures in real time using your camera.  
 - **Personalized Job Feed** – Matches your performance data with live global job listings.  
 
-Together, these modules create a complete and safe practice loop —  
-a space where you can fail, learn, improve, and iterate until you are ready.
+Together, these modules create a complete and safe practice loop — a space where you can fail, learn, improve, and iterate until you are ready.
 
 ---
 
