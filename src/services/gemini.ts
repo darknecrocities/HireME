@@ -8,6 +8,23 @@ const GEMINI_ENABLED = !!API_KEY;
 const genAI = GEMINI_ENABLED ? new GoogleGenerativeAI(API_KEY) : null;
 const MODEL_NAME = "gemini-3.1-flash-lite-preview";
 
+// Cache models to avoid repeated initialization
+const cachedModels: Record<string, any> = {};
+
+function getModel(modelId: string) {
+  if (!genAI) return null;
+  if (!cachedModels[modelId]) {
+    cachedModels[modelId] = genAI.getGenerativeModel({ 
+      model: modelId,
+      generationConfig: {
+        maxOutputTokens: 1000,
+        temperature: 0.7,
+      }
+    });
+  }
+  return cachedModels[modelId];
+}
+
 /**
  * Helper to try multiple models for a prompt.
  */
@@ -17,7 +34,9 @@ async function generateWithFallback<T>(prompt: string, models: string[]): Promis
   let lastError = null;
   for (const modelId of models) {
     try {
-      const model = genAI.getGenerativeModel({ model: modelId });
+      const model = getModel(modelId);
+      if (!model) continue;
+      
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
@@ -54,16 +73,32 @@ export async function generateInterviewQuestion(
 ): Promise<string> {
   if (!genAI) return getMockInterviewQuestion(role);
 
-  try {
-    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
-    const prompt = `You are an expert interviewer for the ${role} role. Current context: ${context}. This is question number ${questionNumber} of the session. 
+  const prompt = `You are an expert interviewer for the ${role} role. Current context: ${context}. This is question number ${questionNumber} of the session. 
     If questionNumber is 1: Ask an introductory behavioral question.
     If questionNumber > 1: Follow up on their previous answer: "${previousAnswer}". 
     Generate ONE focused, professional interview question. Return ONLY the question, no extra text.`;
 
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text().trim() || getMockInterviewQuestion(role);
+  try {
+    // Use fallback pattern for resilience and speed
+    const models = [MODEL_NAME, "gemini-1.5-flash-8b", "gemini-1.5-flash"];
+    
+    for (const modelId of models) {
+      try {
+        const model = getModel(modelId);
+        if (!model) continue;
+        
+        const result = await model.generateContent({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 150, temperature: 0.7 }
+        });
+        const response = await result.response;
+        return response.text().trim() || getMockInterviewQuestion(role);
+      } catch (e) {
+        console.warn(`Model ${modelId} failed for question, trying next...`);
+        continue;
+      }
+    }
+    return getMockInterviewQuestion(role);
   } catch (error) {
     console.error('Gemini Question Error:', error);
     return getMockInterviewQuestion(role);

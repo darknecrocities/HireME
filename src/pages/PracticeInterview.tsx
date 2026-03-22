@@ -188,14 +188,16 @@ export default function PracticeInterview() {
       
       const interval = setInterval(() => {
         if (i < chars.length) {
-          currentText += chars[i];
+          // BATCHING: Process 3 characters at once to reduce re-renders by 3x
+          const chunk = chars.slice(i, i + 3).join('');
+          currentText += chunk;
           setDisplayedAIQuestion(currentText);
-          i++;
+          i += 3;
         } else {
           setIsTyping(false);
           clearInterval(interval);
         }
-      }, 30); // Speed of typing
+      }, 50); // Slightly slower interval but 3x more content = faster perceived speed + 5x fewer re-renders
       
       return () => clearInterval(interval);
     }

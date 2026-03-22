@@ -52,9 +52,9 @@ export function useAudioAnalysis(isActive: boolean) {
 
         const now = Date.now();
         
-        // OPTIMIZATION: Throttle audio analysis to ~20fps (every 50ms)
+        // OPTIMIZATION: Throttle audio analysis to ~12fps (every 80ms)
         // This is more than enough for volume/consistency metrics
-        if (now - lastAnalysisTimeRef.current >= 50) {
+        if (now - lastAnalysisTimeRef.current >= 80) {
           // Double check context state in loop
           if (audioContextRef.current.state === 'suspended') {
             await audioContextRef.current.resume();
@@ -75,8 +75,8 @@ export function useAudioAnalysis(isActive: boolean) {
           totalFramesRef.current++;
           if (speaking) speakingFramesRef.current++;
 
-          // Only update React state every 200ms
-          if (now - lastUpdateRef.current > 200) {
+          // Only update React state every 300ms
+          if (now - lastUpdateRef.current > 300) {
             setVolume(normalizedVol);
             setIsSpeaking(speaking);
             

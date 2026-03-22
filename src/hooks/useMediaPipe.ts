@@ -3,16 +3,12 @@ import type { BodyLanguageScores } from '../types';
 
 // Accessing MediaPipe from window globals because direct ESM imports
 // in Vite 8 are incompatible with these UMD bundles.
-const { FaceMesh, FACEMESH_RIGHT_EYE, FACEMESH_LEFT_EYE, FACEMESH_LIPS, FACEMESH_LEFT_EYEBROW, FACEMESH_RIGHT_EYEBROW, FACEMESH_FACE_OVAL } = (window as any);
-const { Pose, POSE_CONNECTIONS } = (window as any);
-const { Hands, HAND_CONNECTIONS } = (window as any);
-const { Camera } = (window as any);
-const { drawConnectors, drawLandmarks } = (window as any);
-
-
 export function useMediaPipe() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  // Use a stable getter for MediaPipe globals
+  const getMediaPipe = useCallback(() => (window as any), []);
   
   const [scores, setScores] = useState<BodyLanguageScores>({
     eyeContact: 0,
@@ -37,6 +33,9 @@ export function useMediaPipe() {
   const showMeshRef = useRef(false);
   const lastScoreUpdateRef = useRef(0);
   const frameCounterRef = useRef(0);
+  const emotionRef = useRef('Neutral');
+  const gestureRef = useRef('None');
+  const audioScoreRef = useRef(0);
 
   const scoreHistory = useRef<{ eye: number[]; posture: number[]; gesture: number[]; confidence: number[] }>({
     eye: [],
@@ -203,7 +202,7 @@ export function useMediaPipe() {
     const baseConfidence = (eyeVal * 0.4 + postureVal * 0.3 + gestureVal * 0.3);
     const confidenceVal = smoothScore(scoreHistory.current.confidence, Math.max(0, Math.min(100, baseConfidence)));
     
-    const audioVal = scores.audio;
+    const audioVal = audioScoreRef.current;
     const overall = Math.round((eyeVal + postureVal + gestureVal + confidenceVal + audioVal) / 5);
 
     const now = Date.now();
@@ -211,22 +210,28 @@ export function useMediaPipe() {
     if (now - lastScoreUpdateRef.current > 300) {
       setScores({ eyeContact: eyeVal, posture: postureVal, gestures: gestureVal, confidence: confidenceVal, audio: audioVal, overall });
       lastScoreUpdateRef.current = now;
+      
+      const nextEmo = confidenceVal > 80 ? 'Highly Confident' : (eyeVal > 70 ? 'Attentive' : 'Distracted');
+      const nextGes = gestureVal > 60 ? 'Engaged' : 'Static';
+      
+      if (nextEmo !== emotionRef.current) {
+        emotionRef.current = nextEmo;
+        setEmotion(nextEmo);
+      }
+      if (nextGes !== gestureRef.current) {
+        gestureRef.current = nextGes;
+        setGesture(nextGes);
+      }
     }
-
-    const currentEmo = confidenceVal > 80 ? 'Highly Confident' : (eyeVal > 70 ? 'Attentive' : 'Distracted');
-    const currentGes = gestureVal > 60 ? 'Engaged' : 'Static';
-    
-    setEmotion(currentEmo);
-    setGesture(currentGes);
-  }, [smoothScore, scores.audio]);
+  }, [smoothScore]);
 
   const drawFrame = useCallback(() => {
     if (!canvasRef.current || !videoRef.current) return;
     const ctx = canvasRef.current.getContext('2d');
     if (!ctx) return;
 
-    const w = canvasRef.current.width = videoRef.current.videoWidth || 1280;
-    const h = canvasRef.current.height = videoRef.current.videoHeight || 720;
+    const w = canvasRef.current.width;
+    const h = canvasRef.current.height;
 
     ctx.save();
     ctx.clearRect(0, 0, w, h);
@@ -240,26 +245,31 @@ export function useMediaPipe() {
     }
 
     if (showMeshRef.current) {
-      if (latestResults.current.face?.multiFaceLandmarks) {
-        for (const landmarks of latestResults.current.face.multiFaceLandmarks) {
-          // RESTORED: A lighter but detailed "Premium" mesh
-          // Instead of 400+ lines, we draw the key contours for high-end feel & 60fps
-          drawConnectors(ctx, landmarks, FACEMESH_RIGHT_EYE, {color: '#3b82f6', lineWidth: 1 });
-          drawConnectors(ctx, landmarks, FACEMESH_LEFT_EYE, {color: '#3b82f6', lineWidth: 1 });
-          drawConnectors(ctx, landmarks, FACEMESH_FACE_OVAL, {color: '#3b82f6', lineWidth: 1 });
-          drawConnectors(ctx, landmarks, FACEMESH_LIPS, {color: '#3b82f6', lineWidth: 1 });
-          drawConnectors(ctx, landmarks, FACEMESH_LEFT_EYEBROW, {color: '#3b82f6', lineWidth: 1 });
-          drawConnectors(ctx, landmarks, FACEMESH_RIGHT_EYEBROW, {color: '#3b82f6', lineWidth: 1 });
+      const { drawConnectors, drawLandmarks, FACEMESH_RIGHT_EYE, FACEMESH_LEFT_EYE, FACEMESH_FACE_OVAL, FACEMESH_LIPS, FACEMESH_LEFT_EYEBROW, FACEMESH_RIGHT_EYEBROW, FACEMESH_TESSELATION, POSE_CONNECTIONS, HAND_CONNECTIONS } = getMediaPipe();
+      
+      if (drawConnectors) {
+        if (latestResults.current.face?.multiFaceLandmarks) {
+          for (const landmarks of latestResults.current.face.multiFaceLandmarks) {
+            drawConnectors(ctx, landmarks, FACEMESH_RIGHT_EYE, {color: '#3b82f6', lineWidth: 1 });
+            drawConnectors(ctx, landmarks, FACEMESH_LEFT_EYE, {color: '#3b82f6', lineWidth: 1 });
+            drawConnectors(ctx, landmarks, FACEMESH_FACE_OVAL, {color: '#3b82f6', lineWidth: 1 });
+            drawConnectors(ctx, landmarks, FACEMESH_LIPS, {color: '#3b82f6', lineWidth: 1 });
+            drawConnectors(ctx, landmarks, FACEMESH_LEFT_EYEBROW, {color: '#3b82f6', lineWidth: 1 });
+            drawConnectors(ctx, landmarks, FACEMESH_RIGHT_EYEBROW, {color: '#3b82f6', lineWidth: 1 });
+            if (FACEMESH_TESSELATION) {
+              drawConnectors(ctx, landmarks, FACEMESH_TESSELATION, {color: '#3b82f699', lineWidth: 0.5 });
+            }
+          }
         }
-      }
-      if (latestResults.current.pose?.poseLandmarks) {
-        drawConnectors(ctx, latestResults.current.pose.poseLandmarks, POSE_CONNECTIONS, {color: '#8b5cf6', lineWidth: 4});
-        drawLandmarks(ctx, latestResults.current.pose.poseLandmarks, {color: '#f59e0b', lineWidth: 2});
-      }
-      if (latestResults.current.hands?.multiHandLandmarks) {
-        for (const landmarks of latestResults.current.hands.multiHandLandmarks) {
-          drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {color: '#10b981', lineWidth: 5});
-          drawLandmarks(ctx, landmarks, {color: '#3b82f6', lineWidth: 2});
+        if (latestResults.current.pose?.poseLandmarks) {
+          drawConnectors(ctx, latestResults.current.pose.poseLandmarks, POSE_CONNECTIONS, {color: '#8b5cf6', lineWidth: 4});
+          if (drawLandmarks) drawLandmarks(ctx, latestResults.current.pose.poseLandmarks, {color: '#f59e0b', lineWidth: 2});
+        }
+        if (latestResults.current.hands?.multiHandLandmarks) {
+          for (const landmarks of latestResults.current.hands.multiHandLandmarks) {
+            drawConnectors(ctx, landmarks, HAND_CONNECTIONS, {color: '#10b981', lineWidth: 5});
+            if (drawLandmarks) drawLandmarks(ctx, landmarks, {color: '#3b82f6', lineWidth: 2});
+          }
         }
       }
     }
@@ -274,9 +284,10 @@ export function useMediaPipe() {
     ctx.fillText(`BIOMETRICS ACTIVE`, w - 170, 54);
 
     animFrameRef.current = requestAnimationFrame(drawFrame);
-  }, []); // Remove showMesh from dependencies to prevent loop drift
+  }, [getMediaPipe]); // Remove showMesh from dependencies to prevent loop drift
 
   const onResults = useCallback((type: 'face' | 'pose' | 'hands', results: any) => {
+    // console.log(`MediaPipe: Received results for ${type}`);
     latestResults.current.image = results.image;
     if (type === 'face') latestResults.current.face = results;
     if (type === 'pose') latestResults.current.pose = results;
@@ -286,33 +297,44 @@ export function useMediaPipe() {
   }, [updateScores]);
 
   const initMediaPipe = useCallback(async () => {
-    if (faceMeshRef.current) return;
+    const { FaceMesh, Pose, Hands } = getMediaPipe();
+    
+    if (faceMeshRef.current || !FaceMesh) {
+      if (!FaceMesh) console.warn("MediaPipe: FaceMesh global not found yet");
+      return;
+    }
 
+    console.log("MediaPipe: Starting initialization...");
     try {
       const faceMesh = new FaceMesh({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
-      // RESTORED: refineLandmarks: true is required for Eye Metrics (Iris tracking)
       faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
       faceMesh.onResults((res: any) => onResults('face', res));
-      await faceMesh.initialize();
-      faceMeshRef.current = faceMesh;
 
       const pose = new Pose({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}` });
-      // OPTIMIZATION: Use modelComplexity 0 (Fastest)
       pose.setOptions({ modelComplexity: 0, smoothLandmarks: true, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
       pose.onResults((res: any) => onResults('pose', res));
-      await pose.initialize();
-      poseRef.current = pose;
 
       const hands = new Hands({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-      // OPTIMIZATION: Use modelComplexity 0 (Fastest)
       hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
       hands.onResults((res: any) => onResults('hands', res));
+
+      console.log("MediaPipe: Initializing models sequentially (Safety Revert)...");
+      // SEQUENTIAL INITIALIZATION (CRITICAL: Parallel clobbers global state!)
+      await faceMesh.initialize();
+      console.log("MediaPipe: FaceMesh ready");
+      await pose.initialize();
+      console.log("MediaPipe: Pose ready");
       await hands.initialize();
+      console.log("MediaPipe: Hands ready");
+
+      faceMeshRef.current = faceMesh;
+      poseRef.current = pose;
       handsRef.current = hands;
+      console.log("MediaPipe: All Models Initialized Successfully");
     } catch (e) {
       console.error('MediaPipe initialization failed:', e);
     }
-  }, [onResults]);
+  }, [onResults, getMediaPipe]);
 
   const start = useCallback(async () => {
     try {
@@ -321,6 +343,12 @@ export function useMediaPipe() {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
+        
+        // SET CANVAS SIZE ONCE
+        if (canvasRef.current) {
+          canvasRef.current.width = videoRef.current.videoWidth || 640;
+          canvasRef.current.height = videoRef.current.videoHeight || 480;
+        }
       }
     } catch (e) {
       console.error('Camera access failed', e);
@@ -330,7 +358,8 @@ export function useMediaPipe() {
     setIsActive(true);
     if (!faceMeshRef.current) await initMediaPipe();
 
-    if (videoRef.current) {
+    const { Camera } = getMediaPipe();
+    if (videoRef.current && Camera) {
       const camera = new Camera(videoRef.current, {
         onFrame: async () => {
           if (videoRef.current) {
@@ -340,16 +369,16 @@ export function useMediaPipe() {
             latestResults.current.image = videoRef.current;
             
             // OPTIMIZATION: Distribute AI load across frames
-            // 1. FaceMesh: Run every frame for smooth eye/iris tracking
+            // 1. FaceMesh: ALWAYS run FaceMesh for maximum accuracy and zero lag
             const pFace = faceMeshRef.current?.send({ image: videoRef.current }).catch(() => {});
             
-            // 2. Hands: Run every 2nd frame
-            const pHands = (frameCount % 2 === 0) 
+            // 2. Hands: Run every 3rd frame (gestures are slower)
+            const pHands = (frameCount % 3 === 0) 
               ? handsRef.current?.send({ image: videoRef.current }).catch(() => {}) 
               : Promise.resolve();
               
-            // 3. Pose: Run every 3rd frame (posture is more static)
-            const pPose = (frameCount % 3 === 0) 
+            // 3. Pose: Run every 4th frame (posture is more static)
+            const pPose = (frameCount % 4 === 0) 
               ? poseRef.current?.send({ image: videoRef.current }).catch(() => {}) 
               : Promise.resolve();
             
@@ -390,18 +419,21 @@ export function useMediaPipe() {
     }
   }, []);
 
-  const toggleMesh = () => {
+  const toggleMesh = useCallback(() => {
     showMeshRef.current = !showMeshRef.current;
     setShowMesh(showMeshRef.current);
-  };
+  }, []);
   
-  const setAudioValue = (val: number) => {
+  const setAudioValue = useCallback((val: number) => {
+    audioScoreRef.current = val;
     setScores(prev => ({ ...prev, audio: val }));
-  };
+  }, []);
   
   useEffect(() => {
+    // PRE-INITIALIZE ON MOUNT (FREEZE FIX)
+    initMediaPipe();
     return () => stop();
-  }, [stop]);
+  }, [initMediaPipe, stop]);
 
   return { videoRef, canvasRef, scores, isActive, cameraReady, showMesh, emotion, gesture, start, stop, toggleMesh, setAudioValue };
 }
