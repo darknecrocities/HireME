@@ -24,6 +24,7 @@ export function useMediaPipe() {
   const [showMesh, setShowMesh] = useState(false);
   const [emotion, setEmotion] = useState('Neutral');
   const [gesture, setGesture] = useState('None');
+  const [initProgress, setInitProgress] = useState(0);
 
   const faceMeshRef = useRef<any | null>(null);
   const handsRef = useRef<any | null>(null);
@@ -305,6 +306,7 @@ export function useMediaPipe() {
     }
 
     console.log("MediaPipe: Starting initialization...");
+    setInitProgress(5);
     try {
       const faceMesh = new FaceMesh({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
       faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
@@ -319,12 +321,16 @@ export function useMediaPipe() {
       hands.onResults((res: any) => onResults('hands', res));
 
       console.log("MediaPipe: Initializing models sequentially (Safety Revert)...");
+      setInitProgress(10);
       // SEQUENTIAL INITIALIZATION (CRITICAL: Parallel clobbers global state!)
       await faceMesh.initialize();
+      setInitProgress(40);
       console.log("MediaPipe: FaceMesh ready");
       await pose.initialize();
+      setInitProgress(70);
       console.log("MediaPipe: Pose ready");
       await hands.initialize();
+      setInitProgress(100);
       console.log("MediaPipe: Hands ready");
 
       faceMeshRef.current = faceMesh;
@@ -332,6 +338,7 @@ export function useMediaPipe() {
       handsRef.current = hands;
       console.log("MediaPipe: All Models Initialized Successfully");
     } catch (e) {
+      setInitProgress(0);
       console.error('MediaPipe initialization failed:', e);
     }
   }, [onResults, getMediaPipe]);
@@ -435,5 +442,5 @@ export function useMediaPipe() {
     return () => stop();
   }, [initMediaPipe, stop]);
 
-  return { videoRef, canvasRef, scores, isActive, cameraReady, showMesh, emotion, gesture, start, stop, toggleMesh, setAudioValue };
+  return { videoRef, canvasRef, scores, isActive, cameraReady, showMesh, emotion, gesture, initProgress, start, stop, toggleMesh, setAudioValue };
 }

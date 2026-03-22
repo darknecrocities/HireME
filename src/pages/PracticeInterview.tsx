@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 export default function PracticeInterview() {
   const { user } = useAuth();
   const { hasReachedLimit, incrementUsage } = useUsageLimit();
-  const { videoRef, canvasRef, scores, isActive, showMesh, emotion, gesture, start, stop, toggleMesh, setAudioValue: setMediaPipeAudio } = useMediaPipe();
+  const { videoRef, canvasRef, scores, isActive, cameraReady, showMesh, emotion, gesture, initProgress, start, stop, toggleMesh, setAudioValue: setMediaPipeAudio } = useMediaPipe();
   const { loading: aiLoading, getInterviewQuestion, getFullSessionAnalysis } = useAI();
   const { saveSession } = useFirestore();
 
@@ -504,7 +504,36 @@ export default function PracticeInterview() {
             {/* Main Session Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
               <div className="lg:col-span-8 flex flex-col gap-4">
-                <div className="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10" style={{ background: '#000', aspectRatio: '16/9' }}>
+                 <div className="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10" style={{ background: '#000', aspectRatio: '16/9' }}>
+                  {/* PREMIUM LOADING OVERLAY */}
+                  {sessionStarted && (initProgress < 100 || !cameraReady) && (
+                    <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-2xl transition-all duration-700 animate-in fade-in">
+                      <div className="relative w-48 h-48 flex items-center justify-center">
+                        <div className="absolute inset-0 border-[3px] border-white/5 rounded-full" />
+                        <div 
+                          className="absolute inset-0 border-[3px] border-blue-500 rounded-full border-t-transparent animate-spin"
+                          style={{ animationDuration: '1.2s' }}
+                        />
+                        <div className="text-center">
+                          <div className="text-4xl font-bold text-white tracking-tighter">{initProgress}%</div>
+                          <div className="text-[10px] text-blue-400 font-bold tracking-[0.2em] uppercase">AI ENGINE</div>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-8 w-64 px-4 text-center">
+                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-700 ease-out shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+                            style={{ width: `${initProgress}%` }}
+                          />
+                        </div>
+                        <p className="mt-6 text-white/40 text-[11px] font-medium tracking-wide uppercase">
+                          Optimizing neural pathways...
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
                   <canvas ref={canvasRef} className="w-full h-full object-cover" style={{ display: isActive ? 'block' : 'none' }} />
                   <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ display: !isActive ? 'block' : 'none', transform: 'scaleX(-1)' }} />
                   <BodyLanguageOverlay scores={scores} isActive={isActive} />
