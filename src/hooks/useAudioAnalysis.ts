@@ -4,6 +4,7 @@ export function useAudioAnalysis(isActive: boolean) {
   const [audioScore, setAudioScore] = useState(0);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [volume, setVolume] = useState(0);
+  const [error, setError] = useState<string | null>(null);
   
   const audioContextRef = useRef<AudioContext | null>(null);
   const analyserRef = useRef<AnalyserNode | null>(null);
@@ -15,7 +16,7 @@ export function useAudioAnalysis(isActive: boolean) {
 
   const lastAnalysisTimeRef = useRef(0);
 
-  const startAudio = useCallback(async () => {
+  const initAudio = useCallback(async () => {
     try {
       // Improved constraints for better Windows/Chrome compatibility
       const constraints = { 
@@ -26,7 +27,17 @@ export function useAudioAnalysis(isActive: boolean) {
         } 
       };
       
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      let stream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (e) {
+        console.warn("Audio: Complex constraints failed, falling back to simple audio", e);
+        // FALLBACK: If complex constraints fail, try the simplest possible audio request
+        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      }
+
+      setError(null);
       streamRef.current = stream;
       
       const AudioContextClass = (window as any).AudioContext || (window as any).webkitAudioContext;
@@ -98,8 +109,15 @@ export function useAudioAnalysis(isActive: boolean) {
       };
       
       updateAudio();
-    } catch (err) {
+    } catch (err: any) {
       console.error('CRITICAL: Audio initialization failed:', err);
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setError('permission-denied');
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setError('no-device');
+      } else {
+        setError('failed');
+      }
     }
   }, []);
 
@@ -113,6 +131,7 @@ export function useAudioAnalysis(isActive: boolean) {
       audioContextRef.current.close();
       audioContextRef.current = null;
     }
+    setError(null);
     speakingFramesRef.current = 0;
     totalFramesRef.current = 0;
     setAudioScore(0);
@@ -122,12 +141,12 @@ export function useAudioAnalysis(isActive: boolean) {
 
   useEffect(() => {
     if (isActive) {
-      startAudio();
+      initAudio();
     } else {
       stopAudio();
     }
     return () => stopAudio();
-  }, [isActive, startAudio, stopAudio]);
+  }, [isActive, initAudio, stopAudio]);
 
-  return { audioScore, isSpeaking, volume };
+  return { audioScore, isSpeaking, volume, error, initAudio };
 }

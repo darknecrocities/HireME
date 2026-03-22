@@ -39,7 +39,7 @@ export default function PracticeInterview() {
   const [displayedAIQuestion, setDisplayedAIQuestion] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   
-  const { audioScore } = useAudioAnalysis(sessionStarted && !showFeedback);
+  const { audioScore, error: audioError, initAudio } = useAudioAnalysis(sessionStarted && !showFeedback);
   const [preferredVoice, setPreferredVoice] = useState<SpeechSynthesisVoice | null>(null);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -269,6 +269,7 @@ export default function PracticeInterview() {
     setIsAnswering(false);
 
     await start();
+    await initAudio();
     const question = await getInterviewQuestion(role, '', `Industry: ${industry}`, 1);
     setMessages([{ role: 'ai', content: question, timestamp: new Date() }]);
     speak(question);
@@ -571,9 +572,16 @@ export default function PracticeInterview() {
                     <button onClick={toggleMesh} className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${showMesh ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400'}`} style={{ border: 'none', cursor: 'pointer' }}>
                       <Eye className="w-4 h-4" /> {showMesh ? 'Disable AI Mesh' : 'Enable AI Mesh'}
                     </button>
-                    <button onClick={toggleListening} className={`p-3 rounded-2xl transition-all ${isListening ? 'bg-rose-600/20 border-rose-500/50' : 'bg-white/5 border-white/10'}`} style={{ border: '1px solid', cursor: 'pointer' }}>
-                      {isListening ? <MicOff className="w-5 h-5 text-rose-500" /> : <Mic className="w-5 h-5 text-slate-400" />}
-                    </button>
+                    <div className="relative">
+                      <button onClick={toggleListening} className={`p-3 rounded-2xl transition-all ${isListening ? 'bg-rose-600/20 border-rose-500/50' : 'bg-white/5 border-white/10'}`} style={{ border: '1px solid', cursor: 'pointer' }}>
+                        {isListening ? <MicOff className="w-5 h-5 text-rose-500" /> : <Mic className="w-5 h-5 text-slate-400" />}
+                      </button>
+                      {audioError && (
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-rose-600 text-white text-[10px] font-black uppercase tracking-tighter rounded-lg whitespace-nowrap shadow-lg animate-in fade-in slide-in-from-top-1 z-10">
+                          {audioError === 'permission-denied' ? 'Mic Blocked' : 'No Mic Found'}
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <button onClick={endSession} className={`flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-black text-xs uppercase tracking-widest transition-all ${questionCount >= 3 ? 'bg-blue-600 shadow-lg shadow-blue-900/40' : 'bg-rose-950/40 border border-rose-900/50 hover:bg-rose-900/60'}`} style={{ cursor: 'pointer' }}>
                     {questionCount >= 3 ? <Sparkles className="w-5 h-5" /> : <StopCircle className="w-5 h-5" />} {questionCount >= 3 ? 'Complete Session' : 'Terminate Session'}
