@@ -3,7 +3,7 @@ import type { BodyLanguageScores } from '../types';
 
 // Accessing MediaPipe from window globals because direct ESM imports
 // in Vite 8 are incompatible with these UMD bundles.
-const { FaceMesh, FACEMESH_TESSELATION, FACEMESH_RIGHT_EYE, FACEMESH_LEFT_EYE } = (window as any);
+const { FaceMesh, FACEMESH_RIGHT_EYE, FACEMESH_LEFT_EYE, FACEMESH_LIPS, FACEMESH_LEFT_EYEBROW, FACEMESH_RIGHT_EYEBROW, FACEMESH_FACE_OVAL } = (window as any);
 const { Pose, POSE_CONNECTIONS } = (window as any);
 const { Hands, HAND_CONNECTIONS } = (window as any);
 const { Camera } = (window as any);
@@ -36,6 +36,7 @@ export function useMediaPipe() {
   const animFrameRef = useRef<number | null>(null);
   const showMeshRef = useRef(false);
   const lastScoreUpdateRef = useRef(0);
+  const frameCounterRef = useRef(0);
 
   const scoreHistory = useRef<{ eye: number[]; posture: number[]; gesture: number[]; confidence: number[] }>({
     eye: [],
@@ -206,7 +207,8 @@ export function useMediaPipe() {
     const overall = Math.round((eyeVal + postureVal + gestureVal + confidenceVal + audioVal) / 5);
 
     const now = Date.now();
-    if (now - lastScoreUpdateRef.current > 200) {
+    // Throttled to 300ms for even better performance on slow devices
+    if (now - lastScoreUpdateRef.current > 300) {
       setScores({ eyeContact: eyeVal, posture: postureVal, gestures: gestureVal, confidence: confidenceVal, audio: audioVal, overall });
       lastScoreUpdateRef.current = now;
     }
@@ -240,9 +242,14 @@ export function useMediaPipe() {
     if (showMeshRef.current) {
       if (latestResults.current.face?.multiFaceLandmarks) {
         for (const landmarks of latestResults.current.face.multiFaceLandmarks) {
-          drawConnectors(ctx, landmarks, FACEMESH_TESSELATION, {color: '#3b82f6', lineWidth: 1 });
-          drawConnectors(ctx, landmarks, FACEMESH_RIGHT_EYE, {color: '#10b981', lineWidth: 2 });
-          drawConnectors(ctx, landmarks, FACEMESH_LEFT_EYE, {color: '#10b981', lineWidth: 2 });
+          // RESTORED: A lighter but detailed "Premium" mesh
+          // Instead of 400+ lines, we draw the key contours for high-end feel & 60fps
+          drawConnectors(ctx, landmarks, FACEMESH_RIGHT_EYE, {color: '#3b82f6', lineWidth: 1 });
+          drawConnectors(ctx, landmarks, FACEMESH_LEFT_EYE, {color: '#3b82f6', lineWidth: 1 });
+          drawConnectors(ctx, landmarks, FACEMESH_FACE_OVAL, {color: '#3b82f6', lineWidth: 1 });
+          drawConnectors(ctx, landmarks, FACEMESH_LIPS, {color: '#3b82f6', lineWidth: 1 });
+          drawConnectors(ctx, landmarks, FACEMESH_LEFT_EYEBROW, {color: '#3b82f6', lineWidth: 1 });
+          drawConnectors(ctx, landmarks, FACEMESH_RIGHT_EYEBROW, {color: '#3b82f6', lineWidth: 1 });
         }
       }
       if (latestResults.current.pose?.poseLandmarks) {
@@ -283,19 +290,22 @@ export function useMediaPipe() {
 
     try {
       const faceMesh = new FaceMesh({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
-      faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+      // RESTORED: refineLandmarks: true is required for Eye Metrics (Iris tracking)
+      faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
       faceMesh.onResults((res: any) => onResults('face', res));
       await faceMesh.initialize();
       faceMeshRef.current = faceMesh;
 
       const pose = new Pose({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}` });
-      pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+      // OPTIMIZATION: Use modelComplexity 0 (Fastest)
+      pose.setOptions({ modelComplexity: 0, smoothLandmarks: true, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
       pose.onResults((res: any) => onResults('pose', res));
       await pose.initialize();
       poseRef.current = pose;
 
       const hands = new Hands({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
-      hands.setOptions({ maxNumHands: 2, modelComplexity: 1, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+      // OPTIMIZATION: Use modelComplexity 0 (Fastest)
+      hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
       hands.onResults((res: any) => onResults('hands', res));
       await hands.initialize();
       handsRef.current = hands;
@@ -306,7 +316,8 @@ export function useMediaPipe() {
 
   const start = useCallback(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 } });
+      // Reduced resolution for better performance (640x480 is standard and much lighter)
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { width: 640, height: 480 } });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
         await videoRef.current.play();
@@ -323,15 +334,32 @@ export function useMediaPipe() {
       const camera = new Camera(videoRef.current, {
         onFrame: async () => {
           if (videoRef.current) {
+            frameCounterRef.current++;
+            const frameCount = frameCounterRef.current;
+            
             latestResults.current.image = videoRef.current;
+            
+            // OPTIMIZATION: Distribute AI load across frames
+            // 1. FaceMesh: Run every frame for smooth eye/iris tracking
             const pFace = faceMeshRef.current?.send({ image: videoRef.current }).catch(() => {});
-            const pPose = poseRef.current?.send({ image: videoRef.current }).catch(() => {});
-            const pHands = handsRef.current?.send({ image: videoRef.current }).catch(() => {});
-            await Promise.all([pFace, pPose, pHands]);
+            
+            // 2. Hands: Run every 2nd frame
+            const pHands = (frameCount % 2 === 0) 
+              ? handsRef.current?.send({ image: videoRef.current }).catch(() => {}) 
+              : Promise.resolve();
+              
+            // 3. Pose: Run every 3rd frame (posture is more static)
+            const pPose = (frameCount % 3 === 0) 
+              ? poseRef.current?.send({ image: videoRef.current }).catch(() => {}) 
+              : Promise.resolve();
+            
+            // Don't await Promise.all to keep the UI thread free
+            // The results will be handled by the callbacks as they arrive
+            Promise.all([pFace, pHands, pPose]);
           }
         },
-        width: 1280,
-        height: 720
+        width: 640,
+        height: 480
       });
       camera.start();
       cameraRef.current = camera;
