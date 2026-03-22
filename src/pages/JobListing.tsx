@@ -319,7 +319,7 @@ export default function JobListing() {
                         </div>
                         <div className="flex flex-wrap items-center gap-4 text-slate-400 text-[11px] font-bold uppercase tracking-widest">
                           <span className="flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-blue-500" /> {job.company_name}</span>
-                          <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-slate-500" /> {job.location || 'Global'}</span>
+                          <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-slate-500" /> {(job.location && job.location.toLowerCase() !== 'no fetch') ? job.location : 'Remote/Global'}</span>
                           <span className="flex items-center gap-1.5"><Globe2 className="w-3.5 h-3.5 text-blue-400/50" /> {job.platform}</span>
                           <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-slate-500" /> {new Date(job.posted_at).toLocaleDateString()}</span>
                         </div>
