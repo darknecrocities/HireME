@@ -510,7 +510,7 @@ export default function PracticeInterview() {
                 </div>
                 <button 
                   onClick={endSession}
-                  className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest flex items-center gap-2"
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2"
                   style={{ cursor: 'pointer' }}
                 >
                   <X size={16} /> Exit Session
@@ -575,9 +575,9 @@ export default function PracticeInterview() {
                       )}
                     </div>
                   </div>
-                  <div className="flex items-center justify-between px-2">
-                    <div className="flex items-center gap-3">
-                      <button onClick={toggleMesh} className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${showMesh ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400'}`} style={{ border: 'none', cursor: 'pointer' }}>
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-2 px-2 mt-4 sm:mt-0">
+                    <div className="flex items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">
+                      <button onClick={toggleMesh} className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${showMesh ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400'}`} style={{ border: 'none', cursor: 'pointer' }}>
                         <Eye className="w-4 h-4" /> {showMesh ? 'Disable AI Mesh' : 'Enable AI Mesh'}
                       </button>
                       <div className="relative">
@@ -591,7 +591,7 @@ export default function PracticeInterview() {
                         )}
                       </div>
                     </div>
-                    <button onClick={endSession} className={`flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-black text-xs uppercase tracking-widest transition-all ${questionCount >= 3 ? 'bg-blue-600 shadow-lg shadow-blue-900/40' : 'bg-rose-950/40 border border-rose-900/50 hover:bg-rose-900/60'}`} style={{ cursor: 'pointer' }}>
+                    <button onClick={endSession} className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-white font-black text-xs uppercase tracking-widest transition-all ${questionCount >= 3 ? 'bg-blue-600 shadow-lg shadow-blue-900/40' : 'bg-rose-950/40 border border-rose-900/50 hover:bg-rose-900/60'}`} style={{ cursor: 'pointer' }}>
                       {questionCount >= 3 ? <Sparkles className="w-5 h-5" /> : <StopCircle className="w-5 h-5" />} {questionCount >= 3 ? 'Complete Session' : 'Terminate Session'}
                     </button>
                   </div>
@@ -600,9 +600,9 @@ export default function PracticeInterview() {
                 <div className="lg:col-span-4 flex flex-col glass-card border-white/5 h-[600px]">
                   <div className="p-5 border-b border-white/5 bg-white/5">
                     <h3 className="text-xs font-black text-white tracking-widest uppercase">STAR Analysis Panel</h3>
-                    <div className="flex gap-2 mt-4">
+                    <div className="grid grid-cols-2 sm:flex gap-2 mt-4">
                       {(['situation', 'task', 'action', 'result'] as const).map((s) => (
-                        <button key={s} onClick={() => setStar(prev => ({ ...prev, [s]: !prev[s] }))} className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-xl text-[8px] font-black uppercase tracking-tighter transition-all ${star[s] ? 'bg-emerald-500 text-black' : 'bg-white/5 text-slate-500'}`} style={{ border: 'none', cursor: 'pointer' }}>
+                        <button key={s} onClick={() => setStar(prev => ({ ...prev, [s]: !prev[s] }))} className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-[8px] font-black uppercase tracking-tighter transition-all ${star[s] ? 'bg-emerald-500 text-black' : 'bg-white/5 text-slate-500'}`} style={{ border: 'none', cursor: 'pointer' }}>
                           <CheckCircle2 className={`w-3 h-3 ${star[s] ? 'text-black' : 'text-slate-700'}`} /> {s}
                         </button>
                       ))}
@@ -754,7 +754,7 @@ export default function PracticeInterview() {
                       </div>
 
                       <div className="mt-12 flex justify-center">
-                        <button onClick={() => { setSessionStarted(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="px-10 py-5 rounded-3xl bg-white text-black font-black text-xs uppercase tracking-[.2em] hover:scale-[1.05] transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] cursor-pointer">
+                        <button onClick={() => { setSessionStarted(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-full sm:w-auto px-10 py-5 rounded-3xl bg-white text-black font-black text-xs uppercase tracking-[.2em] hover:scale-[1.05] transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] cursor-pointer">
                           START NEW SESSION
                         </button>
                       </div>
