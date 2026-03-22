@@ -39,7 +39,7 @@ export default function PracticeInterview() {
   const [displayedAIQuestion, setDisplayedAIQuestion] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   
-  const { audioScore, error: audioError, initAudio } = useAudioAnalysis(sessionStarted && !showFeedback);
+  const { audioScore, error: audioError, initAudio, volume: audioVolume } = useAudioAnalysis(sessionStarted && !showFeedback);
   const [preferredVoice, setPreferredVoice] = useState<SpeechSynthesisVoice | null>(null);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -116,6 +116,19 @@ export default function PracticeInterview() {
       setUserInput(currentFullText);
     };
 
+    recognition.onstart = () => {
+      console.log('Speech recognition started');
+      setIsListening(true);
+    };
+
+    recognition.onsoundstart = () => {
+      console.log('Speech recognition: sound detected');
+    };
+
+    recognition.onnomatch = () => {
+      console.warn('Speech recognition: no match');
+    };
+
     recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
       if (event.error === 'not-allowed') {
@@ -124,13 +137,18 @@ export default function PracticeInterview() {
     };
 
     recognition.onend = () => {
+      console.log('Speech recognition ended');
       // Auto-restart if we're still in the answering phase and supposed to be listening
       if (isAnswering && sessionStarted && !showFeedback) {
-        try {
-          recognition.start();
-        } catch (e) {
-          setIsListening(false);
-        }
+        console.log('Speech recognition: attempting auto-restart');
+        setTimeout(() => {
+          try {
+            if (recognitionRef.current) recognitionRef.current.start();
+          } catch (e) {
+            console.error('Auto-restart failed:', e);
+            // On mobile, if it fails, it might need one more manual toggle
+          }
+        }, 300); // Small delay to avoid immediate lock
       } else {
         setIsListening(false);
       }
@@ -139,7 +157,6 @@ export default function PracticeInterview() {
     try {
       recognition.start();
       recognitionRef.current = recognition;
-      setIsListening(true);
     } catch (e) {
       console.error('Failed to start recognition:', e);
       setIsListening(false);
@@ -270,6 +287,12 @@ export default function PracticeInterview() {
 
     await start();
     await initAudio();
+    // MOBILE FIX: Authorize SpeechRecognition directly in the click event
+    try {
+      startListening();
+    } catch (e) {
+      console.warn('Initial mic authorization failed', e);
+    }
     const question = await getInterviewQuestion(role, '', `Industry: ${industry}`, 1);
     setMessages([{ role: 'ai', content: question, timestamp: new Date() }]);
     speak(question);
@@ -618,14 +641,14 @@ export default function PracticeInterview() {
                       );
                     })}
                     {/* Live User Transcript */}
-                    {isAnswering && userInput && (
+                    {isAnswering && (userInput || audioVolume > 5) && (
                       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex justify-end">
                         <div className="max-w-[90%] rounded-2xl px-5 py-4 text-xs font-bold leading-relaxed bg-blue-600/40 text-white/90 rounded-tr-none border border-blue-500/30 backdrop-blur-sm">
                           <div className="text-[8px] font-black text-blue-300 mb-2 uppercase tracking-widest flex items-center gap-2">
-                            <div className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
-                            Live Transcription
+                            <div className={`w-1.5 h-1.5 rounded-full ${audioVolume > 15 ? 'bg-emerald-400 animate-ping' : 'bg-blue-400 animate-pulse'}`} />
+                            {audioVolume > 10 ? 'Hearing You...' : 'Listening Stream...'}
                           </div>
-                          {userInput}
+                          {userInput ? userInput : <span className="opacity-30 italic">Processing audio...</span>}
                           <span className="inline-block w-1.5 h-4 bg-white/50 animate-pulse ml-1" />
                         </div>
                       </motion.div>
@@ -657,7 +680,7 @@ export default function PracticeInterview() {
 
                   <div className="p-4 bg-black/40">
                     <div className="flex items-center gap-2">
-                      <input type="text" value={userInput} onChange={(e) => setUserInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') sendAnswer(); }} placeholder={isListening ? 'LISTENING_STREAM...' : 'TYPE RESPONSE...'} className="flex-1 px-5 py-4 rounded-2xl text-[10px] font-black text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 uppercase tracking-widest font-mono" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }} />
+                      <input type="text" value={userInput} onChange={(e) => setUserInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') sendAnswer(); }} placeholder={isListening ? (audioVolume > 15 ? 'HEARING_AUDIO...' : 'LISTENING_STREAM...') : 'TYPE RESPONSE...'} className="flex-1 px-5 py-4 rounded-2xl text-[10px] font-black text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 uppercase tracking-widest font-mono" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }} />
                       <button onClick={sendAnswer} disabled={!userInput.trim() || aiLoading} className="p-4 rounded-2xl bg-blue-600 shadow-lg shadow-blue-900/40 transition-all hover:scale-105 disabled:opacity-20" style={{ border: 'none', cursor: 'pointer' }}>
                         <Send className="w-4 h-4 text-white" />
                       </button>
