@@ -1,0 +1,218 @@
+node_modules/react-router-dom/dist/index.d.ts(1,69): error TS2307: Cannot find module 'react-router/dom' or its corresponding type declarations.
+  There are types at 'C:/Users/Arron/Documents/hireme/HireME/node_modules/react-router/dist/development/dom-export.d.mts', but this result could not be resolved under your current 'moduleResolution' setting. Consider updating to 'node16', 'nodenext', or 'bundler'.
+node_modules/react-router/dist/development/index.d.ts(4,8): error TS1259: Module '"C:/Users/Arron/Documents/hireme/HireME/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/react-router/dist/development/instrumentation--6Pioq_G.d.ts(413,5): error TS18028: Private identifiers are only available when targeting ECMAScript 2015 and higher.
+src/pages/PracticeInterview.tsx(10,33): error TS6142: Module '../components/BodyLanguageOverlay' was resolved to 'C:/Users/Arron/Documents/hireme/HireME/src/components/BodyLanguageOverlay.tsx', but '--jsx' is not set.
+src/pages/PracticeInterview.tsx(386,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(388,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(389,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(390,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(395,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(396,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(397,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(400,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(401,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(404,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(405,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(411,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(422,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(423,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(424,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(426,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(428,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(429,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(431,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(434,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(435,22): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(437,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(440,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(442,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(449,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(450,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(451,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(455,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(457,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(458,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(459,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(461,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(462,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(463,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(465,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(466,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(467,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(468,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(470,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(471,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(472,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(474,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(475,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(476,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(478,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(479,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(480,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(483,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(493,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(494,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(500,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(501,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(502,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(503,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(504,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(511,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(512,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(513,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(519,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(523,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(528,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(535,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(536,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(538,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(539,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(540,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(541,20): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(542,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(545,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(550,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(555,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(557,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(569,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(570,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(571,18): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(574,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(575,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(576,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(577,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(581,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(582,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(583,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(587,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(588,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(589,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(594,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(601,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(602,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(603,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(606,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(608,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(614,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(615,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(620,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(621,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(622,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(623,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(626,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(627,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(628,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(633,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(634,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(635,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(636,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(638,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(639,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(640,40): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(640,87): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(643,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(649,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(650,43): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(650,78): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(655,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(656,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(657,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(658,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(660,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(661,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(666,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(670,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(671,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(672,51): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(672,160): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(674,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(675,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(676,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(685,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(686,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(687,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(688,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(691,52): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(692,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(696,35): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(696,67): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(696,138): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(696,218): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(697,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(701,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(703,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(709,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(714,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(721,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(722,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(723,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(724,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(725,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(733,16): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(735,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(736,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(737,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(738,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(739,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(740,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(741,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(742,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(745,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(746,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(747,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(748,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(750,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(751,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(752,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(757,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(764,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(765,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(766,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(771,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(772,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(773,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(774,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(775,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(776,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(777,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(778,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(780,35): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(781,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(786,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(787,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(788,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(790,35): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(791,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(798,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(799,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(800,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(802,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(803,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(811,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(812,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(813,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(815,29): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(816,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(817,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(818,33): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(820,31): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(826,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/pages/PracticeInterview.tsx(827,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/services/firebase.ts(7,11): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/services/firebase.ts(7,23): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/services/firebase.ts(8,15): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/services/firebase.ts(8,27): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/services/firebase.ts(9,14): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/services/firebase.ts(9,26): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/services/firebase.ts(10,18): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/services/firebase.ts(10,30): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/services/firebase.ts(11,22): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/services/firebase.ts(11,34): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/services/firebase.ts(12,10): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/services/firebase.ts(12,22): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/services/firebase.ts(13,18): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/services/firebase.ts(13,30): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+src/services/gemini.ts(4,17): error TS1343: The 'import.meta' meta-property is only allowed when the '--module' option is 'es2020', 'es2022', 'esnext', 'system', 'node16', 'node18', 'node20', or 'nodenext'.
+src/services/gemini.ts(4,29): error TS2339: Property 'env' does not exist on type 'ImportMeta'.
+../../../node_modules/@types/tar/index.d.ts(239,36): error TS2709: Cannot use namespace 'MiniPass' as a type.

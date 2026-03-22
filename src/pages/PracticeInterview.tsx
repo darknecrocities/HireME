@@ -56,7 +56,6 @@ export default function PracticeInterview() {
       if (preferredVoice) {
         utterance.voice = preferredVoice;
       } else {
-        // Fallback search if state not yet set
         const voices = window.speechSynthesis.getVoices();
         const maleVoice = voices.find(v => 
           v.name.toLowerCase().includes('male') || 
@@ -93,40 +92,19 @@ export default function PracticeInterview() {
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
-    recognition.lang = 'en-US';
+    recognition.lang = navigator.language || 'en-US';
 
     recognition.onresult = (event: any) => {
-      let finalTranscript = '';
-      let interimTranscript = '';
-      
-      for (let i = event.resultIndex; i < event.results.length; ++i) {
-        if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript;
-        } else {
-          interimTranscript += event.results[i][0].transcript;
-        }
-      }
-      
-      // Update userInput with the full string (final + current interim)
-      // Since we use continuous=true, we might want to preserve previous final results
-      const currentFullText = Array.from(event.results)
+      const fullText = Array.from(event.results)
         .map((res: any) => res[0].transcript)
         .join(' ');
         
-      setUserInput(currentFullText);
+      setUserInput(fullText);
     };
 
     recognition.onstart = () => {
       console.log('Speech recognition started');
       setIsListening(true);
-    };
-
-    recognition.onsoundstart = () => {
-      console.log('Speech recognition: sound detected');
-    };
-
-    recognition.onnomatch = () => {
-      console.warn('Speech recognition: no match');
     };
 
     recognition.onerror = (event: any) => {
@@ -138,17 +116,14 @@ export default function PracticeInterview() {
 
     recognition.onend = () => {
       console.log('Speech recognition ended');
-      // Auto-restart if we're still in the answering phase and supposed to be listening
       if (isAnswering && sessionStarted && !showFeedback) {
-        console.log('Speech recognition: attempting auto-restart');
         setTimeout(() => {
           try {
             if (recognitionRef.current) recognitionRef.current.start();
           } catch (e) {
             console.error('Auto-restart failed:', e);
-            // On mobile, if it fails, it might need one more manual toggle
           }
-        }, 300); // Small delay to avoid immediate lock
+        }, 300);
       } else {
         setIsListening(false);
       }
@@ -185,7 +160,6 @@ export default function PracticeInterview() {
     } else if (countdown === 0 && sessionStarted && !isAnswering && messages.length > 0 && messages[messages.length-1].role === 'ai') {
       setIsAnswering(true);
       setAnswerTimer(30);
-      // Auto-start listening when answering starts
       if (!isListening) {
         startListening();
       }
@@ -205,7 +179,6 @@ export default function PracticeInterview() {
       
       const interval = setInterval(() => {
         if (i < chars.length) {
-          // BATCHING: Process 3 characters at once to reduce re-renders by 3x
           const chunk = chars.slice(i, i + 3).join('');
           currentText += chunk;
           setDisplayedAIQuestion(currentText);
@@ -214,7 +187,7 @@ export default function PracticeInterview() {
           setIsTyping(false);
           clearInterval(interval);
         }
-      }, 50); // Slightly slower interval but 3x more content = faster perceived speed + 5x fewer re-renders
+      }, 50);
       
       return () => clearInterval(interval);
     }
@@ -287,12 +260,13 @@ export default function PracticeInterview() {
 
     await start();
     await initAudio();
-    // MOBILE FIX: Authorize SpeechRecognition directly in the click event
-    try {
-      startListening();
-    } catch (e) {
-      console.warn('Initial mic authorization failed', e);
-    }
+    setTimeout(() => {
+      try {
+        startListening();
+      } catch (e) {
+        console.warn('Initial mic authorization failed', e);
+      }
+    }, 500);
     const question = await getInterviewQuestion(role, '', `Industry: ${industry}`, 1);
     setMessages([{ role: 'ai', content: question, timestamp: new Date() }]);
     speak(question);
@@ -410,13 +384,11 @@ export default function PracticeInterview() {
           </motion.div>
         </div>
       )}
-      {/* Background Glows */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-blue-900/20 blur-[150px] rounded-full pointer-events-none" />
       
       <div className="max-w-[1400px] mx-auto w-full flex-1 flex flex-col items-center justify-center">
-        {/* Header */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 text-[10px] font-black tracking-widest uppercase"
             style={{ background: 'rgba(30, 58, 138, 0.4)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}>
@@ -525,94 +497,107 @@ export default function PracticeInterview() {
           </div>
         ) : (
           <motion.div key="session" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full">
-            {/* Main Session Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
-              <div className="lg:col-span-8 flex flex-col gap-4">
-                 <div className="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10" style={{ background: '#000', aspectRatio: '16/9' }}>
-                  {/* PREMIUM LOADING OVERLAY */}
-                  {sessionStarted && (initProgress < 100 || !cameraReady) && (
-                    <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-2xl transition-all duration-700 animate-in fade-in">
-                      <div className="relative w-48 h-48 flex items-center justify-center">
-                        <div className="absolute inset-0 border-[3px] border-white/5 rounded-full" />
-                        <div 
-                          className="absolute inset-0 border-[3px] border-blue-500 rounded-full border-t-transparent animate-spin"
-                          style={{ animationDuration: '1.2s' }}
-                        />
-                        <div className="text-center">
-                          <div className="text-4xl font-bold text-white tracking-tighter">{initProgress}%</div>
-                          <div className="text-[10px] text-blue-400 font-bold tracking-[0.2em] uppercase">AI ENGINE</div>
-                        </div>
-                      </div>
-                      
-                      <div className="mt-8 w-64 px-4 text-center">
-                        <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-700 ease-out shadow-[0_0_20px_rgba(59,130,246,0.5)]"
-                            style={{ width: `${initProgress}%` }}
-                          />
-                        </div>
-                        <p className="mt-6 text-white/40 text-[11px] font-medium tracking-wide uppercase">
-                          Optimizing neural pathways...
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  <canvas ref={canvasRef} className="w-full h-full object-cover" style={{ display: isActive ? 'block' : 'none' }} />
-                  <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ display: !isActive ? 'block' : 'none', transform: 'scaleX(-1)' }} />
-                  <BodyLanguageOverlay scores={scores} isActive={isActive} />
-                  
-                  {/* Overlay Timers */}
-                  <AnimatePresence>
-                    {countdown > 0 && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 1.5 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.5 }}
-                        className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm"
-                      >
-                        <div className="text-[120px] font-black text-white leading-none tracking-tighter">{countdown}</div>
-                        <div className="text-xs font-black text-blue-400 uppercase tracking-[0.5em] mt-4">Preparing Question</div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <div className="absolute top-6 left-6 flex items-center gap-4">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/5">
-                      <Clock className="w-4 h-4 text-blue-500" />
-                      <span className="text-sm font-black text-white">{formatTime(timer)}</span>
-                    </div>
-                    {isAnswering && (
-                      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl backdrop-blur-md border ${answerTimer < 10 ? 'bg-rose-600/20 border-rose-500/30' : 'bg-emerald-600/20 border-emerald-500/30'}`}>
-                        <div className={`w-2 h-2 rounded-full animate-pulse ${answerTimer < 10 ? 'bg-rose-500' : 'bg-emerald-500'}`} />
-                        <span className={`text-sm font-black ${answerTimer < 10 ? 'text-rose-400' : 'text-emerald-400'}`}>{answerTimer}s remaining</span>
-                      </div>
-                    )}
+            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-8">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-600/20 flex items-center justify-center border border-blue-500/30 ring-1 ring-blue-500/10">
+                    <Video className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-white tracking-tight uppercase">{role} Session</h2>
+                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">AI-Powered Real-time Analysis</p>
                   </div>
                 </div>
-                <div className="flex items-center justify-between px-2">
-                  <div className="flex items-center gap-3">
-                    <button onClick={toggleMesh} className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${showMesh ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400'}`} style={{ border: 'none', cursor: 'pointer' }}>
-                      <Eye className="w-4 h-4" /> {showMesh ? 'Disable AI Mesh' : 'Enable AI Mesh'}
-                    </button>
-                    <div className="relative">
-                      <button onClick={toggleListening} className={`p-3 rounded-2xl transition-all ${isListening ? 'bg-rose-600/20 border-rose-500/50' : 'bg-white/5 border-white/10'}`} style={{ border: '1px solid', cursor: 'pointer' }}>
-                        {isListening ? <MicOff className="w-5 h-5 text-rose-500" /> : <Mic className="w-5 h-5 text-slate-400" />}
-                      </button>
-                      {audioError && (
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-rose-600 text-white text-[10px] font-black uppercase tracking-tighter rounded-lg whitespace-nowrap shadow-lg animate-in fade-in slide-in-from-top-1 z-10">
-                          {audioError === 'permission-denied' ? 'Mic Blocked' : 'No Mic Found'}
+                <button 
+                  onClick={endSession}
+                  className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest flex items-center gap-2"
+                  style={{ cursor: 'pointer' }}
+                >
+                  <X size={16} /> Exit Session
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
+                <div className="lg:col-span-8 flex flex-col gap-4">
+                  <div className="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10" style={{ background: '#000', aspectRatio: '16/9' }}>
+                    {sessionStarted && (initProgress < 100 || !cameraReady) && (
+                      <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-2xl transition-all duration-700 animate-in fade-in">
+                        <div className="relative w-48 h-48 flex items-center justify-center">
+                          <div className="absolute inset-0 border-[3px] border-white/5 rounded-full" />
+                          <div 
+                            className="absolute inset-0 border-[3px] border-blue-500 rounded-full border-t-transparent animate-spin"
+                            style={{ animationDuration: '1.2s' }}
+                          />
+                          <div className="text-center">
+                            <div className="text-4xl font-bold text-white tracking-tighter">{initProgress}%</div>
+                            <div className="text-[10px] text-blue-400 font-bold tracking-[0.2em] uppercase">AI ENGINE</div>
+                          </div>
+                        </div>
+                        <div className="mt-8 w-64 px-4 text-center">
+                          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                            <div 
+                              className="h-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-700 ease-out shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+                              style={{ width: `${initProgress}%` }}
+                            />
+                          </div>
+                          <p className="mt-6 text-white/40 text-[11px] font-medium tracking-wide uppercase">
+                            Optimizing neural pathways...
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    <canvas ref={canvasRef} className="w-full h-full object-cover" style={{ display: isActive ? 'block' : 'none' }} />
+                    <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" style={{ display: !isActive ? 'block' : 'none', transform: 'scaleX(-1)' }} />
+                    <BodyLanguageOverlay scores={scores} isActive={isActive} />
+                    <AnimatePresence>
+                      {countdown > 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 1.5 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.5 }}
+                          className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm"
+                        >
+                          <div className="text-[120px] font-black text-white leading-none tracking-tighter">{countdown}</div>
+                          <div className="text-xs font-black text-blue-400 uppercase tracking-[0.5em] mt-4">Preparing Question</div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                    <div className="absolute top-6 left-6 flex items-center gap-4">
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/5">
+                        <Clock className="w-4 h-4 text-blue-500" />
+                        <span className="text-sm font-black text-white">{formatTime(timer)}</span>
+                      </div>
+                      {isAnswering && (
+                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl backdrop-blur-md border ${answerTimer < 10 ? 'bg-rose-600/20 border-rose-500/30' : 'bg-emerald-600/20 border-emerald-500/30'}`}>
+                          <div className={`w-2 h-2 rounded-full animate-pulse ${answerTimer < 10 ? 'bg-rose-500' : 'bg-emerald-500'}`} />
+                          <span className={`text-sm font-black ${answerTimer < 10 ? 'text-rose-400' : 'text-emerald-400'}`}>{answerTimer}s remaining</span>
                         </div>
                       )}
                     </div>
                   </div>
-                  <button onClick={endSession} className={`flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-black text-xs uppercase tracking-widest transition-all ${questionCount >= 3 ? 'bg-blue-600 shadow-lg shadow-blue-900/40' : 'bg-rose-950/40 border border-rose-900/50 hover:bg-rose-900/60'}`} style={{ cursor: 'pointer' }}>
-                    {questionCount >= 3 ? <Sparkles className="w-5 h-5" /> : <StopCircle className="w-5 h-5" />} {questionCount >= 3 ? 'Complete Session' : 'Terminate Session'}
-                  </button>
+                  <div className="flex items-center justify-between px-2">
+                    <div className="flex items-center gap-3">
+                      <button onClick={toggleMesh} className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${showMesh ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400'}`} style={{ border: 'none', cursor: 'pointer' }}>
+                        <Eye className="w-4 h-4" /> {showMesh ? 'Disable AI Mesh' : 'Enable AI Mesh'}
+                      </button>
+                      <div className="relative">
+                        <button onClick={toggleListening} className={`p-3 rounded-2xl transition-all ${isListening ? 'bg-rose-600/20 border-rose-500/50' : 'bg-white/5 border-white/10'}`} style={{ border: '1px solid', cursor: 'pointer' }}>
+                          {isListening ? <MicOff className="w-5 h-5 text-rose-500" /> : <Mic className="w-5 h-5 text-slate-400" />}
+                        </button>
+                        {audioError && (
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-rose-600 text-white text-[10px] font-black uppercase tracking-tighter rounded-lg whitespace-nowrap shadow-lg animate-in fade-in slide-in-from-top-1 z-10">
+                            {audioError === 'permission-denied' ? 'Mic Blocked' : 'No Mic Found'}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <button onClick={endSession} className={`flex items-center gap-2 px-8 py-4 rounded-2xl text-white font-black text-xs uppercase tracking-widest transition-all ${questionCount >= 3 ? 'bg-blue-600 shadow-lg shadow-blue-900/40' : 'bg-rose-950/40 border border-rose-900/50 hover:bg-rose-900/60'}`} style={{ cursor: 'pointer' }}>
+                      {questionCount >= 3 ? <Sparkles className="w-5 h-5" /> : <StopCircle className="w-5 h-5" />} {questionCount >= 3 ? 'Complete Session' : 'Terminate Session'}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-                <div className="lg:col-span-4 flex flex-col glass-card border-white/5" style={{ height: '600px' }}>
+                <div className="lg:col-span-4 flex flex-col glass-card border-white/5 h-[600px]">
                   <div className="p-5 border-b border-white/5 bg-white/5">
                     <h3 className="text-xs font-black text-white tracking-widest uppercase">STAR Analysis Panel</h3>
                     <div className="flex gap-2 mt-4">
@@ -640,7 +625,6 @@ export default function PracticeInterview() {
                         </motion.div>
                       );
                     })}
-                    {/* Live User Transcript */}
                     {isAnswering && (userInput || audioVolume > 5) && (
                       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex justify-end">
                         <div className="max-w-[90%] rounded-2xl px-5 py-4 text-xs font-bold leading-relaxed bg-blue-600/40 text-white/90 rounded-tr-none border border-blue-500/30 backdrop-blur-sm">
@@ -656,28 +640,15 @@ export default function PracticeInterview() {
                     {aiLoading && <div className="flex gap-1 p-4"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" /><div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce delay-75" /><div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce delay-150" /></div>}
                     <div ref={chatEndRef} />
                   </div>
-
-                  {/* Submit Button Overlay */}
                   <AnimatePresence>
                     {isAnswering && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        className="p-4 pt-0"
-                      >
-                        <button
-                          onClick={sendAnswer}
-                          className="w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-[0.3em] transition-all shadow-[0_10px_30px_rgba(16,185,129,0.2)] flex items-center justify-center gap-3 active:scale-95"
-                          style={{ border: 'none', cursor: 'pointer' }}
-                        >
-                          <CheckCircle2 className="w-4 h-4" />
-                          SUBMIT ANSWER
+                      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="p-4 pt-0">
+                        <button onClick={sendAnswer} className="w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-[0.3em] transition-all shadow-[0_10px_30px_rgba(16,185,129,0.2)] flex items-center justify-center gap-3 active:scale-95" style={{ border: 'none', cursor: 'pointer' }}>
+                          <CheckCircle2 className="w-4 h-4" /> SUBMIT ANSWER
                         </button>
                       </motion.div>
                     )}
                   </AnimatePresence>
-
                   <div className="p-4 bg-black/40">
                     <div className="flex items-center gap-2">
                       <input type="text" value={userInput} onChange={(e) => setUserInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') sendAnswer(); }} placeholder={isListening ? (audioVolume > 15 ? 'HEARING_AUDIO...' : 'LISTENING_STREAM...') : 'TYPE RESPONSE...'} className="flex-1 px-5 py-4 rounded-2xl text-[10px] font-black text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 uppercase tracking-widest font-mono" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }} />
@@ -689,7 +660,6 @@ export default function PracticeInterview() {
                 </div>
               </div>
 
-              {/* Analysis Report Section */}
               <AnimatePresence>
                 {showFeedback && (
                   <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} className="w-full mt-12 space-y-8" id="analysis-report">
@@ -792,9 +762,10 @@ export default function PracticeInterview() {
                   </motion.div>
                 )}
               </AnimatePresence>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </motion.div>
+        ) }
+      </AnimatePresence>
       </div>
     </div>
   );
