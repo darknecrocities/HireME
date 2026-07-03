@@ -30,8 +30,7 @@ graph TD
     User((User)) --> |Client| React[React 19 Frontend]
     React --> |Neural Link| Ollama[Local Ollama API]
     React --> |Vision Engine| MediaPipe[MediaPipe CV]
-    React --> |Identity/Data| Firebase[Firebase Services]
-    React --> |Job Feed| TheirStack[TheirStack API]
+    React --> |Persistence| LocalStorage[(Browser Local Storage)]
     
     subgraph "Neural Feedback Loop"
         MediaPipe --> |Body Language Tracking| Analysis[AI Consensus Engine]
@@ -155,7 +154,7 @@ The core differentiator of HireME is its **Resonance matching** algorithm.
 ## 🛠 Project Structure
 
 - `/src/hooks`: Custom React hooks for MediaPipe, Local Auth, and AI interactions.
-- `/src/services`: Core service implementations for local Ollama and Firebase.
+- `/src/services`: Core service implementations for local Ollama.
 - `/src/pages`: Main application views (Practice Interview, Resume Enhancer, Job Feed, Ollama Hub).
 - `/public`: Static assets and MediaPipe model files.
 
