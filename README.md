@@ -2,7 +2,6 @@
 
 [![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev/)
-[![Firebase](https://img.shields.io/badge/Firebase-039BE5?style=for-the-badge&logo=Firebase&logoColor=white)](https://firebase.google.com/)
 [![Ollama](https://img.shields.io/badge/Ollama-black?style=for-the-badge&logo=ollama&logoColor=white)](https://ollama.com/)
 
 **HireMe** is a web application that gives every job seeker a professional-grade preparation system directly in their browser — HireMe acts as your personal coach. It combines **Generative AI** and **Computer Vision** to simulate a real recruitment experience.
@@ -97,14 +96,13 @@ The core differentiator of HireME is its **Resonance matching** algorithm.
 - **Data Visualization (Recharts)**: **Recharts** for visualizing performance trends and resonance growth.
 
 ### **Services & Security**
-- **Firebase Firestore**: Real-time persistence for your career pathway and saved nodes.
-- **Firebase Auth**: Secure, seamless Google and Email identity management.
-- **TheirStack API**: High-fidelity job node mapping from 10M+ global listings.
+- **Local Storage Engine**: Completely private, client-side persistence for your career pathways and saved job listings.
+- **Offline Identity Mock**: Clean offline developer identity configuration.
+- **Local Job Seed Feed**: High-fidelity local developer positions mapping.
 - **Zero-Trust Video**: No camera data is ever stored; analysis is performed entirely in RAM and discarded instantly.
 
 ### **Deployment**
-- **Vercel**: High-performance edge deployment for the React frontend.
-- **Firebase Hosting**: Global CDN for static assets and Firebase SDK integration.
+- **Vercel**: High-performance static web deployment for the localized React frontend.
 
 ---
 
