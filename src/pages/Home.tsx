@@ -58,7 +58,7 @@ const steps = [
 const capabilities = [
   { t: 'Interactive Analysis', d: 'Advanced tracking of non-verbal cues for comprehensive feedback.' },
   { t: 'STAR Integration', d: 'Automated achievement mapping to professional hiring standards.' },
-  { t: 'Gemini AI Insights', d: 'Instant semantic analysis for real-time improvements.' },
+  { t: 'Ollama AI Insights', d: 'Instant semantic analysis for real-time improvements.' },
   { t: 'Privacy Focused', d: 'On-device data processing ensures your information remains secure.' },
 ];
 

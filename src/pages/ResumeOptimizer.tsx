@@ -553,7 +553,7 @@ export default function ResumeOptimizer() {
                   </div>
                   <div>
                     <h2 className="text-sm font-black text-white uppercase tracking-widest mb-1">Professional Resume Template</h2>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Optimized by Gemini AI</p>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Optimized by Ollama AI</p>
                   </div>
                 </div>
                 <div className="flex gap-3">

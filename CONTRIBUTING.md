@@ -15,7 +15,7 @@ Welcome to the HireME project! We're excited to have you here. This guide will h
     npm install
     ```
 4.  **Set up environment variables**:
-    Create a `.env` file in the root directory and add your Firebase and Gemini API keys as shown in the `.env.example` (or as provided by the lead developer).
+    Create a `.env` file in the root directory and add your Firebase API key as shown in the `.env.example` (and ensure your local Ollama instance is configured).
 
 ## 🌳 Branching Strategy
 
@@ -40,7 +40,7 @@ Please follow the existing project structure:
 -   `src/components`: Reusable UI components (buttons, cards, etc.).
 -   `src/hooks`: Custom React hooks for logic reuse.
 -   `src/pages`: Main application pages/routes.
--   `src/services`: External service integrations (Firebase, Gemini API).
+-   `src/services`: External service integrations (Firebase, Ollama API).
 -   `src/types`: TypeScript interfaces and type definitions.
 -   `src/utils`: Helper functions and shared utilities.
 

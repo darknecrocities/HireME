@@ -8,13 +8,10 @@ import {
   BarChart3,
   Menu,
   X,
-  LogOut,
   Zap,
   Search,
-  User
+  Cpu
 } from 'lucide-react';
-import { useAuth } from '../hooks/useAuth';
-import { useProfile } from '../hooks/useProfile';
 import logo from '../assets/Hireme.png';
 
 const navItems = [
@@ -24,13 +21,12 @@ const navItems = [
   { path: '/jobs', label: 'Jobs', icon: Search },
   { path: '/dashboard', label: 'Analytics', icon: BarChart3 },
   { path: '/pricing', label: 'Pricing', icon: Zap },
+  { path: '/engine', label: 'AI Engine', icon: Cpu },
 ];
 
 export default function Navbar() {
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, logout } = useAuth();
-  const { profile } = useProfile();
 
   return (
     <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-[1100px]">
@@ -80,30 +76,6 @@ export default function Navbar() {
               );
             })}
             
-            <div className="w-[1px] h-6 bg-white/10 mx-2" />
-            
-            <div className="flex items-center gap-4">
-              {user ? (
-                <div className="flex items-center gap-3">
-                  <div className="flex flex-col items-end">
-                     <span className="text-[8px] font-bold text-blue-500 uppercase tracking-widest">{profile?.occupation || 'Entity'}</span>
-                    <span className="text-[10px] font-bold text-white max-w-[100px] truncate">{profile?.fullName || user.email}</span>
-                  </div>
-                  <button 
-                    onClick={() => logout()}
-                    className="p-2 rounded-full border border-white/10 bg-[#030817] text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all cursor-pointer shadow-[0_0_15px_rgba(0,0,0,0.5)]"
-                    title="Sign Out"
-                  >
-                    <LogOut className="w-4 h-4" />
-                  </button>
-                </div>
-              ) : (
-                <Link to="/auth" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#030817] border border-blue-500/50 shadow-[0_0_15px_rgba(59,130,246,0.2)] text-white text-[10px] font-bold tracking-[0.2em] transition-all hover:bg-blue-900/40 no-underline">
-                  <User className="w-3.5 h-3.5 text-blue-400" />
-                  LOG IN / SIGN UP
-                </Link>
-              )}
-            </div>
           </div>
 
           {/* Mobile Toggle */}
@@ -145,27 +117,6 @@ export default function Navbar() {
                   </Link>
                 );
               })}
-              
-              {!user && (
-                <Link
-                  to="/auth"
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-4 px-6 py-4 rounded-2xl text-base font-black text-blue-500 bg-blue-500/10 no-underline"
-                >
-                  <User className="w-5 h-5" />
-                  LOG IN / SIGN UP
-                </Link>
-              )}
-              
-              {user && (
-                <button
-                  onClick={() => { logout(); setMobileOpen(false); }}
-                  className="w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-base font-black text-rose-500 bg-rose-500/10 border-none text-left cursor-pointer"
-                >
-                  <LogOut className="w-5 h-5" />
-                  LOGOUT
-                </button>
-              )}
             </div>
           </motion.div>
         )}

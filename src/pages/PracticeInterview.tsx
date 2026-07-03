@@ -393,7 +393,7 @@ export default function PracticeInterview() {
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 text-[10px] font-black tracking-widest uppercase"
             style={{ background: 'rgba(30, 58, 138, 0.4)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}>
             <Target className="w-3.5 h-3.5" />
-            AI Interview Engine Powered by Gemini
+            AI Interview Engine Powered by Ollama
           </div>
           <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
             PRACTICE <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-500">SESSION</span>

@@ -1,69 +1,147 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { ResumeAnalysisResult, ResumeSuggestion, EnhancedResume } from '../types';
 
-const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
-const GEMINI_ENABLED = !!API_KEY;
+// Configuration keys for local storage
+const ENDPOINT_KEY = 'hireme_ollama_endpoint';
+const MODEL_KEY = 'hireme_ollama_model';
 
-// Initialize the SDK
-const genAI = GEMINI_ENABLED ? new GoogleGenerativeAI(API_KEY) : null;
-const MODEL_NAME = "gemini-3.1-flash-lite-preview";
-
-// Cache models to avoid repeated initialization
-const cachedModels: Record<string, any> = {};
-
-function getModel(modelId: string) {
-  if (!genAI) return null;
-  if (!cachedModels[modelId]) {
-    cachedModels[modelId] = genAI.getGenerativeModel({ 
-      model: modelId,
-      generationConfig: {
-        maxOutputTokens: 1000,
-        temperature: 0.7,
-      }
-    });
-  }
-  return cachedModels[modelId];
+export function getOllamaEndpoint(): string {
+  return localStorage.getItem(ENDPOINT_KEY) || 'http://localhost:11434';
 }
 
-/**
- * Helper to try multiple models for a prompt.
- */
-async function generateWithFallback<T>(prompt: string, models: string[]): Promise<T> {
-  if (!genAI) throw new Error("AI not enabled.");
-  
-  let lastError = null;
-  for (const modelId of models) {
-    try {
-      const model = getModel(modelId);
-      if (!model) continue;
-      
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      const text = response.text();
-      
-      if (!text) throw new Error("Empty response from model.");
-      
-      const startIdx = text.indexOf('{');
-      const endIdx = text.lastIndexOf('}');
-      if (startIdx === -1 || endIdx === -1) {
-        console.error("Model returned non-JSON text:", text);
-        throw new Error("AI returned invalid data format. Please try again.");
+export function setOllamaEndpoint(endpoint: string): void {
+  localStorage.setItem(ENDPOINT_KEY, endpoint.replace(/\/$/, '')); // trim trailing slash
+}
+
+export function getSelectedOllamaModel(): string {
+  return localStorage.getItem(MODEL_KEY) || 'llama3.2';
+}
+
+export function setSelectedOllamaModel(model: string): void {
+  localStorage.setItem(MODEL_KEY, model);
+}
+
+// Check if local Ollama is online and get available models
+export async function checkOllamaStatus(): Promise<{ status: boolean; models: string[] }> {
+  try {
+    const endpoint = getOllamaEndpoint();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000); // 2 second timeout for status checks
+
+    const res = await fetch(`${endpoint}/api/tags`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+
+    if (!res.ok) return { status: false, models: [] };
+    const data = await res.json();
+    const models = (data.models || []).map((m: any) => m.name);
+    return { status: true, models };
+  } catch (error) {
+    return { status: false, models: [] };
+  }
+}
+
+// Pull a model from the registry with progress callback
+export async function pullOllamaModel(
+  modelName: string, 
+  onProgress: (status: string, progress: number) => void
+): Promise<void> {
+  const endpoint = getOllamaEndpoint();
+  const res = await fetch(`${endpoint}/api/pull`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: modelName, stream: true })
+  });
+  if (!res.ok) throw new Error(`Failed to start pulling model: ${res.statusText}`);
+
+  const reader = res.body?.getReader();
+  if (!reader) throw new Error('ReadableStream not supported');
+
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for (const line of lines) {
+      if (line.trim()) {
+        try {
+          const parsed = JSON.parse(line);
+          if (parsed.status) {
+            let pct = 0;
+            if (parsed.total) {
+              pct = Math.round((parsed.completed / parsed.total) * 100);
+            }
+            onProgress(parsed.status, pct);
+          }
+        } catch (e) {
+          // ignore parsing error for incomplete chunks
+        }
       }
-      
-      const cleaned = text.substring(startIdx, endIdx + 1);
-      return JSON.parse(cleaned) as T;
-    } catch (error: any) {
-      console.warn(`Model ${modelId} failed:`, error.message);
-      lastError = error;
-      if (error.message?.includes('429')) continue;
-      continue;
     }
   }
-  throw lastError;
+}
+
+// Core helper to call Ollama's local generation endpoint
+async function queryOllama(prompt: string, systemPrompt?: string, forceJson: boolean = false): Promise<string> {
+  const endpoint = getOllamaEndpoint();
+  const model = getSelectedOllamaModel();
+
+  const payload: any = {
+    model: model,
+    prompt: prompt,
+    stream: false,
+    options: {
+      temperature: 0.7,
+      num_predict: 1000
+    }
+  };
+
+  if (systemPrompt) {
+    payload.system = systemPrompt;
+  }
+
+  if (forceJson) {
+    payload.format = "json";
+  }
+
+  const res = await fetch(`${endpoint}/api/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    throw new Error(`Ollama generation failed: ${res.statusText}`);
+  }
+
+  const data = await res.json();
+  return data.response || '';
+}
+
+// Robust JSON extraction and parsing
+function parseJsonSafe<T>(text: string, fallback: T): T {
+  try {
+    const startIdx = text.indexOf('{');
+    const endIdx = text.lastIndexOf('}');
+    if (startIdx === -1 || endIdx === -1) {
+      return JSON.parse(text) as T;
+    }
+    const cleaned = text.substring(startIdx, endIdx + 1);
+    return JSON.parse(cleaned) as T;
+  } catch (err) {
+    console.error("Ollama JSON parsing error. Raw output:", text, err);
+    return fallback;
+  }
 }
 
 /**
- * Generate an interview question using Gemini API.
+ * Generate an interview question using Ollama API.
  */
 export async function generateInterviewQuestion(
   role: string,
@@ -71,7 +149,10 @@ export async function generateInterviewQuestion(
   context: string,
   questionNumber: number
 ): Promise<string> {
-  if (!genAI) return getMockInterviewQuestion(role);
+  const status = await checkOllamaStatus();
+  if (!status.status || status.models.length === 0) {
+    return getMockInterviewQuestion(role);
+  }
 
   const prompt = `You are an expert interviewer for the ${role} role. Current context: ${context}. This is question number ${questionNumber} of the session. 
     If questionNumber is 1: Ask an introductory behavioral question.
@@ -79,43 +160,28 @@ export async function generateInterviewQuestion(
     Generate ONE focused, professional interview question. Return ONLY the question, no extra text.`;
 
   try {
-    // Use fallback pattern for resilience and speed
-    const models = [MODEL_NAME, "gemini-1.5-flash-8b", "gemini-1.5-flash"];
-    
-    for (const modelId of models) {
-      try {
-        const model = getModel(modelId);
-        if (!model) continue;
-        
-        const result = await model.generateContent({
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 150, temperature: 0.7 }
-        });
-        const response = await result.response;
-        return response.text().trim() || getMockInterviewQuestion(role);
-      } catch (e) {
-        console.warn(`Model ${modelId} failed for question, trying next...`);
-        continue;
-      }
-    }
-    return getMockInterviewQuestion(role);
+    const response = await queryOllama(prompt, `You are an expert interviewer for the ${role} role.`, false);
+    return response.trim() || getMockInterviewQuestion(role);
   } catch (error) {
-    console.error('Gemini Question Error:', error);
+    console.error('Ollama Question Error:', error);
     return getMockInterviewQuestion(role);
   }
 }
 
 /**
- * Analyze a resume against a job description using Gemini API.
+ * Analyze a resume against a job description using Ollama API.
  */
 export async function analyzeResume(
   resumeText: string,
   jobDescription: string
 ): Promise<ResumeAnalysisResult> {
-  if (!genAI) return getMockResumeAnalysis();
+  const status = await checkOllamaStatus();
+  const fallback = getMockResumeAnalysis();
+  if (!status.status || status.models.length === 0) {
+    return fallback;
+  }
 
-  const models = [MODEL_NAME, "gemini-1.5-flash"];
-  const prompt = `Analyze this resume against the job description. Return ONLY valid JSON (no markdown fences) in this exact format:
+  const prompt = `Analyze this resume against the job description. Return ONLY valid JSON in this exact format:
 {
   "score": <0-100>,
   "missingKeywords": ["keyword1", "keyword2"],
@@ -129,27 +195,34 @@ ${resumeText}
 Job Description:
 ${jobDescription}`;
 
-  return await generateWithFallback<ResumeAnalysisResult>(prompt, models);
+  try {
+    const response = await queryOllama(prompt, "You are a resume analyzer that outputs valid JSON schemas.", true);
+    return parseJsonSafe<ResumeAnalysisResult>(response, fallback);
+  } catch (error) {
+    console.error('Ollama Resume Analysis Error:', error);
+    return fallback;
+  }
 }
 
 /**
- * Generate session feedback from Gemini.
+ * Generate session feedback from Ollama.
  */
 export async function generateSessionFeedback(
   scores: { eyeContact: number; posture: number; gestures: number; confidence: number; audio: number },
   interviewType: string
 ): Promise<string> {
-  if (!genAI) return getMockFeedback(scores);
+  const status = await checkOllamaStatus();
+  if (!status.status || status.models.length === 0) {
+    return getMockFeedback(scores);
+  }
+
+  const prompt = `You are an interview coach. The candidate just completed a ${interviewType} practice session. Their scores (0-100): Eye Contact: ${scores.eyeContact}, Posture: ${scores.posture}, Gestures: ${scores.gestures}, Confidence: ${scores.confidence}, Vocal Performance: ${scores.audio}. Provide 3-4 sentences of constructive feedback with specific improvement tips.`;
 
   try {
-    const model = genAI.getGenerativeModel({ model: MODEL_NAME });
-    const prompt = `You are an interview coach. The candidate just completed a ${interviewType} practice session. Their scores (0-100): Eye Contact: ${scores.eyeContact}, Posture: ${scores.posture}, Gestures: ${scores.gestures}, Confidence: ${scores.confidence}, Vocal Performance: ${scores.audio}. Provide 3-4 sentences of constructive feedback with specific improvement tips.`;
-
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    return response.text().trim() || getMockFeedback(scores);
+    const response = await queryOllama(prompt, "You are an interview coach.", false);
+    return response.trim() || getMockFeedback(scores);
   } catch (error) {
-    console.error('Gemini Feedback Error:', error);
+    console.error('Ollama Feedback Error:', error);
     return getMockFeedback(scores);
   }
 }
@@ -162,7 +235,27 @@ export async function analyzeFullSession(
   scores: { eyeContact: number; posture: number; gestures: number; confidence: number; audio: number },
   role: string
 ): Promise<any> {
-  const models = [MODEL_NAME, "gemini-1.5-flash"];
+  const status = await checkOllamaStatus();
+  const fallback = {
+    overallScore: Math.round((scores.eyeContact + scores.posture + scores.gestures + scores.confidence + scores.audio) / 5),
+    hiringProbability: 70,
+    confidenceScore: scores.confidence,
+    summary: "Great work completing the interview session. Review the checklist below for improvement targets.",
+    technicalFeedback: "Clear technical understanding demonstrated, but could benefit from deeper examples.",
+    bodyLanguageFeedback: getMockFeedback(scores),
+    vocalFeedback: "Vocal pacing was clear and stable throughout the interview.",
+    strengths: ["Clear communication", "Structured layout"],
+    improvements: ["Incorporate more STAR metrics", "Increase eye contact consistency"],
+    improvementChecklist: ["Practice STAR method bullets", "Maintain steady posture during questions"],
+    top3JobRecommendations: [
+      { "title": `${role} Associate`, "reason": "Good foundational match for your communication skills" }
+    ]
+  };
+
+  if (!status.status || status.models.length === 0) {
+    return fallback;
+  }
+
   const prompt = `Analyze this interview for ${role}.
   TRANSCRIPT: ${JSON.stringify(transcript)}
   METRICS: ${JSON.stringify(scores)}
@@ -186,22 +279,37 @@ export async function analyzeFullSession(
     ]
   }`;
 
-  return await generateWithFallback<any>(prompt, models);
+  try {
+    const response = await queryOllama(prompt, "You are an AI hiring director analyzing interview recordings.", true);
+    return parseJsonSafe<any>(response, fallback);
+  } catch (error) {
+    console.error('Ollama Full Session Analysis Error:', error);
+    return fallback;
+  }
 }
 
 /**
  * Generate a professional, enhanced resume from raw text.
  */
 export async function generateEnhancedResume(resumeText: string, targetJob?: string): Promise<EnhancedResume> {
-  if (!genAI) return getMockEnhancedResume();
+  const status = await checkOllamaStatus();
+  const fallback = getMockEnhancedResume();
+  if (!status.status || status.models.length === 0) {
+    return fallback;
+  }
 
-  const models = [MODEL_NAME, "gemini-1.5-flash"];
   const prompt = `Enhance resume for job: ${targetJob || 'formalized'}. 
   Return JSON ONLY: { "personalInfo": { "name": "", "email": "", "phone": "", "location": "", "linkedin": "", "website": "" }, "summary": "", "experience": [{ "role": "", "company": "", "location": "", "duration": "", "bullets": [] }], "education": [{ "degree": "", "school": "", "location": "", "duration": "" }], "skills": [{ "category": "", "items": [] }] }
   Content must be formal, board-ready, STAR bullets. 
   Resume: ${resumeText}`;
 
-  return await generateWithFallback<EnhancedResume>(prompt, models);
+  try {
+    const response = await queryOllama(prompt, "You are a professional resume optimization editor.", true);
+    return parseJsonSafe<EnhancedResume>(response, fallback);
+  } catch (error) {
+    console.error('Ollama Resume Enhancement Error:', error);
+    return fallback;
+  }
 }
 
 // ===== Mock Data Fallbacks =====
@@ -227,8 +335,6 @@ function getMockInterviewQuestion(role: string): string {
   questionIndex++;
   return q;
 }
-
-// Unused mock full analysis removed
 
 function getMockResumeAnalysis(): ResumeAnalysisResult {
   const suggestions: ResumeSuggestion[] = [
@@ -285,7 +391,7 @@ function getMockEnhancedResume(): EnhancedResume {
         location: "Manila, PH",
         duration: "2021 - Present",
         bullets: [
-          "Optimized resume analysis throughput by 65% through the implementation of Gemini Pro 1.5-Flash and a distributed caching layer.",
+          "Optimized resume analysis throughput by 65% through the implementation of local Ollama models and a distributed caching layer.",
           "Architected a scalable microservices ecosystem using Node.js and PostgreSQL, reducing infrastructure costs by 30% annually.",
           "Led a cross-functional team of 10 engineers to deliver a board-ready hiring platform featured at global tech summits."
         ]
@@ -317,7 +423,7 @@ function getMockEnhancedResume(): EnhancedResume {
       },
       {
         category: "AI & MACHINE LEARNING",
-        items: ["Gemini Pro", "OpenAI API", "Vector Databases", "Prompt Engineering", "Fine-tuning"]
+        items: ["Ollama", "Local LLMs", "Vector Databases", "Prompt Engineering", "Fine-tuning"]
       },
       {
         category: "LEADERSHIP & OPERATIONS",

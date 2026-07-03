@@ -14,7 +14,7 @@ export function useAI() {
     setLoading(true);
     setError(null);
     try {
-      const { generateInterviewQuestion } = await import('../services/gemini');
+      const { generateInterviewQuestion } = await import('../services/ollama');
       const question = await generateInterviewQuestion(role, previousAnswer, context, questionNumber);
       return question;
     } catch (err) {
@@ -33,7 +33,7 @@ export function useAI() {
     setLoading(true);
     setError(null);
     try {
-      const { analyzeResume } = await import('../services/gemini');
+      const { analyzeResume } = await import('../services/ollama');
       const result = await analyzeResume(resumeText, jobDescription);
       return result;
     } catch (err) {
@@ -52,7 +52,7 @@ export function useAI() {
     setLoading(true);
     setError(null);
     try {
-      const { generateEnhancedResume } = await import('../services/gemini');
+      const { generateEnhancedResume } = await import('../services/ollama');
       const result = await generateEnhancedResume(resumeText, targetJob);
       return result;
     } catch (err) {
@@ -72,7 +72,7 @@ export function useAI() {
     setLoading(true);
     setError(null);
     try {
-      const { analyzeFullSession } = await import('../services/gemini');
+      const { analyzeFullSession } = await import('../services/ollama');
       const result = await analyzeFullSession(transcript, scores, role);
       return result;
     } catch (err) {

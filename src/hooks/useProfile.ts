@@ -1,7 +1,4 @@
-import { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../services/firebase';
-import { useAuth } from './useAuth';
+import { useState } from 'react';
 
 export interface UserProfile {
   fullName: string;
@@ -12,33 +9,14 @@ export interface UserProfile {
 }
 
 export function useProfile() {
-  const { user } = useAuth();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchProfile() {
-      if (!user) {
-        setProfile(null);
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const docRef = doc(db, 'users', user.uid);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setProfile(docSnap.data() as UserProfile);
-        }
-      } catch (err) {
-        console.error('Error fetching profile:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchProfile();
-  }, [user]);
+  const [profile] = useState<UserProfile | null>({
+    fullName: 'Offline User',
+    bday: '1995-01-01',
+    occupation: 'Lead AI Engineer',
+    email: 'offline@hireme.local',
+    createdAt: new Date().toISOString()
+  });
+  const [loading] = useState(false);
 
   return { profile, loading };
 }
