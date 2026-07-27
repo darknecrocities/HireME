@@ -8,7 +8,6 @@ import {
   BarChart3,
   Menu,
   X,
-  Zap,
   Search,
   Cpu
 } from 'lucide-react';
@@ -20,7 +19,6 @@ const navItems = [
   { path: '/interview', label: 'Interview', icon: Video },
   { path: '/jobs', label: 'Jobs', icon: Search },
   { path: '/dashboard', label: 'Analytics', icon: BarChart3 },
-  { path: '/pricing', label: 'Pricing', icon: Zap },
   { path: '/engine', label: 'AI Engine', icon: Cpu },
 ];
 

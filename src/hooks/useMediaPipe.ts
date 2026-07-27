@@ -308,15 +308,15 @@ export function useMediaPipe() {
     console.log("MediaPipe: Starting initialization...");
     setInitProgress(5);
     try {
-      const faceMesh = new FaceMesh({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}` });
+      const faceMesh = new FaceMesh({ locateFile: (file: string) => `/mediapipe-assets/${file}` });
       faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
       faceMesh.onResults((res: any) => onResults('face', res));
 
-      const pose = new Pose({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}` });
+      const pose = new Pose({ locateFile: (file: string) => `/mediapipe-assets/${file}` });
       pose.setOptions({ modelComplexity: 0, smoothLandmarks: true, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
       pose.onResults((res: any) => onResults('pose', res));
 
-      const hands = new Hands({ locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}` });
+      const hands = new Hands({ locateFile: (file: string) => `/mediapipe-assets/${file}` });
       hands.setOptions({ maxNumHands: 2, modelComplexity: 0, minDetectionConfidence: 0.4, minTrackingConfidence: 0.4 });
       hands.onResults((res: any) => onResults('hands', res));
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FileText, Sparkles, CheckCircle2, AlertCircle, Loader2, RotateCcw, Target, Award, Upload, Download, Mail, Phone, MapPin, Linkedin, ExternalLink } from 'lucide-react';
+import { FileText, Sparkles, CheckCircle2, AlertCircle, Loader2, RotateCcw, Target, Award, Upload, Download, Mail, Phone, MapPin, Linkedin, ExternalLink, Cpu } from 'lucide-react';
 import { useAI } from '../hooks/useAI';
 import { useUsageLimit } from '../hooks/useUsageLimit';
 import { Link } from 'react-router-dom';
@@ -8,8 +8,10 @@ import type { ResumeAnalysisResult, EnhancedResume } from '../types';
 import * as pdfjsLib from 'pdfjs-dist';
 import { jsPDF } from 'jspdf';
 
-// Set up PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
+
+// Set up PDF.js worker locally for offline support
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker;
 
 const TypewriterText = ({ text, delay = 20 }: { text: string; delay?: number }) => {
   const [displayText, setDisplayText] = React.useState('');
@@ -64,7 +66,7 @@ export default function ResumeOptimizer() {
         setCooldown(parseInt(retryMatch[1]));
         setError(`Quota limit reached. Please retry in ${retryMatch[1]}s.`);
       } else {
-        setError('Resume analysis failed. Please check your API quota.');
+        setError('Resume analysis failed. Ensure local Ollama engine is running.');
       }
       setResults(null);
     }
@@ -90,7 +92,7 @@ export default function ResumeOptimizer() {
         setCooldown(parseInt(retryMatch[1]));
         setError(`Quota limit reached. Please retry in ${retryMatch[1]}s.`);
       } else {
-        setError('AI enhancement failed. Please check your API quota.');
+        setError('AI enhancement failed. Ensure local Ollama engine is running.');
       }
       setEnhancedResume(null);
     }
@@ -300,16 +302,16 @@ export default function ResumeOptimizer() {
             </p>
             <div className="grid grid-cols-2 gap-4">
               <Link
-                to="/pricing"
+                to="/engine"
                 className="py-4 rounded-2xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)]"
               >
-                View Tiers
+                AI Engine
               </Link>
               <Link
-                to="/auth"
+                to="/"
                 className="py-4 rounded-2xl bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
               >
-                Sign Up
+                Home
               </Link>
             </div>
           </motion.div>
@@ -330,8 +332,8 @@ export default function ResumeOptimizer() {
           className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-blue-300 mb-6">
-            <Award className="w-4 h-4" />
-            AI Career Development Beta
+            <Cpu className="w-4 h-4 text-blue-400 animate-pulse" />
+            Ollama Local AI Engine
           </div>
           <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
             PRO<span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">FILE</span> OPTIMIZER

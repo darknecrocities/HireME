@@ -20,6 +20,21 @@ export function setSelectedOllamaModel(model: string): void {
   localStorage.setItem(MODEL_KEY, model);
 }
 
+// Get the actual available model tag matching user preference
+export async function getEffectiveOllamaModel(): Promise<string> {
+  const selected = getSelectedOllamaModel();
+  const status = await checkOllamaStatus();
+  if (!status.status || status.models.length === 0) return selected;
+  
+  if (status.models.includes(selected)) return selected;
+  
+  // Try matching with :latest suffix or prefix
+  const match = status.models.find(m => m === `${selected}:latest` || m.split(':')[0] === selected.split(':')[0]);
+  if (match) return match;
+  
+  return status.models[0];
+}
+
 // Check if local Ollama is online and get available models
 export async function checkOllamaStatus(): Promise<{ status: boolean; models: string[] }> {
   try {
@@ -90,7 +105,7 @@ export async function pullOllamaModel(
 // Core helper to call Ollama's local generation endpoint
 async function queryOllama(prompt: string, systemPrompt?: string, forceJson: boolean = false): Promise<string> {
   const endpoint = getOllamaEndpoint();
-  const model = getSelectedOllamaModel();
+  const model = await getEffectiveOllamaModel();
 
   const payload: any = {
     model: model,

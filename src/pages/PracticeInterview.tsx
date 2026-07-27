@@ -28,6 +28,7 @@ export default function PracticeInterview() {
   const [feedback, setFeedback] = useState<any>(null);
   const [showFeedback, setShowFeedback] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [speechError, setSpeechError] = useState<string | null>(null);
   const [transcript, setTranscript] = useState<{ question: string; answer: string }[]>([]);
   const [questionCount, setQuestionCount] = useState(0);
   
@@ -47,6 +48,7 @@ export default function PracticeInterview() {
   const answerTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const speechErrorRef = useRef(false);
 
   const speak = useCallback((text: string) => {
     if ('speechSynthesis' in window) {
@@ -77,6 +79,7 @@ export default function PracticeInterview() {
   const startListening = () => {
     if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
       console.warn('Speech recognition is not supported in this browser.');
+      setSpeechError('Browser speech-to-text unavailable. Type answers below.');
       return;
     }
     
@@ -87,6 +90,9 @@ export default function PracticeInterview() {
         // Ignore stop errors
       }
     }
+
+    speechErrorRef.current = false;
+    setSpeechError(null);
 
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     const recognition = new SpeechRecognition();
@@ -109,17 +115,23 @@ export default function PracticeInterview() {
 
     recognition.onerror = (event: any) => {
       console.error('Speech recognition error:', event.error);
-      if (event.error === 'not-allowed') {
-        setIsListening(false);
+      speechErrorRef.current = true;
+      setIsListening(false);
+      if (event.error === 'network') {
+        setSpeechError('Speech STT requires cloud connection. Offline typing mode active.');
+      } else if (event.error === 'not-allowed') {
+        setSpeechError('Microphone permission blocked.');
+      } else {
+        setSpeechError(`Speech error: ${event.error}`);
       }
     };
 
     recognition.onend = () => {
       console.log('Speech recognition ended');
-      if (isAnswering && sessionStarted && !showFeedback) {
+      if (isAnswering && sessionStarted && !showFeedback && !speechErrorRef.current) {
         setTimeout(() => {
           try {
-            if (recognitionRef.current) recognitionRef.current.start();
+            if (recognitionRef.current && !speechErrorRef.current) recognitionRef.current.start();
           } catch (e) {
             console.error('Auto-restart failed:', e);
           }
@@ -134,20 +146,23 @@ export default function PracticeInterview() {
       recognitionRef.current = recognition;
     } catch (e) {
       console.error('Failed to start recognition:', e);
+      speechErrorRef.current = true;
       setIsListening(false);
     }
   };
 
   const stopListening = () => {
+    speechErrorRef.current = true;
     if (recognitionRef.current) {
-      recognitionRef.current.stop();
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {}
       setIsListening(false);
     }
   };
 
   const toggleListening = () => {
     if (isListening) {
-      setIsListening(false);
       stopListening();
     } else {
       startListening();
@@ -369,16 +384,16 @@ export default function PracticeInterview() {
             </p>
             <div className="grid grid-cols-2 gap-4">
               <Link
-                to="/pricing"
+                to="/engine"
                 className="py-4 rounded-2xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)]"
               >
-                View Tiers
+                AI Engine
               </Link>
               <Link
-                to="/auth"
+                to="/"
                 className="py-4 rounded-2xl bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
               >
-                Sign Up
+                Home
               </Link>
             </div>
           </motion.div>
@@ -584,9 +599,9 @@ export default function PracticeInterview() {
                         <button onClick={toggleListening} className={`p-3 rounded-2xl transition-all ${isListening ? 'bg-rose-600/20 border-rose-500/50' : 'bg-white/5 border-white/10'}`} style={{ border: '1px solid', cursor: 'pointer' }}>
                           {isListening ? <MicOff className="w-5 h-5 text-rose-500" /> : <Mic className="w-5 h-5 text-slate-400" />}
                         </button>
-                        {audioError && (
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-rose-600 text-white text-[10px] font-black uppercase tracking-tighter rounded-lg whitespace-nowrap shadow-lg animate-in fade-in slide-in-from-top-1 z-10">
-                            {audioError === 'permission-denied' ? 'Mic Blocked' : 'No Mic Found'}
+                        {(speechError || audioError) && (
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-amber-600/90 text-white text-[10px] font-black uppercase tracking-tighter rounded-lg whitespace-nowrap shadow-lg animate-in fade-in slide-in-from-top-1 z-10">
+                            {speechError || (audioError === 'permission-denied' ? 'Mic Blocked' : 'No Mic Found')}
                           </div>
                         )}
                       </div>
