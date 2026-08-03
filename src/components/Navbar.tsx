@@ -31,28 +31,28 @@ export default function Navbar() {
   return (
     <div className="nav-wrap">
       <nav className="nav-shell w-full transition-all">
-        <div className="flex items-center justify-between h-full">
+        <div className="flex items-center justify-between h-full px-1">
           {/* Logo & Branding */}
           <Link to="/" className="flex items-center gap-3 no-underline group flex-shrink-0">
-            <div className="nav-brand-mark group-hover:scale-[1.04] transition-transform duration-300">
-               <img 
+            <div className="nav-brand-mark group-hover:scale-[1.05] group-hover:border-blue-400/60 transition-all duration-300 shadow-[0_0_15px_rgba(59,130,246,0.15)]">
+              <img 
                 src={logo} 
                 alt="HireME" 
                 className="w-6 h-6 object-contain"
               />
             </div>
             <div className="flex flex-col justify-center">
-              <span className="text-[15px] font-extrabold text-white tracking-[-0.04em] leading-none">
-                HIRE<span className="text-[#80a7fa]">ME</span>
+              <span className="text-[15px] font-extrabold text-white tracking-[-0.03em] leading-none">
+                HIRE<span className="text-blue-400">ME</span>
               </span>
-              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-[0.18em] mt-1">
-                Career office
+              <span className="text-[8px] text-slate-400 font-bold uppercase tracking-[0.2em] mt-1">
+                Career Office
               </span>
             </div>
           </Link>
 
-          {/* Desktop Nav */}
-          <div className="hidden lg:flex items-center gap-1 lg:gap-2">
+          {/* Desktop Nav Items */}
+          <div className="hidden lg:flex items-center gap-1 bg-black/40 p-1.5 rounded-2xl border border-white/10 backdrop-blur-xl">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               const Icon = item.icon;
@@ -60,70 +60,85 @@ export default function Navbar() {
                 <Link
                   key={item.path}
                   to={item.path}
-                   className={`nav-link ${isActive ? 'nav-link--active' : ''} relative px-3 py-2 rounded-lg text-[10px] lg:text-[11px] font-bold no-underline transition-all duration-300 flex items-center gap-2 ${
-                     isActive ? '' : ''
-                   }`}
+                  className={`relative px-3.5 py-2 rounded-xl text-xs font-semibold no-underline transition-all duration-200 flex items-center gap-2 z-10 ${
+                    isActive ? 'text-white font-bold' : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.03]'
+                  }`}
                 >
-                  <Icon className="w-3.5 h-3.5" />
-                  {item.label}
                   {isActive && (
                     <motion.div
-                      layoutId="nav-active-marker"
-                      className="absolute bottom-0.5 left-3 right-3 h-px bg-[#80a7fa]"
+                      layoutId="nav-active-pill"
+                      className="absolute inset-0 rounded-xl bg-blue-600/25 border border-blue-400/40 shadow-[0_0_20px_rgba(59,130,246,0.3)] -z-10"
+                      transition={{ type: 'spring', stiffness: 400, damping: 32 }}
                     />
                   )}
+                  <Icon className={`w-3.5 h-3.5 transition-colors ${isActive ? 'text-blue-400' : 'text-slate-400'}`} />
+                  <span>{item.label}</span>
                 </Link>
               );
             })}
-            
           </div>
 
-          {/* Mobile Toggle */}
+          {/* AI Engine Status Pill */}
+          <div className="hidden xl:flex items-center">
+            <Link
+              to="/engine"
+              className="group flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-300 text-xs font-bold tracking-wider hover:bg-blue-500/20 hover:border-blue-400/40 transition-all no-underline shadow-[0_0_15px_rgba(59,130,246,0.1)]"
+            >
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+              </span>
+              <span className="text-slate-300 group-hover:text-white transition-colors">AI Active</span>
+            </Link>
+          </div>
+
+          {/* Mobile Menu Button */}
           <button
             aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
             aria-expanded={mobileOpen}
-            className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white transition-colors border border-white/10 bg-white/[0.04] cursor-pointer"
+            className="lg:hidden p-2.5 rounded-xl text-slate-400 hover:text-white transition-colors border border-white/10 bg-white/[0.04] cursor-pointer"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
-            {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: -20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: -20 }}
-            className="lg:hidden absolute top-[4.9rem] left-0 right-0 rounded-xl border border-white/10 overflow-hidden origin-top shadow-2xl"
-            style={{ background: 'rgba(10, 15, 30, 0.98)', backdropFilter: 'blur(20px)' }}
-          >
-            <div className="px-4 py-6 space-y-2">
-              {navItems.map((item) => {
-                const isActive = location.pathname === item.path;
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setMobileOpen(false)}
-                    className="flex items-center gap-4 px-5 py-3.5 rounded-lg text-sm font-bold no-underline transition-all"
-                    style={{
-                      color: isActive ? '#f5f1e8' : '#9caac1',
-                      background: isActive ? 'rgba(111, 151, 244, 0.14)' : 'rgba(255,255,255,0.02)',
-                    }}
-                  >
-                    <Icon className="w-5 h-5" />
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </nav>
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96, y: -12 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96, y: -12 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden absolute top-[4.75rem] left-0 right-0 rounded-2xl border border-white/10 overflow-hidden origin-top shadow-2xl backdrop-blur-2xl"
+              style={{ background: 'rgba(9, 15, 29, 0.96)' }}
+            >
+              <div className="p-3 space-y-1">
+                {navItems.map((item) => {
+                  const isActive = location.pathname === item.path;
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.path}
+                      to={item.path}
+                      onClick={() => setMobileOpen(false)}
+                      className={`flex items-center gap-3.5 px-4 py-3 rounded-xl text-xs font-bold no-underline transition-all ${
+                        isActive
+                          ? 'text-white bg-blue-600/20 border border-blue-500/30 shadow-[0_0_15px_rgba(59,130,246,0.2)]'
+                          : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-blue-400' : 'text-slate-400'}`} />
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </nav>
     </div>
   );
 }
