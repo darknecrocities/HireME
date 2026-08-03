@@ -13,8 +13,15 @@ interface ScoreCardProps {
 }
 
 export default function ScoreCard({ label, value, maxValue = 100, icon: Icon, color, delay = 0, compact = false }: ScoreCardProps) {
+  const tones: Record<string, { solid: string; wash: string }> = {
+    blue: { solid: '#80a7fa', wash: 'rgba(128, 167, 250, 0.14)' },
+    violet: { solid: '#b4a8ed', wash: 'rgba(180, 168, 237, 0.14)' },
+    emerald: { solid: '#79d8ae', wash: 'rgba(121, 216, 174, 0.14)' },
+    amber: { solid: '#e1bc75', wash: 'rgba(225, 188, 117, 0.14)' },
+  };
+  const tone = tones[color] ?? { solid: color, wash: `${color}20` };
   const [displayValue, setDisplayValue] = useState(0);
-  const percentage = (value / maxValue) * 100;
+  const percentage = Math.min(Math.max((value / maxValue) * 100, 0), 100);
 
   useEffect(() => {
     const duration = 1200;
@@ -42,10 +49,10 @@ export default function ScoreCard({ label, value, maxValue = 100, icon: Icon, co
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay, duration: 0.4 }}
-        className="glass-card p-4 flex items-center gap-3"
+        className="glass-card metric-card p-4 flex items-center gap-3"
       >
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: `${color}20` }}>
-          <Icon className="w-5 h-5" style={{ color }} />
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: tone.wash }}>
+          <Icon className="w-5 h-5" style={{ color: tone.solid }} />
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-xs text-slate-400 truncate">{label}</p>
@@ -60,14 +67,13 @@ export default function ScoreCard({ label, value, maxValue = 100, icon: Icon, co
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
-      className="glass-card group hover:scale-[1.02] transition-all duration-500 p-6 border-white/5 hover:border-blue-500/20 shadow-xl"
+      className="glass-card metric-card group transition-all duration-300 p-6 border-white/5 hover:border-blue-500/30 shadow-xl"
     >
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500/0 to-blue-500/0 group-hover:from-blue-500/10 group-hover:to-violet-500/10 rounded-2xl blur-xl transition-all duration-500 opacity-0 group-hover:opacity-100" />
       <div className="relative">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: `${color}15` }}>
-            <Icon className="w-5 h-5" style={{ color }} />
+          <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: tone.wash }}>
+            <Icon className="w-5 h-5" style={{ color: tone.solid }} />
           </div>
           <div>
             <p className="text-sm text-slate-400">{label}</p>
@@ -83,7 +89,7 @@ export default function ScoreCard({ label, value, maxValue = 100, icon: Icon, co
           animate={{ width: `${percentage}%` }}
           transition={{ delay: delay + 0.3, duration: 1, ease: 'easeOut' }}
           className="h-full rounded-full"
-          style={{ background: `linear-gradient(90deg, ${color}, ${color}99)` }}
+          style={{ background: `linear-gradient(90deg, ${tone.solid}, ${tone.solid}99)` }}
         />
       </div>
       </div>

@@ -282,7 +282,7 @@ export default function ResumeOptimizer() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#030817] text-white pt-36 pb-20 px-6 relative overflow-hidden">
+    <div className="page-shell text-white relative overflow-hidden">
       {hasReachedLimit('resume') && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
@@ -324,27 +324,27 @@ export default function ResumeOptimizer() {
         <div className="absolute bottom-0 left-[-8rem] h-[320px] w-[320px] rounded-full bg-blue-600/10 blur-[110px]" />
       </div>
       
-      <div className="max-w-[1400px] mx-auto relative z-10 w-full flex-1 flex flex-col items-center justify-center">
+      <div className="page-frame relative z-10 flex-1 flex flex-col items-center justify-center">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="page-intro self-start mb-10"
         >
-          <div className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-blue-300 mb-6">
+          <div className="eyebrow mb-5">
             <Cpu className="w-4 h-4 text-blue-400 animate-pulse" />
             Ollama Local AI Engine
           </div>
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
-            PRO<span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">FILE</span> OPTIMIZER
+          <h1 className="page-title mb-4">
+            Resume <span className="title-accent">Optimizer</span>
           </h1>
           {error && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 mx-auto max-w-lg p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2 justify-center">
               <AlertCircle className="w-4 h-4" /> {error}
             </motion.div>
           )}
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-slate-400">
-            Smart Validator Edition
+          <p className="page-lede">
+            Compare your experience with a role, clarify your evidence, and export an application-ready resume.
           </p>
         </motion.div>
 
@@ -358,7 +358,7 @@ export default function ResumeOptimizer() {
               className="w-full max-w-5xl space-y-8"
             >
               {/* Tab Toggle */}
-              <div className="flex justify-center mb-8">
+              <div className="flex justify-start mb-6">
                 <div className="inline-flex p-1.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
                   {(['analyze', 'enhance'] as const).map((tab) => (
                     <button

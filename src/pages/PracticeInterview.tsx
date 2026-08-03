@@ -364,7 +364,7 @@ export default function PracticeInterview() {
   }, [userInput, aiLoading, role, industry, getInterviewQuestion, messages, questionCount]);
 
   return (
-    <div className="min-h-screen w-full bg-[#030817] text-white pt-36 pb-20 px-6 relative overflow-hidden flex flex-col items-center">
+    <div className="page-shell text-white relative overflow-hidden flex flex-col items-center">
       {hasReachedLimit('interview') && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
@@ -403,18 +403,19 @@ export default function PracticeInterview() {
       <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-blue-900/20 blur-[150px] rounded-full pointer-events-none" />
       
-      <div className="max-w-[1400px] mx-auto w-full flex-1 flex flex-col items-center justify-center">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 text-[10px] font-black tracking-widest uppercase"
-            style={{ background: 'rgba(30, 58, 138, 0.4)', border: '1px solid rgba(59, 130, 246, 0.2)', color: '#60a5fa' }}>
-            <Target className="w-3.5 h-3.5" />
-            AI Interview Engine Powered by Ollama
-          </div>
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
-            PRACTICE <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-500">SESSION</span>
-          </h1>
-          <p className="text-sm font-bold uppercase tracking-[0.2em] text-slate-500">PERSONAL EDITION</p>
-        </motion.div>
+      <div className="page-frame flex-1 flex flex-col items-center justify-center">
+        {!sessionStarted && !showInstructions && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="page-intro self-start mb-8">
+            <div className="eyebrow mb-5">
+              <Target className="w-3.5 h-3.5" />
+              AI Interview Engine Powered by Ollama
+            </div>
+            <h1 className="page-title mb-4">
+              Interview <span className="title-accent">Practice</span>
+            </h1>
+            <p className="page-lede">A private rehearsal room with structured prompts, measured time, and specific coaching feedback.</p>
+          </motion.div>
+        )}
 
       <AnimatePresence mode="wait">
         {showInstructions ? (
@@ -429,6 +430,7 @@ export default function PracticeInterview() {
             <div className="relative w-full max-w-2xl rounded-[28px] bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] p-10 overflow-hidden">
               <button 
                 onClick={() => setShowInstructions(false)}
+                aria-label="Close interview preparation guide"
                 className="absolute top-6 right-6 p-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all cursor-pointer z-10"
               >
                 <X className="w-5 h-5" />
@@ -512,15 +514,15 @@ export default function PracticeInterview() {
           </div>
         ) : (
           <motion.div key="session" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="w-full">
-            <div className="max-w-[1400px] mx-auto px-4 sm:px-8 py-8">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 mb-10">
+            <div className="page-frame session-frame py-2">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-600/20 flex items-center justify-center border border-blue-500/30 ring-1 ring-blue-500/10">
-                    <Video className="w-6 h-6 text-blue-400" />
+                  <div className="w-11 h-11 rounded-xl bg-blue-600/20 flex items-center justify-center border border-blue-500/30 ring-1 ring-blue-500/10">
+                    <Video className="w-5 h-5 text-blue-400" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-black text-white tracking-tight uppercase">{role} Session</h2>
-                    <p className="text-[10px] font-black text-blue-400 uppercase tracking-[0.3em]">AI-Powered Real-time Analysis</p>
+                    <h2 className="session-title font-extrabold text-white">{role} session</h2>
+                    <p className="session-subtitle mt-1 font-extrabold text-blue-400 uppercase">AI-powered real-time analysis</p>
                   </div>
                 </div>
                 <button 
@@ -532,7 +534,7 @@ export default function PracticeInterview() {
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-12">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mb-8">
                 <div className="lg:col-span-8 flex flex-col gap-4">
                   <div className="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10" style={{ background: '#000', aspectRatio: '16/9' }}>
                     {sessionStarted && (initProgress < 100 || !cameraReady) && (
@@ -590,7 +592,7 @@ export default function PracticeInterview() {
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 sm:gap-2 px-2 mt-4 sm:mt-0">
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2 px-1 mt-4">
                     <div className="flex items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">
                       <button onClick={toggleMesh} className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${showMesh ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400'}`} style={{ border: 'none', cursor: 'pointer' }}>
                         <Eye className="w-4 h-4" /> {showMesh ? 'Disable AI Mesh' : 'Enable AI Mesh'}
@@ -612,7 +614,7 @@ export default function PracticeInterview() {
                   </div>
                 </div>
 
-                <div className="lg:col-span-4 flex flex-col glass-card border-white/5 h-[600px]">
+                <div className="lg:col-span-4 flex flex-col glass-card border-white/5 min-h-[500px]">
                   <div className="p-5 border-b border-white/5 bg-white/5">
                     <h3 className="text-xs font-black text-white tracking-widest uppercase">STAR Analysis Panel</h3>
                     <div className="grid grid-cols-2 sm:flex gap-2 mt-4">

@@ -136,22 +136,22 @@ export default function OllamaHub() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#030817] text-white pt-36 pb-20 px-6 relative overflow-hidden flex flex-col items-center">
+    <div className="page-shell text-white relative overflow-hidden flex flex-col items-center">
       {/* Glow Rings */}
       <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[160px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-violet-900/10 blur-[160px] rounded-full pointer-events-none" />
 
-      <div className="w-full max-w-6xl mx-auto relative z-10 space-y-12">
+      <div className="page-frame relative z-10 space-y-12">
         {/* Title */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-4 text-[10px] font-black tracking-widest uppercase bg-blue-950/40 border border-blue-500/20 text-blue-400">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="page-intro">
+          <div className="eyebrow mb-5">
             <Cpu className="w-3.5 h-3.5" />
             Core AI Controller Layer
           </div>
-          <h1 className="text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl mb-4">
-            OLLAMA <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-violet-500">ENGINE HUB</span>
+          <h1 className="page-title mb-4">
+            Local AI <span className="title-accent">Workspace</span>
           </h1>
-          <p className="text-sm font-medium tracking-[0.2em] text-slate-500 uppercase">OFFLINE PRIVATE LLM DESKTOP GATEWAY</p>
+          <p className="page-lede">Configure the private model workspace that powers every HireME analysis.</p>
         </motion.div>
 
         {/* Dashboard Grid */}

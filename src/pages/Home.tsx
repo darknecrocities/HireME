@@ -11,6 +11,7 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import logo from '../assets/Hireme.png';
+import { ScrollDepth, TiltSurface } from '../components/Motion';
 
 /* ─── Data ─── */
 const features = [
@@ -88,10 +89,10 @@ function SectionHeader({
 }) {
   return (
     <div className="text-center max-w-3xl mx-auto mb-16">
-      <p className="text-xs md:text-sm font-bold text-blue-400 uppercase tracking-[0.32em] mb-4">
+      <p className="eyebrow justify-center mb-5">
         {label}
       </p>
-      <h2 className="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight">
+      <h2 className="section-title mx-auto text-3xl md:text-5xl">
         {title}
       </h2>
       {subtitle && (
@@ -111,9 +112,7 @@ function GlassPanel({
   className?: string;
 }) {
   return (
-    <div
-      className={`rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] ${className}`}
-    >
+    <div className={`surface ${className}`}>
       {children}
     </div>
   );
@@ -121,7 +120,7 @@ function GlassPanel({
 
 export default function Home() {
   return (
-    <div className="min-h-screen w-full overflow-x-hidden bg-[#030817] text-white">
+    <div className="home-page min-h-screen w-full overflow-x-hidden text-white">
       {/* Background glows */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/2 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-blue-700/15 blur-[140px]" />
@@ -130,15 +129,15 @@ export default function Home() {
       </div>
 
       {/* HERO */}
-      <section className="relative px-6 pt-24 pb-20 md:pt-32 md:pb-28">
-        <div className="mx-auto max-w-7xl">
-          <GlassPanel className="overflow-hidden px-8 py-12 md:px-14 md:py-16">
-            <div className="grid items-center gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+      <section className="home-hero relative px-4 pb-14 sm:px-6 md:pb-20">
+        <ScrollDepth className="mx-auto max-w-7xl">
+          <GlassPanel className="home-hero-panel overflow-hidden px-6 py-8 sm:px-8 sm:py-10 md:px-10 md:py-12">
+            <div className="grid items-center gap-8 lg:gap-12 lg:grid-cols-[1.25fr_0.75fr]">
               <div>
                 <motion.div
                   initial={{ opacity: 0, y: -16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="inline-flex items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-4 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-blue-300"
+                  className="eyebrow"
                 >
                   <ShieldCheck className="h-4 w-4" />
                   Personal Edition
@@ -148,10 +147,10 @@ export default function Home() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6 }}
-                  className="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:text-6xl"
+                  className="display-title"
                 >
                   Land your next job with
-                  <span className="block bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+                  <span className="title-accent block">
                     AI-powered career preparation
                   </span>
                 </motion.h1>
@@ -175,7 +174,7 @@ export default function Home() {
                 >
                   <Link
                     to="/resume"
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-blue-500 px-7 py-4 text-sm font-bold text-white transition hover:bg-blue-400 no-underline"
+                    className="button-primary inline-flex items-center justify-center gap-2 rounded-lg px-7 py-4 text-sm font-bold text-white transition no-underline"
                   >
                     Optimize Resume
                     <ArrowRight className="h-4 w-4" />
@@ -183,7 +182,7 @@ export default function Home() {
 
                   <Link
                     to="/interview"
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/5 px-7 py-4 text-sm font-bold text-white transition hover:bg-white/10 no-underline"
+                    className="button-secondary inline-flex items-center justify-center gap-2 rounded-lg px-7 py-4 text-sm font-bold transition no-underline"
                   >
                     Practice Interview
                   </Link>
@@ -210,6 +209,7 @@ export default function Home() {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.7 }}
               >
+                <TiltSurface>
                 <GlassPanel className="p-6">
                   <div className="rounded-[24px] border border-blue-400/15 bg-gradient-to-br from-blue-500/10 to-transparent p-6">
                     <div className="flex items-center gap-3">
@@ -254,16 +254,17 @@ export default function Home() {
                     </div>
                   </div>
                 </GlassPanel>
+                </TiltSurface>
               </motion.div>
             </div>
           </GlassPanel>
-        </div>
+        </ScrollDepth>
       </section>
 
       {/* VALUE STRIP */}
       <section className="px-6 pb-8">
         <div className="mx-auto max-w-7xl">
-          <div className="rounded-[24px] border border-white/8 bg-white/[0.02] px-6 py-5 text-center">
+          <div className="home-rule px-6 py-5 text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-slate-400">
               Built for resume optimization, AI interview practice, and performance analytics
             </p>
@@ -290,7 +291,7 @@ export default function Home() {
             {features.map((f) => (
               <motion.div key={f.title} variants={fadeUp}>
                 <Link to={f.path} className="block h-full no-underline">
-                  <GlassPanel className="group h-full p-8 transition hover:-translate-y-1 hover:border-blue-400/30">
+                  <GlassPanel className="surface-hover group h-full p-8">
                     <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-300">
                       <f.icon className="h-7 w-7" />
                     </div>
@@ -349,10 +350,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl">
           <div className="grid items-stretch gap-10 lg:grid-cols-2">
             <GlassPanel className="p-8 md:p-10 flex flex-col h-full">
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-400">
+              <p className="eyebrow">
                 Why Choose HireME
               </p>
-              <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
+              <h2 className="section-title mt-4 text-3xl md:text-5xl">
                 Professional coaching for the modern hiring landscape
               </h2>
               <p className="mt-6 text-sm leading-7 text-slate-400">
@@ -377,7 +378,7 @@ export default function Home() {
             </GlassPanel>
 
             <GlassPanel className="p-8 md:p-10 flex flex-col h-full">
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-400">
+                <p className="eyebrow">
                   Start Here
                 </p>
                 <h3 className="mt-4 text-3xl font-bold text-white">
@@ -389,6 +390,13 @@ export default function Home() {
                 </p>
 
                 <div className="mt-8 space-y-4">
+                  <Link
+                    to="/plan"
+                    className="flex items-center justify-between rounded-2xl border border-blue-300/20 bg-blue-300/10 px-5 py-4 text-white no-underline transition hover:bg-blue-300/15"
+                  >
+                    <span className="font-medium">Build your Career Plan</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                   <Link
                     to="/resume"
                     className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-white no-underline transition hover:bg-white/10"
@@ -422,10 +430,10 @@ export default function Home() {
       <section className="px-6 py-20 md:py-24">
         <div className="mx-auto max-w-7xl">
           <GlassPanel className="px-8 py-12 md:px-14 md:py-16 text-center">
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-blue-400">
+            <p className="eyebrow justify-center">
               Ready to begin
             </p>
-            <h2 className="mt-4 text-3xl font-extrabold tracking-tight text-white md:text-5xl">
+            <h2 className="section-title mx-auto mt-4 text-3xl md:text-5xl">
               Prepare with confidence using AI-guided tools
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-sm leading-7 text-slate-400">
@@ -433,16 +441,16 @@ export default function Home() {
               understand your performance through one connected experience.
             </p>
 
-            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
+            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row relative z-10">
               <Link
                 to="/resume"
-                className="inline-flex items-center justify-center rounded-2xl bg-blue-500 px-7 py-4 text-sm font-bold text-white no-underline transition hover:bg-blue-400"
+                className="button-primary inline-flex items-center justify-center rounded-lg px-7 py-4 text-sm font-bold text-white no-underline transition cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
               >
                 Get Started
               </Link>
               <Link
                 to="/dashboard"
-                className="inline-flex items-center justify-center rounded-2xl border border-white/10 bg-white/5 px-7 py-4 text-sm font-bold text-white no-underline transition hover:bg-white/10"
+                className="button-secondary inline-flex items-center justify-center rounded-lg px-7 py-4 text-sm font-bold no-underline transition cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
               >
                 View Dashboard
               </Link>
@@ -452,7 +460,7 @@ export default function Home() {
       </section>
 
       {/* ═══════════════════  FOOTER  ═════════════════ */}
-      <footer className="w-full border-t border-white/5 bg-black py-16 px-6">
+      <footer className="w-full border-t border-white/10 py-16 px-6">
         <div className="max-w-7xl mx-auto w-full flex flex-col items-center md:flex-row md:items-start justify-between gap-10">
           <div className="flex flex-col items-center md:items-start">
             <div className="flex items-center gap-3 mb-4">
@@ -472,6 +480,7 @@ export default function Home() {
             <Link to="/resume" className="no-underline text-inherit hover:text-white transition-colors">Resume</Link>
             <Link to="/interview" className="no-underline text-inherit hover:text-white transition-colors">Interview</Link>
             <Link to="/jobs" className="no-underline text-inherit hover:text-white transition-colors">Jobs</Link>
+            <Link to="/plan" className="no-underline text-inherit hover:text-white transition-colors">Plan</Link>
             <Link to="/dashboard" className="no-underline text-inherit hover:text-white transition-colors">Analytics</Link>
           </div>
 

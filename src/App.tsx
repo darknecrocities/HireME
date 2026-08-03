@@ -6,6 +6,7 @@ import PracticeInterview from './pages/PracticeInterview';
 import Dashboard from './pages/Dashboard';
 import JobListing from './pages/JobListing';
 import OllamaHub from './pages/OllamaHub';
+import CareerPlan from './pages/CareerPlan';
 import { useAuth } from './hooks/useAuth';
 
 export default function App() {
@@ -22,6 +23,7 @@ export default function App() {
           <Route path="/interview" element={<PracticeInterview />} />
           <Route path="/jobs" element={<JobListing />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/plan" element={<CareerPlan />} />
           <Route path="/engine" element={<OllamaHub />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>

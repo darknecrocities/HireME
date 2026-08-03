@@ -8,7 +8,7 @@ import {
 import { useFirestore } from '../hooks/useFirestore';
 import ScoreCard from '../components/ScoreCard';
 
-const COLORS = ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'];
+const COLORS = ['#80a7fa', '#79d8ae', '#b4a8ed', '#e1bc75', '#ec94a0'];
 
 export default function Dashboard() {
   const { getSessions, loading } = useFirestore();
@@ -60,7 +60,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="page-shell flex items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Brain className="w-12 h-12 text-blue-500 animate-pulse" />
           <p className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">Loading Performance Data...</p>
@@ -70,22 +70,22 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="flex-1 px-4 py-12 bg-black relative overflow-hidden flex flex-col items-center">
+    <div className="page-shell relative overflow-hidden flex flex-col items-center">
       {/* Background Glows */}
       <div className="absolute top-0 right-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="max-w-7xl mx-auto w-full">
+      <div className="page-frame">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-16">
+        <div className="page-intro page-intro--wide flex flex-col md:flex-row md:items-center justify-between gap-8 mb-10">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg mb-4 text-[9px] font-black tracking-widest uppercase border border-blue-500/20 bg-blue-500/5 text-blue-400">
+            <div className="eyebrow mb-5">
               <ShieldCheck className="w-3 h-3" /> Authorized Access Only
             </div>
-            <h1 className="text-5xl font-black text-white tracking-tighter mb-2">CAREER <span className="gradient-text">ANALYTICS</span></h1>
-            <p className="text-xs font-bold uppercase tracking-[0.4em] text-slate-500">Performance Control</p>
+            <h1 className="page-title mb-2">Career <span className="title-accent">Review</span></h1>
+            <p className="page-lede">A clear record of your practice, progress, and strongest signals.</p>
           </motion.div>
           
           <motion.div
@@ -127,10 +127,10 @@ export default function Dashboard() {
                   <XAxis dataKey="name" stroke="#475569" fontSize={10} fontWeight="bold" axisLine={false} tickLine={false} />
                   <YAxis stroke="#475569" fontSize={10} fontWeight="bold" axisLine={false} tickLine={false} domain={[0, 100]} />
                   <Tooltip
-                    contentStyle={{ background: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem', color: '#fff' }}
+                    contentStyle={{ background: '#11192a', border: '1px solid rgba(211, 223, 244, 0.18)', borderRadius: '0.75rem', color: '#f5f1e8' }}
                     itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                   />
-                  <Line type="monotone" dataKey="score" stroke="#3b82f6" strokeWidth={4} dot={{ fill: '#3b82f6', r: 6 }} activeDot={{ r: 8, stroke: '#fff', strokeWidth: 2 }} animationDuration={2000} />
+                  <Line type="monotone" dataKey="score" stroke="#80a7fa" strokeWidth={3} dot={{ fill: '#80a7fa', r: 4 }} activeDot={{ r: 7, stroke: '#f5f1e8', strokeWidth: 2 }} animationDuration={900} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -165,7 +165,7 @@ export default function Dashboard() {
                     ))}
                   </Pie>
                   <Tooltip 
-                    contentStyle={{ background: '#000', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '1rem', color: '#fff' }}
+                    contentStyle={{ background: '#11192a', border: '1px solid rgba(211, 223, 244, 0.18)', borderRadius: '0.75rem', color: '#f5f1e8' }}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -196,7 +196,7 @@ export default function Dashboard() {
             </div>
             <div className="space-y-4">
               {sessions.map((session: any, idx: number) => (
-                <div key={session.id} className="group flex flex-col sm:flex-row items-center justify-between p-6 rounded-3xl bg-white/2 hover:bg-white/5 border border-white/5 transition-all">
+                <div key={session.id ?? `${session.startTime ?? session.createdAt ?? 'session'}-${idx}`} className="group flex flex-col sm:flex-row items-center justify-between p-6 rounded-3xl bg-white/2 hover:bg-white/5 border border-white/5 transition-all">
                   <div className="flex items-center gap-6 mb-4 sm:mb-0">
                     <div className="w-12 h-12 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-500 font-black text-lg border border-blue-500/20">
                       {idx + 1}
