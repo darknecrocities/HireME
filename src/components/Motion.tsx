@@ -1,6 +1,5 @@
-import { type ReactNode, useEffect, useRef, useState } from 'react';
+import { type ReactNode, useRef, useState } from 'react';
 import {
-  AnimatePresence,
   motion,
   useMotionValue,
   useReducedMotion,
@@ -17,28 +16,25 @@ type ChildrenProps = {
 
 const calmEase = [0.22, 1, 0.36, 1] as const;
 
-/** A page-level transition used by every route. It intentionally stays short. */
+/** A smooth, reliable page-level transition used by every route. */
 export function PagePresence({ children }: ChildrenProps) {
   const location = useLocation();
   const reduceMotion = useReducedMotion();
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
-      <motion.div
-        key={location.pathname}
-        initial={reduceMotion ? false : { opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -6 }}
-        transition={{ duration: reduceMotion ? 0.01 : 0.28, ease: calmEase }}
-        className="w-full"
-      >
-        {children}
-      </motion.div>
-    </AnimatePresence>
+    <motion.div
+      key={location.pathname}
+      initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: reduceMotion ? 0.01 : 0.2, ease: calmEase }}
+      className="w-full"
+    >
+      {children}
+    </motion.div>
   );
 }
 
-/** A thin, non-interactive reading-position cue for long career workflows. */
+/** Reading-position scroll progress bar. */
 export function ScrollProgress() {
   const { scrollYProgress } = useScroll();
   const reduceMotion = useReducedMotion();
@@ -53,7 +49,7 @@ export function ScrollProgress() {
   );
 }
 
-/** Reveals meaningful content as it enters the reading path; no repeating motion. */
+/** Reveals content as it enters viewport. */
 export function Reveal({ children, className = '' }: ChildrenProps) {
   const reduceMotion = useReducedMotion();
 
@@ -70,63 +66,88 @@ export function Reveal({ children, className = '' }: ChildrenProps) {
   );
 }
 
-/** Adds a small, pointer-led sense of depth to selected surfaces on fine pointers only. */
-export function TiltSurface({ children, className = '' }: ChildrenProps) {
+/** Interactive 3D physics tilt card that tilts towards the cursor with dynamic glare spotlight. */
+export function TiltCard({ children, className = '' }: ChildrenProps) {
   const reduceMotion = useReducedMotion();
-  const [canTilt, setCanTilt] = useState(false);
-  const rotateXValue = useMotionValue(0);
-  const rotateYValue = useMotionValue(0);
-  const glareXValue = useMotionValue(50);
-  const glareYValue = useMotionValue(50);
-  const rotateX = useSpring(rotateXValue, { stiffness: 220, damping: 24 });
-  const rotateY = useSpring(rotateYValue, { stiffness: 220, damping: 24 });
-  const glareX = useSpring(glareXValue, { stiffness: 180, damping: 28 });
-  const glareY = useSpring(glareYValue, { stiffness: 180, damping: 28 });
-  const glareLeft = useTransform(glareX, (value) => `${value}%`);
-  const glareTop = useTransform(glareY, (value) => `${value}%`);
+  const [isHovered, setIsHovered] = useState(false);
 
-  useEffect(() => {
-    const query = window.matchMedia('(hover: hover) and (pointer: fine)');
-    const update = () => setCanTilt(query.matches && !reduceMotion);
-    update();
-    query.addEventListener('change', update);
-    return () => query.removeEventListener('change', update);
-  }, [reduceMotion]);
+  const rotateXVal = useMotionValue(0);
+  const rotateYVal = useMotionValue(0);
+  const glareXVal = useMotionValue(50);
+  const glareYVal = useMotionValue(50);
 
-  const reset = () => {
-    rotateXValue.set(0);
-    rotateYValue.set(0);
-    glareXValue.set(50);
-    glareYValue.set(50);
+  // Smooth responsive spring physics for 3D rotation
+  const rotateX = useSpring(rotateXVal, { stiffness: 320, damping: 22 });
+  const rotateY = useSpring(rotateYVal, { stiffness: 320, damping: 22 });
+  const glareX = useSpring(glareXVal, { stiffness: 300, damping: 25 });
+  const glareY = useSpring(glareYVal, { stiffness: 300, damping: 25 });
+
+  const glareBackground = useTransform(
+    [glareX, glareY],
+    ([gx, gy]) =>
+      `radial-gradient(circle 280px at ${gx}% ${gy}%, rgba(255, 255, 255, 0.12), transparent 80%)`
+  );
+
+  const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (reduceMotion) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width; // 0 to 1
+    const y = (event.clientY - rect.top) / rect.height; // 0 to 1
+
+    // Tilt range of ±12 degrees
+    rotateXVal.set((0.5 - y) * 16);
+    rotateYVal.set((x - 0.5) * 16);
+    glareXVal.set(x * 100);
+    glareYVal.set(y * 100);
+  };
+
+  const handlePointerEnter = () => setIsHovered(true);
+
+  const handlePointerLeave = () => {
+    setIsHovered(false);
+    rotateXVal.set(0);
+    rotateYVal.set(0);
+    glareXVal.set(50);
+    glareYVal.set(50);
   };
 
   return (
     <motion.div
-      className={`tilt-surface ${className}`}
-      style={{ rotateX, rotateY, transformPerspective: 1100 }}
-      onPointerMove={(event) => {
-        if (!canTilt) return;
-        const bounds = event.currentTarget.getBoundingClientRect();
-        const x = (event.clientX - bounds.left) / bounds.width;
-        const y = (event.clientY - bounds.top) / bounds.height;
-        rotateXValue.set((0.5 - y) * 4);
-        rotateYValue.set((x - 0.5) * 4);
-        glareXValue.set(x * 100);
-        glareYValue.set(y * 100);
+      data-thock="true"
+      data-tilt-card="true"
+      className={`relative rounded-3xl will-change-transform ${className}`}
+      style={{
+        rotateX,
+        rotateY,
+        transformPerspective: 1000,
+        transformStyle: 'preserve-3d',
       }}
-      onPointerLeave={reset}
+      onPointerMove={handlePointerMove}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
     >
-      <motion.span
+      {/* Dynamic Cursor Spotlight Glare Overlay */}
+      <motion.div
         aria-hidden="true"
-        className="tilt-surface__glare"
-        style={{ left: glareLeft, top: glareTop }}
+        className="pointer-events-none absolute inset-0 rounded-3xl z-20 transition-opacity duration-300"
+        style={{
+          background: glareBackground,
+          opacity: isHovered ? 1 : 0,
+        }}
       />
-      {children}
+      <div className="relative z-10 h-full w-full" style={{ transform: 'translateZ(18px)' }}>
+        {children}
+      </div>
     </motion.div>
   );
 }
 
-/** Couples a hero/dashboard surface to scroll for restrained depth, not spectacle. */
+/** Adds a small, pointer-led sense of depth to selected surfaces on fine pointers only. */
+export function TiltSurface({ children, className = '' }: ChildrenProps) {
+  return <TiltCard className={className}>{children}</TiltCard>;
+}
+
+/** Couples a hero/dashboard surface to scroll for restrained depth. */
 export function ScrollDepth({ children, className = '' }: ChildrenProps) {
   const target = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();

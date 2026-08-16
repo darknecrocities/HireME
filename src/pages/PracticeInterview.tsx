@@ -367,31 +367,31 @@ export default function PracticeInterview() {
     <div className="page-shell text-white relative overflow-hidden flex flex-col items-center">
       {hasReachedLimit('interview') && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative w-full max-w-lg p-10 rounded-[40px] bg-white/[0.03] border border-white/10 shadow-[0_0_50px_rgba(59,130,246,0.15)] backdrop-blur-2xl text-center"
+            className="relative w-full max-w-lg p-10 rounded-[28px] bg-zinc-900/90 border border-white/15 shadow-2xl backdrop-blur-2xl text-center"
           >
             <div className="mb-8 flex justify-center">
-              <div className="w-20 h-20 rounded-3xl bg-blue-600/20 flex items-center justify-center border border-blue-500/30">
-                <Sparkles className="w-10 h-10 text-blue-400" />
+              <div className="w-20 h-20 rounded-3xl bg-white/10 flex items-center justify-center border border-white/20">
+                <Sparkles className="w-10 h-10 text-white" />
               </div>
             </div>
-            <h2 className="text-3xl font-black text-white tracking-tighter mb-4 uppercase">Practice Limit Reached</h2>
-            <p className="text-slate-400 font-medium text-sm leading-relaxed mb-10">
-              You've completed your 1-use guest trial. Secure your data and unlock unlimited AI-powered interview practice by signing up or logging in to your account.
+            <h2 className="text-3xl font-black text-white tracking-tight mb-4 uppercase">Practice Limit Reached</h2>
+            <p className="text-zinc-400 font-medium text-sm leading-relaxed mb-10">
+              You've completed your guest trial. Secure your data and unlock unlimited AI-powered interview practice.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <Link
                 to="/engine"
-                className="py-4 rounded-2xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)]"
+                className="py-4 rounded-xl bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-lg text-center no-underline"
               >
                 AI Engine
               </Link>
               <Link
                 to="/"
-                className="py-4 rounded-2xl bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                className="py-4 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all text-center no-underline"
               >
                 Home
               </Link>
@@ -399,21 +399,18 @@ export default function PracticeInterview() {
           </motion.div>
         </div>
       )}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-[600px] h-[600px] bg-blue-900/20 blur-[150px] rounded-full pointer-events-none" />
       
       <div className="page-frame flex-1 flex flex-col items-center justify-center">
         {!sessionStarted && !showInstructions && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="page-intro self-start mb-8">
             <div className="eyebrow mb-5">
               <Target className="w-3.5 h-3.5" />
-              AI Interview Engine Powered by Ollama
+              AI Interview Engine
             </div>
             <h1 className="page-title mb-4">
               Interview <span className="title-accent">Practice</span>
             </h1>
-            <p className="page-lede">A private rehearsal room with structured prompts, measured time, and specific coaching feedback.</p>
+            <p className="page-lede">A private rehearsal room with structured prompts, measured time, and real-time computer vision analysis.</p>
           </motion.div>
         )}
 
@@ -427,43 +424,43 @@ export default function PracticeInterview() {
             className="fixed inset-0 z-[110] flex items-center justify-center px-4"
           >
             <div className="absolute inset-0 bg-black/80 backdrop-blur-xl" />
-            <div className="relative w-full max-w-2xl rounded-[28px] bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] p-10 overflow-hidden">
+            <div className="relative w-full max-w-2xl rounded-[28px] bg-zinc-900/90 backdrop-blur-2xl border border-white/15 shadow-2xl p-10 overflow-hidden">
               <button 
                 onClick={() => setShowInstructions(false)}
                 aria-label="Close interview preparation guide"
-                className="absolute top-6 right-6 p-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all cursor-pointer z-10"
+                className="absolute top-6 right-6 p-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all cursor-pointer z-10"
               >
                 <X className="w-5 h-5" />
               </button>
               <div className="flex flex-col items-center text-center space-y-6">
-                <div className="w-20 h-20 rounded-3xl bg-blue-600/10 flex items-center justify-center border border-blue-500/20 ring-1 ring-blue-500/10">
-                  <CheckCircle2 className="w-10 h-10 text-blue-400" />
+                <div className="w-20 h-20 rounded-3xl bg-white/10 flex items-center justify-center border border-white/20">
+                  <CheckCircle2 className="w-10 h-10 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-2">Interview Preparation Guide</h2>
-                  <p className="text-[10px] font-black text-slate-500 tracking-[0.4em] uppercase">Session Guidelines & Preparation</p>
+                  <h2 className="text-3xl font-black text-white tracking-tight uppercase mb-2">Interview Preparation Guide</h2>
+                  <p className="text-[10px] font-black text-zinc-500 tracking-[0.4em] uppercase">Session Guidelines & Protocol</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full text-left">
-                  <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
-                    <p className="text-[10px] font-black text-blue-400 mb-1 uppercase tracking-widest">Step 1: Preparation</p>
-                    <p className="text-xs text-slate-400 font-bold leading-relaxed">You will have 15 seconds to prepare before answering each question.</p>
+                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                    <p className="text-[10px] font-black text-white mb-1 uppercase tracking-widest">Step 1: Preparation</p>
+                    <p className="text-xs text-zinc-400 font-bold leading-relaxed">You will have 15 seconds to prepare before answering each question.</p>
                   </div>
-                  <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
-                    <p className="text-[10px] font-black text-violet-400 mb-1 uppercase tracking-widest">Step 2: Response</p>
-                    <p className="text-xs text-slate-400 font-bold leading-relaxed">You have up to 30 seconds to answer each question clearly and concisely.</p>
+                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                    <p className="text-[10px] font-black text-white mb-1 uppercase tracking-widest">Step 2: Response</p>
+                    <p className="text-xs text-zinc-400 font-bold leading-relaxed">You have up to 30 seconds to answer each question clearly and concisely.</p>
                   </div>
-                  <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
-                    <p className="text-[10px] font-black text-emerald-400 mb-1 uppercase tracking-widest">Step 3: Duration</p>
-                    <p className="text-xs text-slate-400 font-bold leading-relaxed">The session consists of 3 standard interview questions.</p>
+                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                    <p className="text-[10px] font-black text-white mb-1 uppercase tracking-widest">Step 3: Duration</p>
+                    <p className="text-xs text-zinc-400 font-bold leading-relaxed">The session consists of 3 standard interview questions.</p>
                   </div>
-                  <div className="p-4 rounded-2xl bg-white/2 border border-white/5">
-                    <p className="text-[10px] font-black text-rose-400 mb-1 uppercase tracking-widest">Step 4: Analysis</p>
-                    <p className="text-xs text-slate-400 font-bold leading-relaxed">Receive real-time feedback on your body language and vocal tone.</p>
+                  <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+                    <p className="text-[10px] font-black text-white mb-1 uppercase tracking-widest">Step 4: Analysis</p>
+                    <p className="text-xs text-zinc-400 font-bold leading-relaxed">Receive real-time feedback on your posture, eye contact, and vocal confidence.</p>
                   </div>
                 </div>
                 <button
                   onClick={() => setShowInstructions(false)}
-                  className="w-full py-5 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)]"
+                  className="w-full py-5 rounded-xl bg-white text-black font-black text-xs uppercase tracking-[0.3em] hover:bg-zinc-200 transition-all shadow-lg cursor-pointer"
                 >
                   BEGIN PRACTICE SESSION
                 </button>
@@ -476,34 +473,34 @@ export default function PracticeInterview() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="w-full max-w-2xl rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-10"
+              className="w-full max-w-2xl rounded-[28px] border border-white/10 bg-zinc-900/70 backdrop-blur-xl shadow-2xl p-10"
             >
               <h2 className="text-xl font-bold text-white mb-8 border-b border-white/10 pb-4">Session Parameters</h2>
               <div className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-2">Goal Role</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-2">Goal Role</label>
                   <input
                     type="text"
                     value={role}
                     onChange={(e) => setRole(e.target.value)}
-                    className="w-full px-5 py-4 rounded-xl text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all bg-[#081124] border border-white/10"
+                    className="w-full px-5 py-4 rounded-xl text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-white transition-all bg-black/60 border border-white/10"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-2">Target Industry</label>
+                  <label className="block text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 mb-2">Target Industry</label>
                   <select
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full px-5 py-4 rounded-xl text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none bg-[#081124] border border-white/10"
+                    className="w-full px-5 py-4 rounded-xl text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-white appearance-none bg-black/60 border border-white/10"
                   >
                     {['Technology', 'Finance', 'Healthcare', 'Consulting', 'Marketing', 'Education', 'Food and Beverage', 'Retail', 'Hospitality', 'Manufacturing', 'Real Estate'].map(i => (
-                      <option key={i} value={i} style={{ background: '#081124' }}>{i}</option>
+                      <option key={i} value={i} style={{ background: '#09090b' }}>{i}</option>
                     ))}
                   </select>
                 </div>
                 <button
                   onClick={startSession}
-                  className="w-full flex items-center justify-center gap-3 px-8 py-5 mt-8 rounded-2xl bg-blue-500 text-white font-bold text-sm tracking-[0.2em] uppercase transition hover:bg-blue-400 shadow-[0_10px_30px_rgba(59,130,246,0.3)] cursor-pointer"
+                  className="w-full flex items-center justify-center gap-3 px-8 py-5 mt-8 rounded-xl bg-white text-black font-black text-xs tracking-[0.2em] uppercase transition hover:bg-zinc-200 shadow-xl cursor-pointer"
                   style={{ border: 'none' }}
                 >
                   <Video className="w-5 h-5" />
@@ -517,18 +514,17 @@ export default function PracticeInterview() {
             <div className="page-frame session-frame py-2">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 mb-6">
                 <div className="flex items-center gap-4">
-                  <div className="w-11 h-11 rounded-xl bg-blue-600/20 flex items-center justify-center border border-blue-500/30 ring-1 ring-blue-500/10">
-                    <Video className="w-5 h-5 text-blue-400" />
+                  <div className="w-11 h-11 rounded-xl bg-white/10 flex items-center justify-center border border-white/20">
+                    <Video className="w-5 h-5 text-white" />
                   </div>
                   <div>
                     <h2 className="session-title font-extrabold text-white">{role} session</h2>
-                    <p className="session-subtitle mt-1 font-extrabold text-blue-400 uppercase">AI-powered real-time analysis</p>
+                    <p className="session-subtitle mt-1 font-extrabold text-zinc-400 uppercase">AI-powered real-time analysis</p>
                   </div>
                 </div>
                 <button 
                   onClick={endSession}
-                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/60 hover:bg-white/10 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2"
-                  style={{ cursor: 'pointer' }}
+                  className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-zinc-300 hover:bg-white/10 hover:text-white transition-all text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <X size={16} /> Exit Session
                 </button>
@@ -538,27 +534,27 @@ export default function PracticeInterview() {
                 <div className="lg:col-span-8 flex flex-col gap-4">
                   <div className="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10" style={{ background: '#000', aspectRatio: '16/9' }}>
                     {sessionStarted && (initProgress < 100 || !cameraReady) && (
-                      <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-2xl transition-all duration-700 animate-in fade-in">
+                      <div className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-2xl transition-all duration-700">
                         <div className="relative w-48 h-48 flex items-center justify-center">
-                          <div className="absolute inset-0 border-[3px] border-white/5 rounded-full" />
+                          <div className="absolute inset-0 border-[3px] border-white/10 rounded-full" />
                           <div 
-                            className="absolute inset-0 border-[3px] border-blue-500 rounded-full border-t-transparent animate-spin"
+                            className="absolute inset-0 border-[3px] border-white rounded-full border-t-transparent animate-spin"
                             style={{ animationDuration: '1.2s' }}
                           />
                           <div className="text-center">
                             <div className="text-4xl font-bold text-white tracking-tighter">{initProgress}%</div>
-                            <div className="text-[10px] text-blue-400 font-bold tracking-[0.2em] uppercase">AI ENGINE</div>
+                            <div className="text-[10px] text-zinc-400 font-bold tracking-[0.2em] uppercase">AI ENGINE</div>
                           </div>
                         </div>
                         <div className="mt-8 w-64 px-4 text-center">
-                          <div className="h-1 w-full bg-white/5 rounded-full overflow-hidden">
+                          <div className="h-1 w-full bg-white/10 rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-gradient-to-r from-blue-600 to-blue-400 transition-all duration-700 ease-out shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+                              className="h-full bg-gradient-to-r from-zinc-500 to-white transition-all duration-700 ease-out shadow-[0_0_20px_rgba(255,255,255,0.4)]"
                               style={{ width: `${initProgress}%` }}
                             />
                           </div>
-                          <p className="mt-6 text-white/40 text-[11px] font-medium tracking-wide uppercase">
-                            Optimizing neural pathways...
+                          <p className="mt-6 text-zinc-400 text-[11px] font-medium tracking-wide uppercase">
+                            Calibrating vision engine...
                           </p>
                         </div>
                       </div>
@@ -572,55 +568,55 @@ export default function PracticeInterview() {
                           initial={{ opacity: 0, scale: 1.5 }}
                           animate={{ opacity: 1, scale: 1 }}
                           exit={{ opacity: 0, scale: 0.5 }}
-                          className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/40 backdrop-blur-sm"
+                          className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm"
                         >
                           <div className="text-[120px] font-black text-white leading-none tracking-tighter">{countdown}</div>
-                          <div className="text-xs font-black text-blue-400 uppercase tracking-[0.5em] mt-4">Preparing Question</div>
+                          <div className="text-xs font-black text-zinc-400 uppercase tracking-[0.5em] mt-4">Preparing Question</div>
                         </motion.div>
                       )}
                     </AnimatePresence>
                     <div className="absolute top-6 left-6 flex items-center gap-4">
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/5">
-                        <Clock className="w-4 h-4 text-blue-500" />
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-black/60 backdrop-blur-md border border-white/10">
+                        <Clock className="w-4 h-4 text-white" />
                         <span className="text-sm font-black text-white">{formatTime(timer)}</span>
                       </div>
                       {isAnswering && (
-                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl backdrop-blur-md border ${answerTimer < 10 ? 'bg-rose-600/20 border-rose-500/30' : 'bg-emerald-600/20 border-emerald-500/30'}`}>
-                          <div className={`w-2 h-2 rounded-full animate-pulse ${answerTimer < 10 ? 'bg-rose-500' : 'bg-emerald-500'}`} />
-                          <span className={`text-sm font-black ${answerTimer < 10 ? 'text-rose-400' : 'text-emerald-400'}`}>{answerTimer}s remaining</span>
+                        <div className={`flex items-center gap-2 px-3 py-1.5 rounded-xl backdrop-blur-md border ${answerTimer < 10 ? 'bg-zinc-800/80 border-white/40' : 'bg-black/60 border-white/20'}`}>
+                          <div className={`w-2 h-2 rounded-full animate-pulse ${answerTimer < 10 ? 'bg-zinc-400' : 'bg-white'}`} />
+                          <span className="text-sm font-black text-white">{answerTimer}s remaining</span>
                         </div>
                       )}
                     </div>
                   </div>
                   <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-2 px-1 mt-4">
                     <div className="flex items-center justify-center sm:justify-start gap-3 w-full sm:w-auto">
-                      <button onClick={toggleMesh} className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all ${showMesh ? 'bg-blue-600 text-white' : 'bg-white/5 text-slate-400'}`} style={{ border: 'none', cursor: 'pointer' }}>
-                        <Eye className="w-4 h-4" /> {showMesh ? 'Disable AI Mesh' : 'Enable AI Mesh'}
+                      <button onClick={toggleMesh} className={`flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${showMesh ? 'bg-white text-black' : 'bg-white/5 text-zinc-400 hover:text-white border border-white/10'}`} style={{ border: 'none', cursor: 'pointer' }}>
+                        <Eye className="w-4 h-4" /> {showMesh ? 'Disable Vision Mesh' : 'Enable Vision Mesh'}
                       </button>
                       <div className="relative">
-                        <button onClick={toggleListening} className={`p-3 rounded-2xl transition-all ${isListening ? 'bg-rose-600/20 border-rose-500/50' : 'bg-white/5 border-white/10'}`} style={{ border: '1px solid', cursor: 'pointer' }}>
-                          {isListening ? <MicOff className="w-5 h-5 text-rose-500" /> : <Mic className="w-5 h-5 text-slate-400" />}
+                        <button onClick={toggleListening} className={`p-3 rounded-xl transition-all ${isListening ? 'bg-white text-black' : 'bg-white/5 text-zinc-400 border border-white/10 hover:text-white'}`} style={{ cursor: 'pointer' }}>
+                          {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
                         </button>
                         {(speechError || audioError) && (
-                          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-amber-600/90 text-white text-[10px] font-black uppercase tracking-tighter rounded-lg whitespace-nowrap shadow-lg animate-in fade-in slide-in-from-top-1 z-10">
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-zinc-800 text-white text-[10px] font-black uppercase tracking-tighter rounded-lg whitespace-nowrap shadow-lg border border-white/20 z-10">
                             {speechError || (audioError === 'permission-denied' ? 'Mic Blocked' : 'No Mic Found')}
                           </div>
                         )}
                       </div>
                     </div>
-                    <button onClick={endSession} className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-2xl text-white font-black text-xs uppercase tracking-widest transition-all ${questionCount >= 3 ? 'bg-blue-600 shadow-lg shadow-blue-900/40' : 'bg-rose-950/40 border border-rose-900/50 hover:bg-rose-900/60'}`} style={{ cursor: 'pointer' }}>
+                    <button onClick={endSession} className={`w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 rounded-xl text-white font-black text-xs uppercase tracking-widest transition-all ${questionCount >= 3 ? 'bg-white text-black hover:bg-zinc-200' : 'bg-zinc-800 border border-white/20 hover:bg-zinc-700'}`} style={{ cursor: 'pointer' }}>
                       {questionCount >= 3 ? <Sparkles className="w-5 h-5" /> : <StopCircle className="w-5 h-5" />} {questionCount >= 3 ? 'Complete Session' : 'Terminate Session'}
                     </button>
                   </div>
                 </div>
 
-                <div className="lg:col-span-4 flex flex-col glass-card border-white/5 min-h-[500px]">
-                  <div className="p-5 border-b border-white/5 bg-white/5">
-                    <h3 className="text-xs font-black text-white tracking-widest uppercase">STAR Analysis Panel</h3>
+                <div className="lg:col-span-4 flex flex-col glass-card border-white/10 min-h-[500px]">
+                  <div className="p-5 border-b border-white/10 bg-white/[0.02]">
+                    <h3 className="text-xs font-black text-white tracking-widest uppercase">STAR Analysis Framework</h3>
                     <div className="grid grid-cols-2 sm:flex gap-2 mt-4">
                       {(['situation', 'task', 'action', 'result'] as const).map((s) => (
-                        <button key={s} onClick={() => setStar(prev => ({ ...prev, [s]: !prev[s] }))} className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-[8px] font-black uppercase tracking-tighter transition-all ${star[s] ? 'bg-emerald-500 text-black' : 'bg-white/5 text-slate-500'}`} style={{ border: 'none', cursor: 'pointer' }}>
-                          <CheckCircle2 className={`w-3 h-3 ${star[s] ? 'text-black' : 'text-slate-700'}`} /> {s}
+                        <button key={s} onClick={() => setStar(prev => ({ ...prev, [s]: !prev[s] }))} className={`flex-1 flex flex-col items-center justify-center gap-1 py-2 rounded-xl text-[8px] font-black uppercase tracking-tighter transition-all ${star[s] ? 'bg-white text-black' : 'bg-white/5 text-zinc-500 border border-white/5'}`} style={{ border: 'none', cursor: 'pointer' }}>
+                          <CheckCircle2 className={`w-3 h-3 ${star[s] ? 'text-black' : 'text-zinc-600'}`} /> {s}
                         </button>
                       ))}
                     </div>
@@ -630,12 +626,12 @@ export default function PracticeInterview() {
                       const isLastAI = i === messages.length - 1 && msg.role === 'ai';
                       return (
                         <motion.div key={i} initial={{ opacity: 0, x: msg.role === 'user' ? 20 : -20 }} animate={{ opacity: 1, x: 0 }} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[90%] rounded-2xl px-5 py-4 text-xs font-bold leading-relaxed ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white/5 text-slate-300 rounded-tl-none border border-white/10'}`}>
-                            {msg.role === 'ai' && <div className="text-[10px] font-black text-blue-400 mb-2 uppercase tracking-widest flex items-center gap-2"><Sparkles className="w-3 h-3" /> AI Interviewer</div>}
+                          <div className={`max-w-[90%] rounded-2xl px-5 py-4 text-xs font-bold leading-relaxed ${msg.role === 'user' ? 'bg-white text-black rounded-tr-none shadow-md' : 'bg-white/[0.04] text-zinc-200 rounded-tl-none border border-white/10'}`}>
+                            {msg.role === 'ai' && <div className="text-[10px] font-black text-zinc-400 mb-2 uppercase tracking-widest flex items-center gap-2"><Sparkles className="w-3 h-3 text-white" /> AI Interviewer</div>}
                             {isLastAI && isTyping ? (
                               <div className="flex flex-col gap-2">
                                 <span>{displayedAIQuestion}</span>
-                                <span className="inline-block w-1.5 h-4 bg-blue-500/50 animate-pulse ml-1" />
+                                <span className="inline-block w-1.5 h-4 bg-white/50 animate-pulse ml-1" />
                               </div>
                             ) : msg.content}
                           </div>
@@ -644,33 +640,33 @@ export default function PracticeInterview() {
                     })}
                     {isAnswering && (userInput || audioVolume > 5) && (
                       <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="flex justify-end">
-                        <div className="max-w-[90%] rounded-2xl px-5 py-4 text-xs font-bold leading-relaxed bg-blue-600/40 text-white/90 rounded-tr-none border border-blue-500/30 backdrop-blur-sm">
-                          <div className="text-[8px] font-black text-blue-300 mb-2 uppercase tracking-widest flex items-center gap-2">
-                            <div className={`w-1.5 h-1.5 rounded-full ${audioVolume > 15 ? 'bg-emerald-400 animate-ping' : 'bg-blue-400 animate-pulse'}`} />
+                        <div className="max-w-[90%] rounded-2xl px-5 py-4 text-xs font-bold leading-relaxed bg-zinc-800 text-white rounded-tr-none border border-white/20 backdrop-blur-sm">
+                          <div className="text-[8px] font-black text-zinc-400 mb-2 uppercase tracking-widest flex items-center gap-2">
+                            <div className={`w-1.5 h-1.5 rounded-full ${audioVolume > 15 ? 'bg-white animate-ping' : 'bg-zinc-400 animate-pulse'}`} />
                             {audioVolume > 10 ? 'Hearing You...' : 'Listening Stream...'}
                           </div>
-                          {userInput ? userInput : <span className="opacity-30 italic">Processing audio...</span>}
+                          {userInput ? userInput : <span className="opacity-40 italic">Processing voice input...</span>}
                           <span className="inline-block w-1.5 h-4 bg-white/50 animate-pulse ml-1" />
                         </div>
                       </motion.div>
                     )}
-                    {aiLoading && <div className="flex gap-1 p-4"><div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce" /><div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce delay-75" /><div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-bounce delay-150" /></div>}
+                    {aiLoading && <div className="flex gap-1 p-4"><div className="w-1.5 h-1.5 rounded-full bg-white animate-bounce" /><div className="w-1.5 h-1.5 rounded-full bg-white animate-bounce delay-75" /><div className="w-1.5 h-1.5 rounded-full bg-white animate-bounce delay-150" /></div>}
                     <div ref={chatEndRef} />
                   </div>
                   <AnimatePresence>
                     {isAnswering && (
                       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="p-4 pt-0">
-                        <button onClick={sendAnswer} className="w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-[0.3em] transition-all shadow-[0_10px_30px_rgba(16,185,129,0.2)] flex items-center justify-center gap-3 active:scale-95" style={{ border: 'none', cursor: 'pointer' }}>
+                        <button onClick={sendAnswer} className="w-full py-4 rounded-xl bg-white hover:bg-zinc-200 text-black font-black text-xs uppercase tracking-[0.3em] transition-all shadow-lg flex items-center justify-center gap-3 active:scale-95 cursor-pointer" style={{ border: 'none' }}>
                           <CheckCircle2 className="w-4 h-4" /> SUBMIT ANSWER
                         </button>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                  <div className="p-4 bg-black/40">
+                  <div className="p-4 bg-black/60 border-t border-white/10">
                     <div className="flex items-center gap-2">
-                      <input type="text" value={userInput} onChange={(e) => setUserInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') sendAnswer(); }} placeholder={isListening ? (audioVolume > 15 ? 'HEARING_AUDIO...' : 'LISTENING_STREAM...') : 'TYPE RESPONSE...'} className="flex-1 px-5 py-4 rounded-2xl text-[10px] font-black text-white focus:outline-none focus:ring-1 focus:ring-blue-500/50 uppercase tracking-widest font-mono" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)' }} />
-                      <button onClick={sendAnswer} disabled={!userInput.trim() || aiLoading} className="p-4 rounded-2xl bg-blue-600 shadow-lg shadow-blue-900/40 transition-all hover:scale-105 disabled:opacity-20" style={{ border: 'none', cursor: 'pointer' }}>
-                        <Send className="w-4 h-4 text-white" />
+                      <input type="text" value={userInput} onChange={(e) => setUserInput(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') sendAnswer(); }} placeholder={isListening ? (audioVolume > 15 ? 'HEARING_AUDIO...' : 'LISTENING_STREAM...') : 'TYPE RESPONSE...'} className="flex-1 px-5 py-4 rounded-xl text-[10px] font-black text-white focus:outline-none focus:ring-1 focus:ring-white uppercase tracking-widest font-mono bg-white/[0.04] border border-white/10" />
+                      <button onClick={sendAnswer} disabled={!userInput.trim() || aiLoading} className="p-4 rounded-xl bg-white text-black shadow-lg transition-all hover:bg-zinc-200 disabled:opacity-20 cursor-pointer" style={{ border: 'none' }}>
+                        <Send className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -680,74 +676,74 @@ export default function PracticeInterview() {
               <AnimatePresence>
                 {showFeedback && (
                   <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} className="w-full mt-12 space-y-8" id="analysis-report">
-                    <div className="glass-card p-10 border-blue-900/30">
+                    <div className="glass-card p-10 border-white/10">
                       <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
                         <div className="flex items-center gap-4">
-                          <Sparkles className="w-10 h-10 text-blue-400" />
+                          <Sparkles className="w-10 h-10 text-white" />
                           <div className="text-left">
-                            <h3 className="text-3xl font-black text-white uppercase tracking-tighter">Session Debrief</h3>
-                            <p className="text-[10px] font-black tracking-[.4em] text-slate-500 uppercase">Analysis Report</p>
+                            <h3 className="text-3xl font-black text-white uppercase tracking-tight">Session Debrief</h3>
+                            <p className="text-[10px] font-black tracking-[.4em] text-zinc-400 uppercase">Analysis Report</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-4">
-                          <div className="px-6 py-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
-                            <p className="text-sm font-black text-emerald-500 underline decoration-2 underline-offset-4">{feedback?.hiringProbability || 0}%</p>
-                            <p className="text-[8px] font-black text-slate-500 tracking-widest uppercase">Hire Probability</p>
+                          <div className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+                            <p className="text-base font-black text-white">{feedback?.hiringProbability || 0}%</p>
+                            <p className="text-[8px] font-black text-zinc-400 tracking-widest uppercase">Hire Probability</p>
                           </div>
-                          <div className="px-6 py-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-center">
-                            <p className="text-sm font-black text-amber-500 underline decoration-2 underline-offset-4">{feedback?.confidenceScore || scores.confidence}</p>
-                            <p className="text-[8px] font-black text-slate-500 tracking-widest uppercase">Confidence Score</p>
+                          <div className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-center">
+                            <p className="text-base font-black text-white">{feedback?.confidenceScore || scores.confidence}</p>
+                            <p className="text-[8px] font-black text-zinc-400 tracking-widest uppercase">Confidence Score</p>
                           </div>
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
                         {[
-                          { l: 'EYE CONTACT', v: scores.eyeContact, c: 'text-blue-400' },
-                          { l: 'POSTURE', v: scores.posture, c: 'text-violet-400' },
-                          { l: 'GESTURES', v: scores.gestures, c: 'text-rose-400' },
-                          { l: 'VOCAL', v: scores.audio, c: 'text-indigo-400' }
+                          { l: 'EYE CONTACT', v: scores.eyeContact },
+                          { l: 'POSTURE', v: scores.posture },
+                          { l: 'GESTURES', v: scores.gestures },
+                          { l: 'VOCAL', v: scores.audio }
                         ].map(s => (
-                          <div key={s.l} className="p-6 rounded-3xl bg-white/2 border border-white/5 text-center">
-                            <p className={`text-3xl font-black ${s.c} mb-1`}>{s.v}</p>
-                            <p className="text-[9px] font-black text-slate-600 tracking-widest uppercase">{s.l}</p>
+                          <div key={s.l} className="p-6 rounded-2xl bg-white/[0.02] border border-white/10 text-center">
+                            <p className="text-3xl font-black text-white mb-1">{s.v}</p>
+                            <p className="text-[9px] font-black text-zinc-400 tracking-widest uppercase">{s.l}</p>
                           </div>
                         ))}
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 text-left">
-                        <div className="md:col-span-2 rounded-3xl p-8 bg-blue-950/20 border border-blue-500/10">
-                          <p className="text-xs font-black text-blue-400 tracking-[0.2em] mb-4 uppercase">Feedback Summary</p>
-                          <p className="text-base font-bold text-slate-300 leading-relaxed italic">"{feedback?.summary || feedback?.feedback || 'Analyzing session data...'}"</p>
+                        <div className="md:col-span-2 rounded-2xl p-8 bg-zinc-900/60 border border-white/10">
+                          <p className="text-xs font-black text-zinc-300 tracking-[0.2em] mb-4 uppercase">Feedback Summary</p>
+                          <p className="text-base font-bold text-zinc-200 leading-relaxed italic">"{feedback?.summary || feedback?.feedback || 'Analyzing session data...'}"</p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-8">
                             <div>
-                              <p className="text-[10px] font-black text-emerald-500 tracking-widest mb-2 uppercase">Strengths</p>
+                              <p className="text-[10px] font-black text-white tracking-widest mb-2 uppercase">Strengths</p>
                               <ul className="space-y-1">
                                 {(feedback?.strengths || []).map((s: string, i: number) => (
-                                  <li key={i} className="text-xs font-bold text-slate-400 flex items-center gap-2">
-                                    <div className="w-1 h-1 rounded-full bg-emerald-500" /> {s}
+                                  <li key={i} className="text-xs font-bold text-zinc-300 flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-white" /> {s}
                                   </li>
                                 ))}
                               </ul>
                             </div>
                             <div>
-                              <p className="text-[10px] font-black text-rose-500 tracking-widest mb-2 uppercase">Areas to Polished</p>
+                              <p className="text-[10px] font-black text-zinc-400 tracking-widest mb-2 uppercase">Areas to Polish</p>
                               <ul className="space-y-1">
                                 {(feedback?.improvements || []).map((s: string, i: number) => (
-                                  <li key={i} className="text-xs font-bold text-slate-400 flex items-center gap-2">
-                                    <div className="w-1 h-1 rounded-full bg-rose-500" /> {s}
+                                  <li key={i} className="text-xs font-bold text-zinc-400 flex items-center gap-2">
+                                    <div className="w-1 h-1 rounded-full bg-zinc-500" /> {s}
                                   </li>
                                 ))}
                               </ul>
                             </div>
                           </div>
                         </div>
-                        <div className="rounded-3xl p-8 bg-emerald-950/10 border border-emerald-500/10">
-                          <p className="text-xs font-black text-emerald-400 tracking-[0.2em] mb-4 uppercase">Improvement Checklist</p>
+                        <div className="rounded-2xl p-8 bg-zinc-900/60 border border-white/10">
+                          <p className="text-xs font-black text-zinc-300 tracking-[0.2em] mb-4 uppercase">Actionable Checklist</p>
                           <ul className="space-y-4">
                             {(feedback?.improvementChecklist || ['Processing actionable insights...']).slice(0, 4).map((item: string, i: number) => (
-                              <li key={i} className="flex items-start gap-3 text-xs font-bold text-slate-300">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
+                              <li key={i} className="flex items-start gap-3 text-xs font-bold text-zinc-300">
+                                <CheckCircle2 className="w-4 h-4 text-white flex-shrink-0 mt-0.5" />
                                 {item}
                               </li>
                             ))}
@@ -755,23 +751,23 @@ export default function PracticeInterview() {
                         </div>
                       </div>
 
-                      <div className="rounded-3xl p-8 bg-violet-950/10 border border-violet-500/10 text-left">
-                        <p className="text-xs font-black text-violet-400 tracking-[0.2em] mb-6 uppercase">Career Guidance: Target Roles</p>
+                      <div className="rounded-2xl p-8 bg-zinc-900/60 border border-white/10 text-left">
+                        <p className="text-xs font-black text-zinc-300 tracking-[0.2em] mb-6 uppercase">Target Role Guidance</p>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                           {(feedback?.top3JobRecommendations || []).map((job: any, i: number) => (
-                            <div key={i} className="p-6 rounded-2xl bg-white/2 border border-white/5 hover:border-violet-500/30 transition-all">
+                            <div key={i} className="p-6 rounded-xl bg-white/[0.02] border border-white/10 hover:border-white/25 transition-all">
                               <div className="flex items-center gap-2 mb-3">
-                                <div className="w-6 h-6 rounded-lg bg-violet-600/20 flex items-center justify-center text-violet-400 font-bold text-xs ring-1 ring-violet-500/20">{i + 1}</div>
+                                <div className="w-6 h-6 rounded-lg bg-white/10 flex items-center justify-center text-white font-bold text-xs border border-white/10">{i + 1}</div>
                                 <h4 className="text-sm font-black text-white uppercase">{job.title}</h4>
                               </div>
-                              <p className="text-xs text-slate-500 leading-relaxed italic">"{job.reason}"</p>
+                              <p className="text-xs text-zinc-400 leading-relaxed italic">"{job.reason}"</p>
                             </div>
                           ))}
                         </div>
                       </div>
 
                       <div className="mt-12 flex justify-center">
-                        <button onClick={() => { setSessionStarted(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-full sm:w-auto px-10 py-5 rounded-3xl bg-white text-black font-black text-xs uppercase tracking-[.2em] hover:scale-[1.05] transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] cursor-pointer">
+                        <button onClick={() => { setSessionStarted(false); window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="w-full sm:w-auto px-10 py-5 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-[.2em] hover:bg-zinc-200 transition-all shadow-xl cursor-pointer">
                           START NEW SESSION
                         </button>
                       </div>
@@ -787,3 +783,4 @@ export default function PracticeInterview() {
     </div>
   );
 }
+

@@ -107,7 +107,7 @@ export default function OllamaHub() {
   };
 
   const runHardwareBenchmark = () => {
-    const ram = (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : 'Unknown (estimated 8GB)';
+    const ram = (navigator as any).deviceMemory ? `${(navigator as any).deviceMemory} GB` : '8 GB (Estimated)';
     const ramValue = (navigator as any).deviceMemory || 8;
     const cores = navigator.hardwareConcurrency || 4;
     const hasWebGPU = !!(navigator as any).gpu;
@@ -137,21 +137,17 @@ export default function OllamaHub() {
 
   return (
     <div className="page-shell text-white relative overflow-hidden flex flex-col items-center">
-      {/* Glow Rings */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[160px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-violet-900/10 blur-[160px] rounded-full pointer-events-none" />
-
       <div className="page-frame relative z-10 space-y-12">
         {/* Title */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="page-intro">
           <div className="eyebrow mb-5">
-            <Cpu className="w-3.5 h-3.5" />
-            Core AI Controller Layer
+            <Cpu className="w-3.5 h-3.5 text-white" />
+            Core AI Engine Layer
           </div>
           <h1 className="page-title mb-4">
-            Local AI <span className="title-accent">Workspace</span>
+            Local AI <span className="title-accent">Engine Hub</span>
           </h1>
-          <p className="page-lede">Configure the private model workspace that powers every HireME analysis.</p>
+          <p className="page-lede">Configure and benchmark the private on-device model engine that powers HireME intelligence.</p>
         </motion.div>
 
         {/* Dashboard Grid */}
@@ -163,29 +159,28 @@ export default function OllamaHub() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl"
+              className="bg-zinc-900/60 border border-white/10 rounded-[28px] p-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl"
             >
-              <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-blue-600/5 blur-[50px] rounded-full pointer-events-none" />
               <h2 className="text-lg font-black text-white uppercase tracking-wider mb-6 flex items-center gap-2.5">
-                <Globe className="w-5 h-5 text-blue-400" />
+                <Globe className="w-5 h-5 text-white" />
                 Connection Control
               </h2>
 
               <div className="flex flex-col gap-4">
                 <div className="flex flex-col gap-2">
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Ollama API URL Endpoint</span>
+                  <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Ollama API URL Endpoint</span>
                   <div className="flex gap-3">
                     <input
                       type="text"
                       value={endpoint}
                       onChange={(e) => setEndpointState(e.target.value)}
                       placeholder="http://localhost:11434"
-                      className="flex-1 bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3.5 text-xs text-white focus:outline-none focus:border-blue-500/50 font-mono transition-all"
+                      className="flex-1 bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-xs text-white focus:outline-none focus:border-white font-mono transition-all"
                     />
                     <button
                       onClick={handleTestConnection}
                       disabled={isTesting}
-                      className="px-6 rounded-2xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                      className="px-6 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 text-white text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
                     >
                       {isTesting ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Server className="w-3.5 h-3.5" />}
                       Check Gateway
@@ -194,25 +189,25 @@ export default function OllamaHub() {
                 </div>
 
                 {testStatus !== 'idle' && (
-                  <div className={`p-4 rounded-2xl border flex items-center gap-3 text-xs leading-normal transition-all ${
+                  <div className={`p-4 rounded-xl border flex items-center gap-3 text-xs leading-normal transition-all ${
                     testStatus === 'success' 
-                      ? 'bg-emerald-950/20 border-emerald-500/20 text-emerald-400' 
-                      : 'bg-rose-950/20 border-rose-500/20 text-rose-400'
+                      ? 'bg-zinc-800/80 border-white/20 text-white' 
+                      : 'bg-zinc-800/80 border-white/20 text-zinc-300'
                   }`}>
                     {testStatus === 'success' ? (
                       <>
-                        <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                        <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-white" />
                         <div>
                           <p className="font-bold">Gateway is Online</p>
-                          <p className="text-[10px] text-emerald-400/80">Found {models.length} local models registered on endpoint.</p>
+                          <p className="text-[10px] text-zinc-400">Found {models.length} local models registered on endpoint.</p>
                         </div>
                       </>
                     ) : (
                       <>
-                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                        <AlertCircle className="w-5 h-5 flex-shrink-0 text-zinc-400" />
                         <div>
                           <p className="font-bold">Gateway Offline</p>
-                          <p className="text-[10px] text-rose-400/80">Cannot resolve local port. Verify CORS and run settings.</p>
+                          <p className="text-[10px] text-zinc-400">Cannot resolve local port. Verify CORS and run settings.</p>
                         </div>
                       </>
                     )}
@@ -226,17 +221,16 @@ export default function OllamaHub() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl"
+              className="bg-zinc-900/60 border border-white/10 rounded-[28px] p-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl"
             >
-              <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-violet-600/5 blur-[50px] rounded-full pointer-events-none" />
               <h2 className="text-lg font-black text-white uppercase tracking-wider mb-6 flex items-center gap-2.5">
-                <Download className="w-5 h-5 text-blue-400" />
+                <Download className="w-5 h-5 text-white" />
                 Model Registry Installer
               </h2>
 
               <form onSubmit={handlePullModel} className="space-y-4">
                 <div className="flex flex-col gap-2">
-                  <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Enter Model Identifier</span>
+                  <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Enter Model Identifier</span>
                   <div className="flex gap-3">
                     <input
                       type="text"
@@ -244,12 +238,12 @@ export default function OllamaHub() {
                       onChange={(e) => setModelToPull(e.target.value)}
                       placeholder="llama3.2 or qwen2.5-coder:7b"
                       disabled={pulling}
-                      className="flex-1 bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-3.5 text-xs text-white focus:outline-none focus:border-blue-500/50 font-mono transition-all disabled:opacity-50"
+                      className="flex-1 bg-black/60 border border-white/10 rounded-xl px-5 py-3.5 text-xs text-white focus:outline-none focus:border-white font-mono transition-all disabled:opacity-50"
                     />
                     <button
                       type="submit"
                       disabled={pulling || !modelToPull.trim()}
-                      className="px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-[0_0_20px_rgba(37,99,235,0.2)]"
+                      className="px-6 rounded-xl bg-white hover:bg-zinc-200 text-black text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50 shadow-md"
                     >
                       {pulling ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                       Pull Model
@@ -258,14 +252,14 @@ export default function OllamaHub() {
                 </div>
 
                 {pulling && (
-                  <div className="space-y-3 p-4 rounded-2xl bg-white/[0.02] border border-white/5">
+                  <div className="space-y-3 p-4 rounded-xl bg-white/[0.02] border border-white/10">
                     <div className="flex justify-between items-center text-[10px] font-bold uppercase tracking-wider">
-                      <span className="text-blue-400 animate-pulse">{pullStatus}</span>
+                      <span className="text-white animate-pulse">{pullStatus}</span>
                       <span className="text-white font-mono">{pullProgress}%</span>
                     </div>
-                    <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-gradient-to-r from-blue-500 to-violet-500 transition-all duration-300"
+                        className="h-full bg-white transition-all duration-300"
                         style={{ width: `${pullProgress}%` }}
                       />
                     </div>
@@ -273,15 +267,15 @@ export default function OllamaHub() {
                 )}
 
                 {pullStatus && !pulling && !pullError && (
-                  <div className="p-4 rounded-2xl bg-emerald-950/20 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-3">
-                    <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                  <div className="p-4 rounded-xl bg-zinc-800/80 border border-white/20 text-white text-xs flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 flex-shrink-0 text-white" />
                     <span>{pullStatus}</span>
                   </div>
                 )}
 
                 {pullError && (
-                  <div className="p-4 rounded-2xl bg-rose-950/20 border border-rose-500/20 text-rose-400 text-xs flex items-center gap-3">
-                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                  <div className="p-4 rounded-xl bg-zinc-800/80 border border-white/20 text-zinc-300 text-xs flex items-center gap-3">
+                    <AlertCircle className="w-5 h-5 flex-shrink-0 text-zinc-400" />
                     <span>{pullError}</span>
                   </div>
                 )}
@@ -296,15 +290,14 @@ export default function OllamaHub() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl flex flex-col min-h-[350px]"
+              className="bg-zinc-900/60 border border-white/10 rounded-[28px] p-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl flex flex-col min-h-[350px]"
             >
-              <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-indigo-600/5 blur-[50px] rounded-full pointer-events-none" />
               <h2 className="text-lg font-black text-white uppercase tracking-wider mb-6 flex items-center gap-2.5">
-                <Layers className="w-5 h-5 text-blue-400" />
+                <Layers className="w-5 h-5 text-white" />
                 Model Directory ({models.length})
               </h2>
 
-              <div className="flex-1 overflow-y-auto max-h-[220px] pr-2 space-y-2 custom-scrollbar">
+              <div className="flex-1 overflow-y-auto max-h-[220px] pr-2 space-y-2">
                 {models.length > 0 ? (
                   models.map((modelName) => {
                     const isSelected = selectedModel === modelName;
@@ -312,28 +305,28 @@ export default function OllamaHub() {
                       <button
                         key={modelName}
                         onClick={() => handleSelectModel(modelName)}
-                        className={`w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between cursor-pointer group/item ${
+                        className={`w-full text-left p-4 rounded-xl border transition-all flex items-center justify-between cursor-pointer group/item ${
                           isSelected 
-                            ? 'bg-blue-600/10 border-blue-500/35 text-white shadow-[0_0_20px_rgba(59,130,246,0.15)]'
-                            : 'bg-white/[0.01] border-white/5 text-slate-400 hover:text-white hover:bg-white/[0.03] hover:border-white/10'
+                            ? 'bg-white text-black border-white shadow-lg'
+                            : 'bg-black/40 border-white/10 text-zinc-400 hover:text-white hover:bg-white/[0.04]'
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <Cpu className={`w-4 h-4 ${isSelected ? 'text-blue-400' : 'text-slate-500 group-hover/item:text-white'}`} />
-                          <span className="font-mono text-xs tracking-tight">{modelName}</span>
+                          <Cpu className={`w-4 h-4 ${isSelected ? 'text-black' : 'text-zinc-500 group-hover/item:text-white'}`} />
+                          <span className="font-mono text-xs tracking-tight font-bold">{modelName}</span>
                         </div>
                         {isSelected ? (
-                          <span className="text-[8px] font-black uppercase tracking-widest bg-blue-500 text-white px-2 py-0.5 rounded">ACTIVE</span>
+                          <span className="text-[8px] font-black uppercase tracking-widest bg-black text-white px-2 py-0.5 rounded">ACTIVE</span>
                         ) : (
-                          <ChevronRight className="w-3.5 h-3.5 text-slate-600 group-hover/item:text-white transition-all transform group-hover/item:translate-x-0.5" />
+                          <ChevronRight className="w-3.5 h-3.5 text-zinc-600 group-hover/item:text-white transition-all transform group-hover/item:translate-x-0.5" />
                         )}
                       </button>
                     );
                   })
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center text-center p-8 border border-dashed border-white/10 rounded-2xl">
-                    <AlertCircle className="w-8 h-8 text-slate-600 mb-2" />
-                    <p className="text-xs text-slate-500 italic">No models registered. Run connection check or pull a new model.</p>
+                    <AlertCircle className="w-8 h-8 text-zinc-600 mb-2" />
+                    <p className="text-xs text-zinc-500 italic">No models registered. Run connection check or pull a new model.</p>
                   </div>
                 )}
               </div>
@@ -345,38 +338,37 @@ export default function OllamaHub() {
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
-                className="bg-white/[0.02] border border-white/10 rounded-[2rem] p-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl"
+                className="bg-zinc-900/60 border border-white/10 rounded-[28px] p-8 backdrop-blur-xl relative overflow-hidden group shadow-2xl"
               >
-                <div className="absolute top-0 right-0 w-[120px] h-[120px] bg-blue-600/5 blur-[50px] rounded-full pointer-events-none" />
                 <h2 className="text-lg font-black text-white uppercase tracking-wider mb-6 flex items-center gap-2.5">
-                  <Info className="w-5 h-5 text-blue-400" />
+                  <Info className="w-5 h-5 text-white" />
                   Hardware Advisor
                 </h2>
 
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4 text-xs">
-                    <div className="bg-[#030817]/60 p-4 border border-white/5 rounded-2xl flex flex-col gap-1">
-                      <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Memory RAM</span>
+                    <div className="bg-black/60 p-4 border border-white/10 rounded-2xl flex flex-col gap-1">
+                      <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest">Memory RAM</span>
                       <span className="font-mono font-bold text-white flex items-center gap-1.5">
-                        <Monitor className="w-3.5 h-3.5 text-blue-400" />
+                        <Monitor className="w-3.5 h-3.5 text-white" />
                         {hardware.ram}
                       </span>
                     </div>
-                    <div className="bg-[#030817]/60 p-4 border border-white/5 rounded-2xl flex flex-col gap-1">
-                      <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">CPU Cores</span>
+                    <div className="bg-black/60 p-4 border border-white/10 rounded-2xl flex flex-col gap-1">
+                      <span className="text-[8px] font-bold text-zinc-500 uppercase tracking-widest">CPU Threads</span>
                       <span className="font-mono font-bold text-white flex items-center gap-1.5">
-                        <Cpu className="w-3.5 h-3.5 text-blue-400" />
-                        {hardware.cores} threads
+                        <Cpu className="w-3.5 h-3.5 text-white" />
+                        {hardware.cores} cores
                       </span>
                     </div>
                   </div>
 
-                  <div className="bg-[#030817]/60 p-4 border border-white/5 rounded-2xl space-y-2">
-                    <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                  <div className="bg-black/60 p-4 border border-white/10 rounded-2xl space-y-2">
+                    <div className="flex justify-between items-center text-[10px] font-black text-zinc-400 uppercase tracking-widest">
                       <span>Recommendation Node</span>
-                      <span className="text-blue-400 font-mono">{hardware.recommendedModel}</span>
+                      <span className="text-white font-mono font-bold">{hardware.recommendedModel}</span>
                     </div>
-                    <p className="text-[10px] text-slate-400 leading-relaxed">{hardware.explanation}</p>
+                    <p className="text-[10px] text-zinc-400 leading-relaxed">{hardware.explanation}</p>
                   </div>
                 </div>
               </motion.div>
@@ -389,37 +381,36 @@ export default function OllamaHub() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white/[0.02] border border-white/10 rounded-[2.5rem] p-8 backdrop-blur-xl relative overflow-hidden shadow-2xl"
+          className="bg-zinc-900/60 border border-white/10 rounded-[28px] p-8 backdrop-blur-xl relative overflow-hidden shadow-2xl"
         >
-          <div className="absolute top-0 left-0 w-[200px] h-[200px] bg-blue-600/5 blur-[80px] rounded-full pointer-events-none" />
           <h2 className="text-lg font-black text-white uppercase tracking-wider mb-6 flex items-center gap-2.5">
-            <Terminal className="w-5 h-5 text-blue-400" />
-            Automatic Execution & CORS Settings
+            <Terminal className="w-5 h-5 text-white" />
+            Automatic Execution & CORS Configuration
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs leading-relaxed">
             <div className="space-y-4">
               <h3 className="font-bold text-white uppercase tracking-wider text-[11px] flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                1. Enable CORS Origins (Mandatory)
+                <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                1. Enable CORS Origins
               </h3>
-              <p className="text-slate-400">
+              <p className="text-zinc-400">
                 To allow the browser client to communicate directly with your local Ollama port without security blocks, set the wildcard origin environment variable:
               </p>
-              <div className="bg-[#030817] p-4 rounded-2xl border border-white/5 font-mono text-[10px] text-slate-300 select-all">
+              <div className="bg-black/60 p-4 rounded-xl border border-white/10 font-mono text-[10px] text-zinc-300 select-all">
                 OLLAMA_ORIGINS="*" ollama serve
               </div>
             </div>
 
             <div className="space-y-4">
               <h3 className="font-bold text-white uppercase tracking-wider text-[11px] flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                <span className="w-1.5 h-1.5 rounded-full bg-white" />
                 2. Auto Run at Startup
               </h3>
-              <p className="text-slate-400">
-                Create a local launch script (shell shell/bash) to automatically set configurations and start Ollama alongside your dev environment:
+              <p className="text-zinc-400">
+                Create a local launch script to automatically set configurations and start Ollama alongside your dev environment:
               </p>
-              <div className="bg-[#030817] p-4 rounded-2xl border border-white/5 font-mono text-[9px] text-slate-350 select-all leading-normal whitespace-pre">
+              <div className="bg-black/60 p-4 rounded-xl border border-white/10 font-mono text-[9px] text-zinc-300 select-all leading-normal whitespace-pre">
 {`#!/bin/bash
 export OLLAMA_ORIGINS="*"
 ollama serve &

@@ -63,7 +63,7 @@ export default function JobListing() {
 
   const handleSearch = async (e?: React.FormEvent, customQuery?: string) => {
     if (e) e.preventDefault();
-    const searchQuery = customQuery || query || 'Software Engineer'; // Default if empty
+    const searchQuery = customQuery || query || 'Software Engineer';
     const results = await searchJobs({ query: searchQuery, location, remote });
     setJobs(results);
     setInitialSearchDone(true);
@@ -97,10 +97,6 @@ export default function JobListing() {
 
   return (
     <div className="page-shell text-white relative overflow-hidden flex flex-col items-center">
-      {/* Background Decorative Elements */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-blue-900/10 blur-[150px] rounded-full pointer-events-none" />
-
       <div className="page-frame relative z-10">
         {/* Header */}
         <div className="page-intro mb-10">
@@ -109,7 +105,7 @@ export default function JobListing() {
             animate={{ opacity: 1, y: 0 }}
             className="eyebrow mb-5"
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 text-white" />
             AI-Enhanced Job Feed
           </motion.div>
           <motion.h1 
@@ -133,12 +129,12 @@ export default function JobListing() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.3 }}
-            className="inline-flex p-1 bg-white/5 border border-white/10 rounded-2xl backdrop-blur-xl mb-8"
+            className="inline-flex p-1 bg-black/60 border border-white/10 rounded-2xl backdrop-blur-xl mb-8"
           >
             <button
               onClick={() => setView('search')}
-              className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-[14px] text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${
-                view === 'search' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
+              className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all cursor-pointer ${
+                view === 'search' ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white'
               }`}
             >
               <BrainCircuit className="w-4 h-4" />
@@ -146,8 +142,8 @@ export default function JobListing() {
             </button>
             <button
               onClick={() => setView('saved')}
-              className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-[14px] text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all ${
-                view === 'saved' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:text-white'
+              className={`flex items-center gap-2 px-4 sm:px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all cursor-pointer ${
+                view === 'saved' ? 'bg-white text-black shadow-lg' : 'text-zinc-400 hover:text-white'
               }`}
             >
               <Star className="w-4 h-4" />
@@ -156,7 +152,7 @@ export default function JobListing() {
           </motion.div>
         </div>
 
-        {/* Profile Resonance (Recommendations) */}
+        {/* Recommendations */}
         <AnimatePresence>
           {view === 'search' && recommendations.length > 0 && (
             <motion.div
@@ -166,8 +162,8 @@ export default function JobListing() {
               className="mb-12 overflow-hidden"
             >
               <div className="flex items-center gap-2 mb-6">
-                <BrainCircuit className="w-4 h-4 text-blue-400" />
-                <h2 className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em]">Recommended Roles</h2>
+                <BrainCircuit className="w-4 h-4 text-white" />
+                <h2 className="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">Recommended Roles</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {recommendations.map((rec, i) => (
@@ -177,16 +173,16 @@ export default function JobListing() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="rounded-[28px] border border-blue-500/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] p-5 hover:border-blue-500/40 text-left group transition-all"
+                    className="rounded-2xl border border-white/10 bg-zinc-900/60 backdrop-blur-xl shadow-xl p-5 hover:border-white/30 text-left group transition-all cursor-pointer"
                   >
                     <div className="flex items-start justify-between mb-3">
-                      <div className="w-8 h-8 rounded-lg bg-blue-600/20 flex items-center justify-center">
-                        <Rocket className="w-4 h-4 text-blue-400" />
+                      <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
+                        <Rocket className="w-4 h-4" />
                       </div>
-                      <Sparkles className="w-3 h-3 text-blue-500/40 group-hover:text-blue-500 transition-colors" />
+                      <Sparkles className="w-3 h-3 text-zinc-500 group-hover:text-white transition-colors" />
                     </div>
                     <h3 className="text-sm font-black text-white mb-1 uppercase tracking-tight">{rec.title}</h3>
-                    <p className="text-[9px] font-bold text-slate-500 uppercase leading-relaxed line-clamp-2">{rec.reason}</p>
+                    <p className="text-[9px] font-bold text-zinc-400 uppercase leading-relaxed line-clamp-2">{rec.reason}</p>
                   </motion.button>
                 ))}
               </div>
@@ -203,42 +199,42 @@ export default function JobListing() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ delay: 0.3 }}
-              className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] mb-12 p-8"
+              className="rounded-[28px] border border-white/10 bg-zinc-900/60 backdrop-blur-xl shadow-2xl mb-12 p-8"
             >
               <form onSubmit={handleSearch} className="grid grid-cols-1 md:grid-cols-12 gap-5 items-end">
                 <div className="md:col-span-4 space-y-2 text-left">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
-                    <Briefcase className="w-3 h-3 text-blue-400" /> Job Title
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
+                    <Briefcase className="w-3 h-3 text-white" /> Job Title
                   </label>
                   <input
                     type="text"
                     placeholder="Software Engineer, Product Designer..."
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    className="w-full bg-[#081124] border border-white/10 rounded-xl px-5 py-4 text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                    className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-4 text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-white transition-all"
                   />
                 </div>
                 <div className="md:col-span-3 space-y-2 text-left">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
-                    <MapPin className="w-3 h-3 text-cyan-400" /> Location
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
+                    <MapPin className="w-3 h-3 text-white" /> Location
                   </label>
                   <input
                     type="text"
                     placeholder="New York, San Francisco, Remote..."
                     value={location}
                     onChange={(e) => setLocation(e.target.value)}
-                    className="w-full bg-[#081124] border border-white/10 rounded-xl px-5 py-4 text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                    className="w-full bg-black/60 border border-white/10 rounded-xl px-5 py-4 text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-white transition-all"
                   />
                 </div>
                 <div className="md:col-span-2 space-y-2 text-left">
-                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
-                    <Globe2 className="w-3 h-3 text-blue-400" /> Mode
+                  <label className="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] flex items-center gap-2 mb-2">
+                    <Globe2 className="w-3 h-3 text-white" /> Mode
                   </label>
                   <button
                     type="button"
                     onClick={() => setRemote(!remote)}
                     className={`w-full py-4 rounded-xl text-[10px] font-bold uppercase tracking-[0.18em] transition-all border cursor-pointer ${
-                      remote ? 'bg-blue-600/20 border-blue-500 text-blue-300 shadow-[0_0_15px_rgba(59,130,246,0.2)]' : 'bg-[#081124] border-white/10 text-slate-400 hover:text-white hover:border-white/30'
+                      remote ? 'bg-white text-black border-white shadow-lg font-black' : 'bg-black/60 border-white/10 text-zinc-400 hover:text-white hover:border-white/30'
                     }`}
                   >
                     <div className="flex items-center justify-center gap-1.5">
@@ -254,7 +250,7 @@ export default function JobListing() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer active:scale-[0.98]"
+                    className="w-full py-4 rounded-xl bg-white hover:bg-zinc-200 text-black font-black text-xs uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer active:scale-[0.98]"
                   >
                     {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                     Search Jobs
@@ -266,13 +262,13 @@ export default function JobListing() {
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="mt-6 p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-black uppercase tracking-widest"
+                  className="mt-6 p-4 rounded-xl bg-zinc-800 border border-white/20 text-zinc-300 text-[10px] font-black uppercase tracking-widest"
                 >
                   Daily Search Limit Reached (10/10). Please wait for reset.
                 </motion.div>
               )}
               {error && (
-                <div className="mt-6 p-4 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-400 text-[10px] font-black uppercase tracking-widest">
+                <div className="mt-6 p-4 rounded-xl bg-zinc-800 border border-white/20 text-zinc-300 text-[10px] font-black uppercase tracking-widest">
                   {error}
                 </div>
               )}
@@ -286,10 +282,10 @@ export default function JobListing() {
               initial={{ opacity: 0, y: 20, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 glass-card px-6 py-4 border-blue-500/30 shadow-[0_20px_50px_rgba(37,99,235,0.2)] flex items-center gap-3"
+              className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 glass-card px-6 py-4 border-white/20 shadow-2xl flex items-center gap-3 bg-black/90 backdrop-blur-xl"
             >
-              <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-blue-400" />
+              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center text-white">
+                <Sparkles className="w-4 h-4" />
               </div>
               <span className="text-[10px] font-black text-white uppercase tracking-[0.2em]">{saveFeedback}</span>
             </motion.div>
@@ -310,30 +306,30 @@ export default function JobListing() {
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: 20 }}
                     transition={{ delay: i * 0.05 }}
-                    className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] p-8 group hover:border-blue-500/30 transition-all mb-6"
+                    className="rounded-[28px] border border-white/10 bg-zinc-900/60 backdrop-blur-xl shadow-xl p-8 group hover:border-white/30 transition-all mb-6"
                   >
                     <div className="flex flex-col md:flex-row gap-6 items-start md:items-center">
-                      <div className="w-14 h-14 rounded-2xl bg-blue-900/20 border border-blue-500/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                        <Building2 className="w-7 h-7 text-blue-400" />
+                      <div className="w-14 h-14 rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform text-white">
+                        <Building2 className="w-7 h-7" />
                       </div>
                       <div className="flex-1 text-left">
                         <div className="flex flex-wrap items-center gap-3 mb-2">
                           <h3 className="text-lg font-black text-white uppercase tracking-tight">{job.job_title}</h3>
                           {job.remote && (
-                            <span className="px-2 py-1 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[8px] font-black uppercase tracking-widest">
-                              Remote Optimized
+                            <span className="px-2.5 py-1 rounded-md bg-white/10 border border-white/15 text-white text-[8px] font-black uppercase tracking-widest">
+                              Remote
                             </span>
                           )}
                         </div>
-                        <div className="flex flex-wrap items-center gap-4 text-slate-400 text-[11px] font-bold uppercase tracking-widest">
-                          <span className="flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-blue-500" /> {job.company_name}</span>
-                          <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-slate-500" /> {(job.location && job.location.toLowerCase() !== 'no fetch') ? job.location : 'Remote/Global'}</span>
-                          <span className="flex items-center gap-1.5"><Globe2 className="w-3.5 h-3.5 text-blue-400/50" /> {job.platform}</span>
-                          <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-slate-500" /> {new Date(job.posted_at).toLocaleDateString()}</span>
+                        <div className="flex flex-wrap items-center gap-4 text-zinc-400 text-[11px] font-bold uppercase tracking-widest">
+                          <span className="flex items-center gap-1.5"><Building2 className="w-3.5 h-3.5 text-white" /> {job.company_name}</span>
+                          <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-zinc-500" /> {(job.location && job.location.toLowerCase() !== 'no fetch') ? job.location : 'Remote/Global'}</span>
+                          <span className="flex items-center gap-1.5"><Globe2 className="w-3.5 h-3.5 text-zinc-400" /> {job.platform}</span>
+                          <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-zinc-500" /> {new Date(job.posted_at).toLocaleDateString()}</span>
                         </div>
                         <div className="mt-4 flex flex-wrap gap-2">
                           {job.technologies?.slice(0, 5).map(tech => (
-                            <span key={tech} className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/50 text-[8px] font-black uppercase tracking-tighter">
+                            <span key={tech} className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-zinc-300 text-[8px] font-black uppercase tracking-tighter">
                               {tech}
                             </span>
                           ))}
@@ -344,20 +340,20 @@ export default function JobListing() {
                           href={job.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex-1 md:w-40 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2"
+                          className="flex-1 md:w-40 py-3 rounded-xl bg-white hover:bg-zinc-200 text-black text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 no-underline shadow-md"
                         >
-                          Applications <ExternalLink className="w-3.5 h-3.5" />
+                          Apply <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                         <button
                           onClick={() => handleSaveToggle(job)}
-                          className={`flex-1 md:w-40 py-3 rounded-xl border transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest ${
+                          className={`flex-1 md:w-40 py-3 rounded-xl border transition-all flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest cursor-pointer ${
                             savedJobIds.has(job.id) 
-                            ? 'bg-rose-500/10 border-rose-500/30 text-rose-400' 
-                            : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'
+                            ? 'bg-zinc-800 border-white/30 text-white' 
+                            : 'bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white'
                           }`}
                         >
-                          <Star className={`w-3.5 h-3.5 ${savedJobIds.has(job.id) ? 'fill-rose-400' : ''}`} />
-                          {savedJobIds.has(job.id) ? 'Saved' : 'Save Path'}
+                          <Star className={`w-3.5 h-3.5 ${savedJobIds.has(job.id) ? 'fill-white text-white' : ''}`} />
+                          {savedJobIds.has(job.id) ? 'Saved' : 'Save Job'}
                         </button>
                       </div>
                     </div>
@@ -371,13 +367,13 @@ export default function JobListing() {
                     key="empty-saved"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-center py-20 bg-white/2 rounded-3xl border border-dashed border-white/10"
+                    className="text-center py-20 bg-zinc-900/40 rounded-3xl border border-dashed border-white/10"
                   >
-                    <div className="w-16 h-16 rounded-full bg-white/5 mx-auto mb-6 flex items-center justify-center border border-white/5">
-                      <Star className="w-8 h-8 text-slate-700" />
+                    <div className="w-16 h-16 rounded-full bg-white/5 mx-auto mb-6 flex items-center justify-center border border-white/5 text-zinc-500">
+                      <Star className="w-8 h-8" />
                     </div>
-                    <h3 className="text-xl font-black text-slate-500 uppercase tracking-widest">No saved paths found</h3>
-                    <p className="text-slate-600 text-xs font-bold mt-2 uppercase">Your curated career nodes will appear here</p>
+                    <h3 className="text-xl font-black text-zinc-400 uppercase tracking-widest">No saved paths found</h3>
+                    <p className="text-zinc-500 text-xs font-bold mt-2 uppercase">Your curated career nodes will appear here</p>
                   </motion.div>
                 );
               }
@@ -388,13 +384,13 @@ export default function JobListing() {
                     key="empty-search"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="text-center py-20 bg-white/2 rounded-3xl border border-dashed border-white/10"
+                    className="text-center py-20 bg-zinc-900/40 rounded-3xl border border-dashed border-white/10"
                   >
-                    <div className="w-16 h-16 rounded-full bg-white/5 mx-auto mb-6 flex items-center justify-center border border-white/5">
-                      <Search className="w-8 h-8 text-slate-700" />
+                    <div className="w-16 h-16 rounded-full bg-white/5 mx-auto mb-6 flex items-center justify-center border border-white/5 text-zinc-500">
+                      <Search className="w-8 h-8" />
                     </div>
-                    <h3 className="text-xl font-black text-slate-500 uppercase tracking-widest">No matching nodes found</h3>
-                    <p className="text-slate-600 text-xs font-bold mt-2 uppercase">Try adjusting your filters for better resonance</p>
+                    <h3 className="text-xl font-black text-zinc-400 uppercase tracking-widest">No matching jobs found</h3>
+                    <p className="text-zinc-500 text-xs font-bold mt-2 uppercase">Try adjusting your filters for better results</p>
                   </motion.div>
                 );
               }
@@ -403,12 +399,12 @@ export default function JobListing() {
                 return (
                   <div key="placeholders" className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {[1,2,3].map(item => (
-                      <div key={item} className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] p-10 text-left group">
-                        <div className="w-10 h-10 rounded-xl bg-blue-900/20 border border-blue-500/20 flex items-center justify-center mb-6">
-                          <Target className="w-5 h-5 text-blue-500" />
+                      <div key={item} className="rounded-[28px] border border-white/10 bg-zinc-900/60 backdrop-blur-xl shadow-xl p-10 text-left group">
+                        <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center mb-6 text-white">
+                          <Briefcase className="w-5 h-5" />
                         </div>
-                        <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-2">Job Recommendation</h4>
-                        <p className="text-slate-500 text-[10px] uppercase font-bold tracking-[0.1em]">Search roles matching your professional profile.</p>
+                        <h4 className="text-white font-bold uppercase tracking-widest text-xs mb-2">Job Opportunities</h4>
+                        <p className="text-zinc-400 text-[10px] uppercase font-bold tracking-[0.1em]">Search roles matching your professional profile.</p>
                       </div>
                     ))}
                   </div>
@@ -421,23 +417,5 @@ export default function JobListing() {
         </div>
       </div>
     </div>
-  );
-}
-
-function Target({ className }: { className?: string }) {
-  return (
-    <svg 
-      className={className} 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="6" />
-      <circle cx="12" cy="12" r="2" />
-    </svg>
   );
 }

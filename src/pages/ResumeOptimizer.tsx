@@ -72,8 +72,6 @@ export default function ResumeOptimizer() {
     }
   };
 
-  // Removed handleGetVerdict as per request
-
   const handleEnhance = async () => {
     if (hasReachedLimit('resume')) return;
     if (!resumeText.trim()) {
@@ -121,13 +119,13 @@ export default function ResumeOptimizer() {
           setIsExtracting(false);
         };
         reader.readAsArrayBuffer(file);
-      } catch (err) {
+      } catch {
         setError('Failed to extract text from PDF. Please paste manually.');
         setIsExtracting(false);
       }
     } else {
       const reader = new FileReader();
-      reader.onload = (e) => setResumeText(e.target?.result as string);
+      reader.onload = (ev) => setResumeText(ev.target?.result as string);
       reader.readAsText(file);
     }
   };
@@ -142,21 +140,21 @@ export default function ResumeOptimizer() {
 
     // Helper for thick lines
     const addLine = (yPos: number) => {
-      doc.setDrawColor(37, 99, 235);
+      doc.setDrawColor(24, 24, 27);
       doc.setLineWidth(0.5);
       doc.line(margin, yPos, pageWidth - margin, yPos);
     };
 
     // Header
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(28);
-    doc.setTextColor(15, 23, 42);
+    doc.setFontSize(26);
+    doc.setTextColor(10, 10, 10);
     doc.text(enhancedResume.personalInfo.name.toUpperCase(), margin, y);
     y += 10;
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
-    doc.setTextColor(100, 116, 139);
+    doc.setTextColor(80, 80, 80);
     const contactInfo = [
       enhancedResume.personalInfo.email,
       enhancedResume.personalInfo.phone,
@@ -169,7 +167,7 @@ export default function ResumeOptimizer() {
     // Summary
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
-    doc.setTextColor(30, 58, 138);
+    doc.setTextColor(20, 20, 20);
     doc.text("PROFESSIONAL SUMMARY", margin, y);
     y += 4;
     addLine(y);
@@ -177,7 +175,7 @@ export default function ResumeOptimizer() {
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
-    doc.setTextColor(51, 65, 85);
+    doc.setTextColor(40, 40, 40);
     const summaryLines = doc.splitTextToSize(enhancedResume.summary, pageWidth - (margin * 2));
     doc.text(summaryLines, margin, y);
     y += (summaryLines.length * 6) + 15;
@@ -185,7 +183,7 @@ export default function ResumeOptimizer() {
     // Experience
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
-    doc.setTextColor(30, 58, 138);
+    doc.setTextColor(20, 20, 20);
     doc.text("PROFESSIONAL EXPERIENCE", margin, y);
     y += 4;
     addLine(y);
@@ -194,25 +192,25 @@ export default function ResumeOptimizer() {
     enhancedResume.experience.forEach((exp: any) => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.setTextColor(15, 23, 42);
+      doc.setTextColor(15, 15, 15);
       doc.text(exp.role, margin, y);
       
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
-      doc.setTextColor(100, 116, 139);
+      doc.setTextColor(80, 80, 80);
       doc.text(exp.duration, pageWidth - margin, y, { align: "right" });
       y += 6;
 
       doc.setFont("helvetica", "bold");
-      doc.setTextColor(37, 99, 235);
+      doc.setTextColor(30, 30, 30);
       doc.text(exp.company, margin, y);
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(100, 116, 139);
+      doc.setTextColor(80, 80, 80);
       doc.text(exp.location, pageWidth - margin, y, { align: "right" });
       y += 8;
 
       doc.setFontSize(10);
-      doc.setTextColor(51, 65, 85);
+      doc.setTextColor(40, 40, 40);
       exp.bullets.forEach((bullet: string) => {
         const bulletLines = doc.splitTextToSize(`\u2022  ${bullet}`, pageWidth - (margin * 2) - 5);
         doc.text(bulletLines, margin + 5, y);
@@ -229,7 +227,7 @@ export default function ResumeOptimizer() {
     // Education
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
-    doc.setTextColor(30, 58, 138);
+    doc.setTextColor(20, 20, 20);
     doc.text("EDUCATION", margin, y);
     y += 4;
     addLine(y);
@@ -238,7 +236,7 @@ export default function ResumeOptimizer() {
     enhancedResume.education.forEach((edu: any) => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(11);
-      doc.setTextColor(15, 23, 42);
+      doc.setTextColor(15, 15, 15);
       doc.text(edu.degree, margin, y);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(10);
@@ -251,7 +249,7 @@ export default function ResumeOptimizer() {
     // Skills
     doc.setFont("helvetica", "bold");
     doc.setFontSize(12);
-    doc.setTextColor(30, 58, 138);
+    doc.setTextColor(20, 20, 20);
     doc.text("SKILLS & EXPERTISE", margin, y);
     y += 4;
     addLine(y);
@@ -260,12 +258,12 @@ export default function ResumeOptimizer() {
     enhancedResume.skills.forEach((skillSet: any) => {
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10);
-      doc.setTextColor(15, 23, 42);
+      doc.setTextColor(15, 15, 15);
       doc.text(skillSet.category + ": ", margin, y);
       
       const categoryWidth = doc.getTextWidth(skillSet.category + ": ");
       doc.setFont("helvetica", "normal");
-      doc.setTextColor(51, 65, 85);
+      doc.setTextColor(40, 40, 40);
       doc.text(skillSet.items.join(", "), margin + categoryWidth, y);
       y += 6;
     });
@@ -285,31 +283,31 @@ export default function ResumeOptimizer() {
     <div className="page-shell text-white relative overflow-hidden">
       {hasReachedLimit('resume') && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-md" />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-md" />
           <motion.div 
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative w-full max-w-lg p-10 rounded-[40px] bg-white/[0.03] border border-white/10 shadow-[0_0_50px_rgba(59,130,246,0.15)] backdrop-blur-2xl text-center"
+            className="relative w-full max-w-lg p-10 rounded-[28px] bg-zinc-900/90 border border-white/15 shadow-2xl backdrop-blur-2xl text-center"
           >
             <div className="mb-8 flex justify-center">
-              <div className="w-20 h-20 rounded-3xl bg-blue-600/20 flex items-center justify-center border border-blue-500/30">
-                <Sparkles className="w-10 h-10 text-blue-400" />
+              <div className="w-20 h-20 rounded-3xl bg-white/10 flex items-center justify-center border border-white/20">
+                <Sparkles className="w-10 h-10 text-white" />
               </div>
             </div>
-            <h2 className="text-3xl font-black text-white tracking-tighter mb-4 uppercase">Practice Limit Reached</h2>
-            <p className="text-slate-400 font-medium text-sm leading-relaxed mb-10">
-              You've reached the 1-use limit for guest users. To unlock unlimited AI optimization and save your progress, upgrade to the full system.
+            <h2 className="text-3xl font-black text-white tracking-tight mb-4 uppercase">Practice Limit Reached</h2>
+            <p className="text-zinc-400 font-medium text-sm leading-relaxed mb-10">
+              You've reached the 1-use limit for guest users. To unlock unlimited AI optimization and save your progress, access your full account.
             </p>
             <div className="grid grid-cols-2 gap-4">
               <Link
                 to="/engine"
-                className="py-4 rounded-2xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-[0_0_20px_rgba(37,99,235,0.3)]"
+                className="py-4 rounded-xl bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-zinc-200 transition-all shadow-lg text-center no-underline"
               >
                 AI Engine
               </Link>
               <Link
                 to="/"
-                className="py-4 rounded-2xl bg-white/5 border border-white/10 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
+                className="py-4 rounded-xl bg-white/5 border border-white/10 text-white text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all text-center no-underline"
               >
                 Home
               </Link>
@@ -317,12 +315,6 @@ export default function ResumeOptimizer() {
           </motion.div>
         </div>
       )}
-      {/* Background glows */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute top-0 left-1/2 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-blue-700/15 blur-[140px]" />
-        <div className="absolute top-[38rem] right-[-10rem] h-[320px] w-[320px] rounded-full bg-cyan-500/10 blur-[110px]" />
-        <div className="absolute bottom-0 left-[-8rem] h-[320px] w-[320px] rounded-full bg-blue-600/10 blur-[110px]" />
-      </div>
       
       <div className="page-frame relative z-10 flex-1 flex flex-col items-center justify-center">
         {/* Header */}
@@ -332,15 +324,15 @@ export default function ResumeOptimizer() {
           className="page-intro self-start mb-10"
         >
           <div className="eyebrow mb-5">
-            <Cpu className="w-4 h-4 text-blue-400 animate-pulse" />
-            Ollama Local AI Engine
+            <Cpu className="w-4 h-4 text-white animate-pulse" />
+            AI Resume Analysis Engine
           </div>
           <h1 className="page-title mb-4">
             Resume <span className="title-accent">Optimizer</span>
           </h1>
           {error && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 mx-auto max-w-lg p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-bold uppercase tracking-widest flex items-center gap-2 justify-center">
-              <AlertCircle className="w-4 h-4" /> {error}
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mb-6 mx-auto max-w-lg p-4 rounded-xl bg-zinc-800 border border-white/20 text-zinc-200 text-xs font-bold uppercase tracking-widest flex items-center gap-2 justify-center">
+              <AlertCircle className="w-4 h-4 text-white" /> {error}
             </motion.div>
           )}
           <p className="page-lede">
@@ -359,15 +351,15 @@ export default function ResumeOptimizer() {
             >
               {/* Tab Toggle */}
               <div className="flex justify-start mb-6">
-                <div className="inline-flex p-1.5 rounded-2xl bg-white/[0.03] border border-white/10 backdrop-blur-xl">
+                <div className="inline-flex p-1.5 rounded-2xl bg-black/60 border border-white/10 backdrop-blur-xl">
                   {(['analyze', 'enhance'] as const).map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                      className={`px-8 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all cursor-pointer ${
                         activeTab === tab 
-                          ? 'bg-blue-600 text-white shadow-[0_0_20px_rgba(37,99,235,0.3)]' 
-                          : 'text-slate-500 hover:text-slate-300'
+                          ? 'bg-white text-black shadow-lg font-bold' 
+                          : 'text-zinc-400 hover:text-white'
                       }`}
                     >
                       {tab === 'analyze' && <Target className="w-3.5 h-3.5 inline mr-2" />}
@@ -379,9 +371,9 @@ export default function ResumeOptimizer() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-10 relative overflow-hidden group">
+                <div className="rounded-[28px] border border-white/10 bg-zinc-900/60 backdrop-blur-xl shadow-2xl p-8 sm:p-10 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-600/20 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-widest hover:bg-blue-600/30 transition-all">
+                    <label className="cursor-pointer flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 border border-white/20 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/20 transition-all">
                       <Upload className="w-3.5 h-3.5" />
                       Upload PDF
                       <input type="file" accept=".pdf,.txt" className="hidden" onChange={handleFileUpload} />
@@ -389,32 +381,32 @@ export default function ResumeOptimizer() {
                   </div>
                   
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-8 h-8 rounded-xl bg-blue-600/20 flex items-center justify-center border border-blue-500/20">
-                      <FileText className="w-4 h-4 text-blue-400" />
+                    <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center border border-white/10 text-white">
+                      <FileText className="w-4 h-4" />
                     </div>
                     <h2 className="text-sm font-bold text-white uppercase tracking-widest">Source Document</h2>
                   </div>
                   
                   {isExtracting ? (
-                    <div className="w-full h-80 flex flex-col items-center justify-center space-y-4 rounded-3xl bg-black/40 border border-white/5">
-                      <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-                      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Scanning Document...</p>
+                    <div className="w-full h-80 flex flex-col items-center justify-center space-y-4 rounded-2xl bg-black/60 border border-white/10">
+                      <Loader2 className="w-10 h-10 text-white animate-spin" />
+                      <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Scanning Document...</p>
                     </div>
                   ) : (
                     <textarea
                       value={resumeText}
                       onChange={(e) => setResumeText(e.target.value)}
                       placeholder="PASTE YOUR RESUME TEXT OR UPLOAD A PDF..."
-                      className="w-full h-80 px-6 py-5 rounded-[20px] text-sm font-bold text-slate-300 placeholder:text-slate-500 bg-[#081124] border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
+                      className="w-full h-80 px-6 py-5 rounded-2xl text-sm font-bold text-zinc-200 placeholder:text-zinc-600 bg-black/60 border border-white/10 focus:outline-none focus:ring-1 focus:ring-white transition-all resize-none"
                     />
                   )}
                 </div>
 
                 <div className="flex flex-col gap-8">
-                  <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-10 flex-1">
+                  <div className="rounded-[28px] border border-white/10 bg-zinc-900/60 backdrop-blur-xl shadow-2xl p-8 sm:p-10 flex-1">
                     <div className="flex items-center gap-3 mb-6">
-                      <div className="w-8 h-8 rounded-xl bg-violet-600/20 flex items-center justify-center border border-violet-500/20">
-                        <Target className="w-4 h-4 text-violet-400" />
+                      <div className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center border border-white/10 text-white">
+                        <Target className="w-4 h-4" />
                       </div>
                       <h2 className="text-sm font-bold text-white uppercase tracking-widest">Target Objective</h2>
                     </div>
@@ -422,14 +414,14 @@ export default function ResumeOptimizer() {
                       value={jobDescription}
                       onChange={(e) => setJobDescription(e.target.value)}
                       placeholder="PASTE TARGET JOB DESCRIPTION..."
-                      className="w-full h-52 px-6 py-5 rounded-[20px] text-sm font-bold text-slate-300 placeholder:text-slate-500 bg-[#081124] border border-white/10 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all resize-none"
+                      className="w-full h-52 px-6 py-5 rounded-2xl text-sm font-bold text-zinc-200 placeholder:text-zinc-600 bg-black/60 border border-white/10 focus:outline-none focus:ring-1 focus:ring-white transition-all resize-none"
                     />
                   </div>
 
                   <button
                     onClick={activeTab === 'analyze' ? handleAnalyze : handleEnhance}
                     disabled={loading || !resumeText || (activeTab === 'analyze' && !jobDescription)}
-                    className="w-full flex items-center justify-center gap-3 py-6 rounded-[28px] bg-blue-500 font-bold text-sm uppercase tracking-[0.2em] text-white transition hover:bg-blue-400 disabled:opacity-50 disabled:hover:bg-blue-500 shadow-lg"
+                    className="w-full flex items-center justify-center gap-3 py-6 rounded-2xl bg-white text-black font-black text-sm uppercase tracking-[0.2em] transition hover:bg-zinc-200 disabled:opacity-30 cursor-pointer shadow-xl"
                   >
                     {loading ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -449,14 +441,12 @@ export default function ResumeOptimizer() {
               className="w-full max-w-6xl space-y-8"
             >
               {/* Score Header */}
-              <div className="rounded-[28px] border border-blue-500/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-12 flex flex-col md:flex-row items-center gap-12 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-blue-500 shadow-[0_0_20px_#3b82f6]" />
-                
+              <div className="rounded-[28px] border border-white/15 bg-zinc-900/80 backdrop-blur-xl shadow-2xl p-10 flex flex-col md:flex-row items-center gap-10 relative overflow-hidden">
                 <div className="relative">
                   <svg className="w-32 h-32 transform -rotate-90">
-                    <circle cx="64" cy="64" r="60" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="8" />
+                    <circle cx="64" cy="64" r="60" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="8" />
                     <motion.circle
-                      cx="64" cy="64" r="60" fill="none" stroke="#3b82f6" strokeWidth="8"
+                      cx="64" cy="64" r="60" fill="none" stroke="#ffffff" strokeWidth="8"
                       strokeDasharray={2 * Math.PI * 60}
                       initial={{ strokeDashoffset: 2 * Math.PI * 60 }}
                       animate={{ strokeDashoffset: (2 * Math.PI * 60) * (1 - results.score / 100) }}
@@ -466,16 +456,16 @@ export default function ResumeOptimizer() {
                   </svg>
                   <div className="absolute inset-0 flex flex-col items-center justify-center">
                     <span className="text-4xl font-black text-white tracking-tighter">{results.score}</span>
-                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">PTS</span>
+                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">PTS</span>
                   </div>
                 </div>
 
                 <div className="flex-1 text-center md:text-left">
-                  <h2 className="text-3xl font-black text-white mb-2 tracking-tighter uppercase">ALIGNMENT SCORE: {results.score >= 80 ? 'EXCELLENT' : 'OPTIMIZED'}</h2>
-                  <p className="text-sm font-bold text-slate-500 uppercase tracking-[0.2em] mb-4">MATCH QUALITY ANALYSIS COMPLETED</p>
+                  <h2 className="text-3xl font-black text-white mb-2 tracking-tight uppercase">ALIGNMENT SCORE: {results.score >= 80 ? 'EXCELLENT' : 'OPTIMIZED'}</h2>
+                  <p className="text-xs font-bold text-zinc-400 uppercase tracking-[0.2em] mb-4">MATCH QUALITY ANALYSIS COMPLETED</p>
                   <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                     {results.missingKeywords.map((kw: string) => (
-                      <span key={kw} className="px-3 py-1 rounded-lg bg-rose-500/10 text-rose-500 text-[10px] font-black uppercase tracking-widest border border-rose-500/20">
+                      <span key={kw} className="px-3 py-1 rounded-lg bg-zinc-800 text-zinc-300 text-[10px] font-black uppercase tracking-widest border border-white/10">
                         MISSING: {kw}
                       </span>
                     ))}
@@ -484,7 +474,7 @@ export default function ResumeOptimizer() {
 
                 <button
                   onClick={reset}
-                  className="p-4 rounded-2xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all border border-white/10 border-none cursor-pointer"
+                  className="p-4 rounded-xl bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white transition-all border border-white/10 cursor-pointer"
                 >
                   <RotateCcw className="w-6 h-6" />
                 </button>
@@ -492,48 +482,48 @@ export default function ResumeOptimizer() {
 
               {/* Feedbacks Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-10">
+                <div className="rounded-[28px] border border-white/10 bg-zinc-900/60 backdrop-blur-xl shadow-2xl p-8 sm:p-10">
                   <div className="flex items-center gap-3 mb-8">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                    <CheckCircle2 className="w-5 h-5 text-white" />
                     <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">Achievement Mapping</h3>
                   </div>
                   <div className="space-y-4">
                     {results.suggestions.map((s: any, i: number) => (
-                      <div key={i} className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-                        <p className="text-xs font-bold text-slate-400 italic mb-2">Original Context</p>
+                      <div key={i} className="p-5 rounded-2xl bg-white/[0.03] border border-white/10">
+                        <p className="text-xs font-bold text-zinc-400 italic mb-2">Original Context</p>
                         <p className="text-xs text-white leading-relaxed font-medium">{s.original}</p>
-                        <div className="my-4 border-t border-emerald-500/20" />
-                        <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2 flex items-center gap-2">
-                          <Sparkles className="w-3 h-3" /> Professional Optimization
+                        <div className="my-4 border-t border-white/10" />
+                        <p className="text-[10px] font-black text-zinc-300 uppercase tracking-widest mb-2 flex items-center gap-2">
+                          <Sparkles className="w-3 h-3 text-white" /> Professional Optimization
                         </p>
-                        <p className="text-sm text-emerald-400 leading-relaxed font-bold">{s.improved}</p>
+                        <p className="text-sm text-white leading-relaxed font-bold">{s.improved}</p>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-xl shadow-[0_10px_40px_rgba(0,0,0,0.28)] p-10">
+                <div className="rounded-[28px] border border-white/10 bg-zinc-900/60 backdrop-blur-xl shadow-2xl p-8 sm:p-10">
                   {error && (
-                    <div className="flex items-center gap-2 text-red-400 bg-red-400/10 p-4 rounded-xl border border-red-400/20 mb-8">
-                      <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                    <div className="flex items-center gap-2 text-zinc-300 bg-zinc-800 p-4 rounded-xl border border-white/20 mb-8">
+                      <AlertCircle className="w-5 h-5 flex-shrink-0 text-white" />
                       <p className="text-sm">{cooldown > 0 ? `Neural Cooldown: ${cooldown}s remaining...` : error}</p>
                     </div>
                   )}
                   <div className="flex items-center gap-3 mb-8">
-                    <AlertCircle className="w-5 h-5 text-blue-500" />
+                    <AlertCircle className="w-5 h-5 text-white" />
                     <h3 className="text-xs font-black text-white uppercase tracking-[0.2em]">STAR Feedback Loop</h3>
                   </div>
-                  <div className="p-8 rounded-3xl bg-blue-500/5 border border-blue-500/10">
-                    <p className="text-sm text-slate-300 leading-relaxed font-medium italic">
+                  <div className="p-8 rounded-2xl bg-white/[0.03] border border-white/10">
+                    <p className="text-sm text-zinc-300 leading-relaxed font-medium italic">
                       {results.starFeedback}
                     </p>
-                    <div className="mt-8 pt-8 border-t border-white/5 flex items-center justify-between">
-                      <div className="text-[10px] font-black text-slate-600 uppercase tracking-widest">
+                    <div className="mt-8 pt-8 border-t border-white/10 flex items-center justify-between">
+                      <div className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">
                         Verified Performance Analysis
                       </div>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map(x => (
-                          <div key={x} className={`w-1.5 h-1.5 rounded-full ${x <= 4 ? 'bg-blue-500' : 'bg-white/10'}`} />
+                          <div key={x} className={`w-1.5 h-1.5 rounded-full ${x <= 4 ? 'bg-white' : 'bg-white/10'}`} />
                         ))}
                       </div>
                     </div>
@@ -548,41 +538,41 @@ export default function ResumeOptimizer() {
               animate={{ opacity: 1, scale: 1 }}
               className="w-full max-w-5xl space-y-8"
             >
-              <div className="flex justify-between items-center bg-white/[0.03] border border-white/10 p-6 rounded-[2rem] backdrop-blur-xl">
+              <div className="flex justify-between items-center bg-zinc-900/80 border border-white/10 p-6 rounded-2xl backdrop-blur-xl">
                 <div className="flex gap-4">
-                   <div className="w-12 h-12 rounded-2xl bg-blue-600/20 flex items-center justify-center border border-blue-500/20 text-blue-400">
+                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center border border-white/20 text-white">
                     <Award className="w-6 h-6" />
                   </div>
                   <div>
                     <h2 className="text-sm font-black text-white uppercase tracking-widest mb-1">Professional Resume Template</h2>
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Optimized by Ollama AI</p>
+                    <p className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">Optimized by AI Engine</p>
                   </div>
                 </div>
                 <div className="flex gap-3">
-                  <button onClick={handleDownloadPDF} className="px-8 py-3 rounded-xl bg-blue-600 text-white text-[10px] font-black uppercase tracking-widest hover:bg-blue-700 transition-all flex items-center gap-2 shadow-[0_0_30px_rgba(37,99,235,0.3)]">
+                  <button onClick={handleDownloadPDF} className="px-8 py-3 rounded-xl bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-zinc-200 transition-all flex items-center gap-2 shadow-lg cursor-pointer">
                     <Download className="w-4 h-4" /> Download PDF
                   </button>
-                  <button onClick={reset} className="p-3 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-all">
+                  <button onClick={reset} className="p-3 rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white transition-all cursor-pointer">
                     <RotateCcw className="w-5 h-5" />
                   </button>
                 </div>
               </div>
 
               {/* Resume Preview */}
-              <div className="bg-white p-12 rounded-[2rem] shadow-2xl text-slate-900 font-['Inter'] relative overflow-hidden">
+              <div className="bg-white p-12 rounded-2xl shadow-2xl text-zinc-900 font-['Inter'] relative overflow-hidden border border-zinc-200">
                 <div className="max-w-4xl mx-auto space-y-10">
                   {/* Header */}
-                  <header className="text-center space-y-4 border-b-2 border-slate-100 pb-10">
-                    <h1 className="text-5xl font-black tracking-tighter text-slate-900 uppercase">{enhancedResume.personalInfo.name}</h1>
-                    <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm font-bold text-slate-500">
-                      <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-blue-600" /> {enhancedResume.personalInfo.email}</span>
-                      <span className="flex items-center gap-2"><Phone className="w-4 h-4 text-blue-600" /> {enhancedResume.personalInfo.phone}</span>
-                      <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-blue-600" /> {enhancedResume.personalInfo.location}</span>
+                  <header className="text-center space-y-4 border-b-2 border-zinc-200 pb-10">
+                    <h1 className="text-5xl font-black tracking-tight text-zinc-950 uppercase">{enhancedResume.personalInfo.name}</h1>
+                    <div className="flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm font-bold text-zinc-600">
+                      <span className="flex items-center gap-2"><Mail className="w-4 h-4 text-zinc-900" /> {enhancedResume.personalInfo.email}</span>
+                      <span className="flex items-center gap-2"><Phone className="w-4 h-4 text-zinc-900" /> {enhancedResume.personalInfo.phone}</span>
+                      <span className="flex items-center gap-2"><MapPin className="w-4 h-4 text-zinc-900" /> {enhancedResume.personalInfo.location}</span>
                       {enhancedResume.personalInfo.linkedin && (
-                        <span className="flex items-center gap-2"><Linkedin className="w-4 h-4 text-blue-600" /> {enhancedResume.personalInfo.linkedin}</span>
+                        <span className="flex items-center gap-2"><Linkedin className="w-4 h-4 text-zinc-900" /> {enhancedResume.personalInfo.linkedin}</span>
                       )}
                       {enhancedResume.personalInfo.website && (
-                        <span className="flex items-center gap-2"><ExternalLink className="w-4 h-4 text-blue-600" /> {enhancedResume.personalInfo.website}</span>
+                        <span className="flex items-center gap-2"><ExternalLink className="w-4 h-4 text-zinc-900" /> {enhancedResume.personalInfo.website}</span>
                       )}
                     </div>
                   </header>
@@ -590,10 +580,10 @@ export default function ResumeOptimizer() {
                   {/* Summary */}
                   <section className="space-y-4">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] whitespace-nowrap">Professional Summary</h3>
-                      <div className="h-[2px] w-full bg-blue-600/10" />
+                      <h3 className="text-[10px] font-black text-zinc-900 uppercase tracking-[0.4em] whitespace-nowrap">Professional Summary</h3>
+                      <div className="h-[2px] w-full bg-zinc-200" />
                     </div>
-                    <p className="text-base leading-relaxed text-slate-700 font-medium">
+                    <p className="text-base leading-relaxed text-zinc-800 font-medium">
                       <TypewriterText text={enhancedResume.summary} />
                     </p>
                   </section>
@@ -601,24 +591,24 @@ export default function ResumeOptimizer() {
                   {/* Experience */}
                   <section className="space-y-8">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] whitespace-nowrap">Professional Experience</h3>
-                      <div className="h-[2px] w-full bg-blue-600/10" />
+                      <h3 className="text-[10px] font-black text-zinc-900 uppercase tracking-[0.4em] whitespace-nowrap">Professional Experience</h3>
+                      <div className="h-[2px] w-full bg-zinc-200" />
                     </div>
                     <div className="space-y-10">
                       {enhancedResume.experience.map((exp: any, i: number) => (
                         <div key={i} className="space-y-4">
                           <div className="flex justify-between items-baseline">
-                            <h4 className="text-xl font-black text-slate-900 tracking-tight">{exp.role}</h4>
-                            <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-full">{exp.duration}</span>
+                            <h4 className="text-xl font-black text-zinc-950 tracking-tight">{exp.role}</h4>
+                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest bg-zinc-100 px-3 py-1 rounded-full">{exp.duration}</span>
                           </div>
-                          <div className="flex justify-between items-center text-sm font-black text-blue-600 uppercase tracking-widest">
+                          <div className="flex justify-between items-center text-sm font-black text-zinc-900 uppercase tracking-widest">
                             <span>{exp.company}</span>
-                            <span className="text-slate-400">{exp.location}</span>
+                            <span className="text-zinc-500">{exp.location}</span>
                           </div>
                           <ul className="grid grid-cols-1 gap-3">
                             {exp.bullets.map((bullet: string, bi: number) => (
-                              <li key={bi} className="text-[13px] leading-relaxed text-slate-600 flex gap-4">
-                                <span className="text-blue-600 font-black mt-0.5">•</span>
+                              <li key={bi} className="text-[13px] leading-relaxed text-zinc-700 flex gap-4">
+                                <span className="text-zinc-900 font-black mt-0.5">•</span>
                                 <span className="font-medium">{bullet}</span>
                               </li>
                             ))}
@@ -631,16 +621,16 @@ export default function ResumeOptimizer() {
                   {/* Skills Grid */}
                   <section className="space-y-8">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] whitespace-nowrap">Technical & Professional Skills</h3>
-                      <div className="h-[2px] w-full bg-blue-600/10" />
+                      <h3 className="text-[10px] font-black text-zinc-900 uppercase tracking-[0.4em] whitespace-nowrap">Technical & Professional Skills</h3>
+                      <div className="h-[2px] w-full bg-zinc-200" />
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-16 gap-y-8">
                       {enhancedResume.skills.map((skill: any, si: number) => (
                         <div key={si} className="space-y-3">
-                          <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b pb-1">{skill.category}</h4>
+                          <h4 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b pb-1">{skill.category}</h4>
                           <div className="flex flex-wrap gap-2">
                             {skill.items.map((item: string, ii: number) => (
-                              <span key={ii} className="px-3 py-1 rounded-lg bg-blue-50 text-blue-700 text-[11px] font-black uppercase tracking-wider">
+                              <span key={ii} className="px-3 py-1 rounded-lg bg-zinc-100 text-zinc-900 text-[11px] font-black uppercase tracking-wider">
                                 {item}
                               </span>
                             ))}
@@ -653,19 +643,19 @@ export default function ResumeOptimizer() {
                   {/* Education */}
                   <section className="space-y-8">
                     <div className="flex items-center gap-4">
-                      <h3 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.4em] whitespace-nowrap">Educational Background</h3>
-                      <div className="h-[2px] w-full bg-blue-600/10" />
+                      <h3 className="text-[10px] font-black text-zinc-900 uppercase tracking-[0.4em] whitespace-nowrap">Educational Background</h3>
+                      <div className="h-[2px] w-full bg-zinc-200" />
                     </div>
                     <div className="space-y-6">
                       {enhancedResume.education.map((edu: any, ei: number) => (
                         <div key={ei} className="flex justify-between items-baseline group">
                           <div className="space-y-1">
-                            <h4 className="text-base font-black text-slate-900 group-hover:text-blue-600 transition-colors">{edu.degree}</h4>
-                            <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">{edu.school}</p>
+                            <h4 className="text-base font-black text-zinc-950">{edu.degree}</h4>
+                            <p className="text-sm font-bold text-zinc-600 uppercase tracking-widest">{edu.school}</p>
                           </div>
                           <div className="text-right">
-                            <p className="text-xs font-black text-slate-900 mb-1">{edu.duration}</p>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{edu.location}</p>
+                            <p className="text-xs font-black text-zinc-950 mb-1">{edu.duration}</p>
+                            <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">{edu.location}</p>
                           </div>
                         </div>
                       ))}

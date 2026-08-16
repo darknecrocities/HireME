@@ -1,42 +1,44 @@
 @import "tailwindcss";
 
 /*
- * HireME — Career Office design system
- * Intent: quiet authority, highly legible workspaces, and one deliberate signal color.
+ * HireME — Obsidian Minimalist design system
+ * Intent: luxury monochrome, high-contrast typography, architectural precision.
+ * All blue/cobalt removed. Signal = pure white. Canvas = obsidian black.
  */
 @theme {
-  --color-black-pure: #0a0f1e;
-  --color-blue-deep: #111a30;
-  --color-blue-accent: #183a78;
-  --color-blue-glow: #4a7fe7;
-  --color-slate-400: #9caac1;
-  --color-slate-300: #c8d2e2;
-  --color-accent-blue: #4479dc;
-  --color-accent-blue-light: #80a7fa;
+  --color-black-pure: #050505;
+  --color-ink-deep: #0a0a0a;
+  --color-ink-raised: #121214;
+  --color-ink-soft: #18181b;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-500: #71717a;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-100: #f4f4f5;
+  --color-white-pure: #ffffff;
   --color-accent-emerald: #3aae84;
   --color-accent-emerald-light: #79d8ae;
-  --color-accent-violet: #8b7ad2;
-  --color-accent-violet-light: #b4a8ed;
   --color-accent-rose: #db6675;
   --color-accent-amber: #d8a652;
   --color-glass-white: rgba(255, 255, 255, 0.04);
-  --color-glass-border: rgba(211, 223, 244, 0.12);
-  --font-family-sans: "Manrope", "Inter", system-ui, sans-serif;
-  --font-family-display: "DM Serif Display", Georgia, serif;
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --font-family-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-family-display: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --nav-h: 5rem;
 }
 
 :root {
-  --ink: #0a0f1e;
-  --ink-raised: #11192a;
-  --ink-soft: #182238;
-  --paper: #f5f1e8;
-  --paper-muted: #b9c4d5;
-  --line: rgba(211, 223, 244, 0.12);
-  --line-strong: rgba(211, 223, 244, 0.2);
-  --signal: #6f97f4;
-  --signal-strong: #4f7ee5;
-  --signal-wash: rgba(111, 151, 244, 0.12);
+  --ink: #050505;
+  --ink-raised: #0e0e10;
+  --ink-soft: #18181b;
+  --paper: #f4f4f5;
+  --paper-muted: #a1a1aa;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.16);
+  --signal: #ffffff;
+  --signal-strong: #e4e4e7;
+  --signal-wash: rgba(255, 255, 255, 0.08);
   --success: #7ad3ac;
   --danger: #ec94a0;
 }
@@ -53,7 +55,7 @@ html {
   scroll-behavior: smooth;
   overflow-x: hidden;
   scrollbar-width: thin;
-  scrollbar-color: #44526d transparent;
+  scrollbar-color: #3f3f46 transparent;
   scrollbar-gutter: stable;
 }
 
@@ -67,6 +69,12 @@ body {
   background: var(--ink);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  cursor: none;
+}
+
+/* Allow default cursor on touch devices */
+@media (hover: none) {
+  body { cursor: auto; }
 }
 
 button, input, textarea, select { font: inherit; }
@@ -83,16 +91,13 @@ select:focus-visible {
 
 #root { width: 100%; min-height: 100vh; overflow-x: hidden; }
 
-/* Application canvas */
+/* Application canvas — subtle architectural grid, no colored glows */
 .app-shell,
 .page-shell,
 .home-page {
   position: relative;
   isolation: isolate;
-  background:
-    radial-gradient(900px 500px at 94% -8%, rgba(68, 121, 220, 0.16), transparent 58%),
-    radial-gradient(700px 500px at -8% 32%, rgba(133, 111, 191, 0.10), transparent 60%),
-    var(--ink);
+  background: var(--ink);
 }
 
 .app-shell::before,
@@ -103,8 +108,8 @@ select:focus-visible {
   z-index: -1;
   inset: 0;
   pointer-events: none;
-  opacity: 0.42;
-  background-image: linear-gradient(rgba(221, 229, 243, 0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(221, 229, 243, 0.028) 1px, transparent 1px);
+  opacity: 0.28;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.022) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.022) 1px, transparent 1px);
   background-size: 48px 48px;
   mask-image: linear-gradient(to bottom, black, transparent 72%);
 }
@@ -135,7 +140,7 @@ select:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--signal);
+  color: var(--paper-muted);
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -155,9 +160,9 @@ select:focus-visible {
   margin: 0.65rem 0 0;
   color: var(--paper);
   font-family: var(--font-family-display);
-  font-weight: 400;
+  font-weight: 800;
   letter-spacing: -0.04em;
-  line-height: 1.02;
+  line-height: 1.05;
 }
 
 .page-title {
@@ -168,7 +173,7 @@ select:focus-visible {
 .display-title {
   max-width: 24ch;
   font-size: clamp(3.05rem, 4.7vw, 5rem);
-  line-height: 0.96;
+  line-height: 1.0;
 }
 
 .section-title {
@@ -177,7 +182,7 @@ select:focus-visible {
   color: var(--paper);
   font-family: var(--font-family-display);
   font-size: clamp(2rem, 3.15vw, 3.25rem);
-  font-weight: 400;
+  font-weight: 800;
   letter-spacing: -0.035em;
   line-height: 1.12;
 }
@@ -192,15 +197,15 @@ select:focus-visible {
   line-height: 1.65;
 }
 
-/* Core surfaces */
+/* Core surfaces — obsidian glass */
 .surface,
 .glass-card {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 0.9rem;
-  background: linear-gradient(145deg, rgba(27, 38, 61, 0.88), rgba(15, 23, 39, 0.92));
-  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.16);
+  background: linear-gradient(145deg, rgba(24, 24, 27, 0.88), rgba(14, 14, 16, 0.92));
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.3);
 }
 
 .surface::before,
@@ -211,30 +216,30 @@ select:focus-visible {
   width: 100%;
   height: 1px;
   content: "";
-  background: linear-gradient(90deg, transparent, rgba(240, 244, 252, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
 }
 
-.surface--quiet { background: rgba(17, 25, 42, 0.72); box-shadow: none; }
-.surface--accent { border-color: rgba(111, 151, 244, 0.34); background: linear-gradient(135deg, rgba(68, 121, 220, 0.18), rgba(22, 31, 51, 0.95) 60%); }
+.surface--quiet { background: rgba(14, 14, 16, 0.72); box-shadow: none; }
+.surface--accent { border-color: rgba(255, 255, 255, 0.2); background: linear-gradient(135deg, rgba(39, 39, 42, 0.4), rgba(14, 14, 16, 0.95) 60%); }
 
 .surface-hover { transition: transform 220ms ease, border-color 220ms ease, background 220ms ease; }
-.surface-hover:hover { transform: translateY(-3px); border-color: rgba(126, 160, 237, 0.46); background: linear-gradient(145deg, rgba(31, 45, 72, 0.98), rgba(18, 27, 45, 0.98)); }
+.surface-hover:hover { transform: translateY(-3px); border-color: rgba(255, 255, 255, 0.24); background: linear-gradient(145deg, rgba(39, 39, 42, 0.6), rgba(18, 18, 20, 0.98)); }
 
 .metric-card { border-left: 2px solid var(--signal); }
 
-/* Reconciles pre-existing screens with the shared system while their task-specific content remains intact. */
+/* Reconciles pre-existing screens with the shared system */
 .page-shell .bg-white\/\[0\.03\],
 .page-shell .bg-white\/\[0\.02\],
 .page-shell .bg-white\/\[0\.01\] {
   border-color: var(--line);
-  background-color: rgba(22, 31, 51, 0.82);
-  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.16);
+  background-color: rgba(14, 14, 16, 0.82);
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.3);
 }
 
 .page-shell .bg-\[\#030817\],
 .page-shell .bg-\[\#081124\],
 .page-shell .bg-black\/40 {
-  background-color: rgba(9, 15, 29, 0.82);
+  background-color: rgba(9, 9, 11, 0.82);
 }
 
 .page-shell .rounded-\[28px\],
@@ -245,27 +250,31 @@ select:focus-visible {
 
 .page-shell .rounded-2xl { border-radius: 0.75rem; }
 
-/* Controls */
+/* Controls — high-contrast monochrome */
 .button-primary,
 .page-shell .bg-blue-500:not(.absolute):not(.rounded-full),
 .page-shell .bg-blue-600:not(.absolute):not(.rounded-full) {
-  border: 1px solid rgba(169, 192, 255, 0.25);
-  background: var(--signal-strong);
-  box-shadow: 0 8px 22px rgba(35, 74, 155, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: #ffffff;
+  color: #050505 !important;
+  box-shadow: 0 8px 22px rgba(255, 255, 255, 0.06);
 }
 
 .button-primary:hover,
 .page-shell .hover\:bg-blue-400:hover,
-.page-shell .hover\:bg-blue-700:hover { background: #5e8be8; }
-
-.page-shell button.bg-white {
-  border: 1px solid rgba(169, 192, 255, 0.25);
-  background: var(--signal-strong);
-  color: var(--paper) !important;
-  box-shadow: 0 8px 22px rgba(35, 74, 155, 0.28);
+.page-shell .hover\:bg-blue-700:hover {
+  background: #e4e4e7;
+  color: #050505 !important;
 }
 
-.page-shell button.bg-white:hover { background: #5e8be8; }
+.page-shell button.bg-white {
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: #ffffff;
+  color: #050505 !important;
+  box-shadow: 0 8px 22px rgba(255, 255, 255, 0.06);
+}
+
+.page-shell button.bg-white:hover { background: #e4e4e7; }
 
 .button-secondary {
   border: 1px solid var(--line-strong);
@@ -277,16 +286,16 @@ select:focus-visible {
 .page-shell textarea,
 .form-field {
   border-color: var(--line-strong) !important;
-  background: rgba(7, 13, 27, 0.72) !important;
+  background: rgba(9, 9, 11, 0.72) !important;
   color: var(--paper) !important;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
 }
 
 .page-shell input::placeholder,
-.page-shell textarea::placeholder { color: #697993 !important; font-weight: 500; }
+.page-shell textarea::placeholder { color: #52525b !important; font-weight: 500; }
 
 .page-shell input:focus,
-.page-shell textarea:focus { border-color: var(--signal) !important; box-shadow: 0 0 0 3px rgba(111, 151, 244, 0.15) !important; }
+.page-shell textarea:focus { border-color: var(--signal) !important; box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08) !important; }
 
 /* Navigation */
 .nav-wrap {
@@ -303,8 +312,8 @@ select:focus-visible {
   padding: 0.5rem 0.65rem 0.5rem 1rem;
   border: 1px solid var(--line);
   border-radius: 0.9rem;
-  background: rgba(10, 15, 30, 0.82);
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.26);
+  background: rgba(5, 5, 5, 0.82);
+  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(18px);
 }
 
@@ -314,28 +323,28 @@ select:focus-visible {
   height: 2.2rem;
   overflow: hidden;
   place-items: center;
-  border: 1px solid rgba(128, 167, 250, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 0.65rem;
-  background: rgba(111, 151, 244, 0.1);
+  background: rgba(255, 255, 255, 0.06);
 }
 
-.nav-link { border: 1px solid transparent; color: #aab7cc; }
+.nav-link { border: 1px solid transparent; color: #71717a; }
 .nav-link:hover { color: var(--paper); background: rgba(255, 255, 255, 0.045); }
 .nav-link--active { border-color: var(--line); color: var(--paper); background: rgba(255, 255, 255, 0.06); }
 
-/* Editorial home: the only intentionally expressive composition in the product. */
+/* Editorial home */
 .home-hero { padding-top: calc(var(--nav-h) + 2.5rem); }
 .home-hero-panel { border-radius: 1rem; }
-.home-hero-panel::after { position: absolute; right: 0; bottom: 0; width: 38%; height: 100%; content: ""; pointer-events: none; background: linear-gradient(135deg, transparent, rgba(111, 151, 244, 0.08)); }
+.home-hero-panel::after { position: absolute; right: 0; bottom: 0; width: 38%; height: 100%; content: ""; pointer-events: none; background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.03)); }
 .home-hero-panel .page-lede { max-width: 54ch; }
 .home-rule { width: 100%; border-top: 1px solid var(--line); }
 
-/* The interview is a focused workbench, not a marketing page. */
+/* Interview workbench */
 .session-frame { padding-top: 0.25rem; }
 .session-frame .session-title { font-size: clamp(1.35rem, 2vw, 1.8rem); letter-spacing: -0.025em; }
 .session-frame .session-subtitle { font-size: 0.62rem; letter-spacing: 0.18em; }
 
-/* Motion language: depth is reserved for orientation and progress, never for interruption. */
+/* Motion — monochrome scroll progress */
 .scroll-progress {
   position: fixed;
   z-index: 80;
@@ -344,8 +353,8 @@ select:focus-visible {
   width: 100%;
   height: 2px;
   transform-origin: 0 50%;
-  background: linear-gradient(90deg, var(--signal-strong), #94d7ff);
-  box-shadow: 0 0 14px rgba(111, 151, 244, 0.65);
+  background: linear-gradient(90deg, #71717a, #ffffff);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.25);
 }
 
 .scroll-depth,
@@ -364,7 +373,7 @@ select:focus-visible {
   border-radius: 999px;
   opacity: 0;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(190, 216, 255, 0.11), transparent 68%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent 68%);
   transition: opacity 180ms ease;
 }
 
@@ -384,7 +393,7 @@ select:focus-visible {
   padding: 0.3rem;
   border: 1px solid var(--line);
   border-radius: 0.78rem;
-  background: rgba(7, 13, 27, 0.5);
+  background: rgba(9, 9, 11, 0.5);
 }
 
 .career-plan-tab {
@@ -404,9 +413,100 @@ select:focus-visible {
 }
 
 .career-plan-tab:hover { color: var(--paper); background: rgba(255, 255, 255, 0.04); }
-.career-plan-tab--active { color: var(--paper); border-color: rgba(128, 167, 250, 0.24); background: rgba(111, 151, 244, 0.13); }
+.career-plan-tab--active { color: var(--paper); border-color: rgba(255, 255, 255, 0.2); background: rgba(255, 255, 255, 0.08); }
 
-/* Motion intentionally remains subtle for a professional, task-focused product. */
+/* Override blue tailwind utility classes used inline in pages */
+.page-shell .bg-blue-600,
+.page-shell .bg-blue-500 {
+  background-color: #ffffff !important;
+  color: #050505 !important;
+}
+
+.page-shell .bg-blue-600\/20,
+.page-shell .bg-blue-600\/10,
+.page-shell .bg-blue-500\/10,
+.page-shell .bg-blue-500\/20 {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.page-shell .border-blue-500\/30,
+.page-shell .border-blue-500\/20,
+.page-shell .border-blue-400\/40,
+.page-shell .border-blue-400\/15,
+.page-shell .border-blue-900\/30 {
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.page-shell .text-blue-400,
+.page-shell .text-blue-300,
+.page-shell .text-blue-500 {
+  color: #d4d4d8 !important;
+}
+
+.page-shell .bg-blue-400,
+.page-shell .bg-blue-500\/50 {
+  background-color: #d4d4d8 !important;
+}
+
+.page-shell .ring-blue-500\/10,
+.page-shell .ring-1.ring-blue-500\/10 {
+  --tw-ring-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.page-shell .focus\:ring-blue-500:focus,
+.page-shell .focus\:ring-blue-500\/50:focus {
+  --tw-ring-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.page-shell .shadow-blue-900\/40 {
+  --tw-shadow-color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.page-shell .hover\:bg-blue-400:hover,
+.page-shell .hover\:bg-blue-700:hover,
+.page-shell .hover\:bg-blue-500\/20:hover {
+  background-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+.page-shell .bg-blue-600\/25 {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.page-shell .shadow-\[0_0_20px_rgba\(59\,130\,246\,0\.3\)\],
+.page-shell .shadow-\[0_0_15px_rgba\(59\,130\,246\,0\.3\)\],
+.page-shell .shadow-\[0_0_15px_rgba\(59\,130\,246\,0\.2\)\],
+.page-shell .shadow-\[0_0_15px_rgba\(59\,130\,246\,0\.15\)\],
+.page-shell .shadow-\[0_0_15px_rgba\(59\,130\,246\,0\.1\)\],
+.page-shell .shadow-\[0_0_50px_rgba\(59\,130\,246\,0\.15\)\],
+.page-shell .shadow-\[0_10px_30px_rgba\(59\,130\,246\,0\.3\)\] {
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.04) !important;
+}
+
+.page-shell .bg-blue-900\/10,
+.page-shell .bg-blue-900\/20,
+.page-shell .bg-blue-700\/15 {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+
+.page-shell .from-blue-500\/10,
+.page-shell .from-blue-600 {
+  --tw-gradient-from: rgba(255, 255, 255, 0.06) !important;
+}
+
+.page-shell .to-blue-400 {
+  --tw-gradient-to: rgba(255, 255, 255, 0.12) !important;
+}
+
+.page-shell .bg-gradient-to-r.from-blue-600.to-blue-400 {
+  background: linear-gradient(90deg, #71717a, #d4d4d8) !important;
+}
+
+.page-shell .bg-cyan-400,
+.page-shell .bg-cyan-500\/10 {
+  background-color: #a1a1aa !important;
+}
+
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .scroll-progress { display: none; }

@@ -8,17 +8,11 @@ interface Props {
   isActive: boolean;
 }
 
-function getScoreColor(score: number): string {
-  if (score >= 80) return '#10b981';
-  if (score >= 60) return '#f59e0b';
-  return '#f43f5e';
-}
-
 function getScoreLabel(score: number): string {
-  if (score >= 80) return 'Great';
-  if (score >= 60) return 'Good';
-  if (score >= 40) return 'Fair';
-  return 'Needs Work';
+  if (score >= 80) return 'Optimal';
+  if (score >= 60) return 'Steady';
+  if (score >= 40) return 'Moderate';
+  return 'Calibrating';
 }
 
 const BodyLanguageOverlay = memo(({ scores, isActive }: Props) => {
@@ -42,17 +36,12 @@ const BodyLanguageOverlay = memo(({ scores, isActive }: Props) => {
         style={{ width: '160px' }}
       >
         {/* Overall Score */}
-        <div className="rounded-xl p-3 text-center transition-colors duration-500"
-          style={{ 
-            background: 'rgba(0,0,0,0.7)', 
-            backdropFilter: 'blur(12px)', 
-            border: '1px solid rgba(255,255,255,0.1)' 
-          }}>
-          <p className="text-xs text-slate-400 mb-1">Overall</p>
-          <p className="text-3xl font-black transition-colors duration-500" style={{ color: getScoreColor(scores.overall) }}>
+        <div className="rounded-xl p-3 text-center transition-colors duration-500 bg-black/80 border border-white/10 backdrop-blur-xl shadow-2xl">
+          <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">Overall</p>
+          <p className="text-3xl font-black text-white tracking-tight">
             {scores.overall}
           </p>
-          <p className="text-xs font-medium transition-colors duration-500" style={{ color: getScoreColor(scores.overall) }}>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 mt-0.5">
             {getScoreLabel(scores.overall)}
           </p>
         </div>
@@ -61,21 +50,15 @@ const BodyLanguageOverlay = memo(({ scores, isActive }: Props) => {
         {metrics.map((metric) => (
           <div
             key={metric.label}
-            className="rounded-xl p-2.5 flex items-center gap-2"
-            style={{ 
-              background: 'rgba(0,0,0,0.6)', 
-              backdropFilter: 'blur(10px)', 
-              border: '1px solid rgba(255,255,255,0.08)' 
-            }}
+            className="rounded-xl p-2.5 flex items-center gap-2 bg-black/70 border border-white/10 backdrop-blur-md"
           >
-            <metric.icon className="w-4 h-4 shrink-0 transition-colors duration-500" style={{ color: getScoreColor(metric.value) }} />
+            <metric.icon className="w-4 h-4 shrink-0 text-white" />
             <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-slate-500 leading-none mb-1">{metric.label}</p>
-              <div className="w-full h-1.5 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.1)' }}>
+              <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider leading-none mb-1">{metric.label}</p>
+              <div className="w-full h-1.5 rounded-full overflow-hidden bg-white/10">
                 <div
-                  className="h-full rounded-full transition-all duration-500 ease-out"
+                  className="h-full rounded-full transition-all duration-500 ease-out bg-white"
                   style={{ 
-                    background: getScoreColor(metric.value),
                     width: `${metric.value}%`
                   }}
                 />
@@ -88,7 +71,6 @@ const BodyLanguageOverlay = memo(({ scores, isActive }: Props) => {
     </AnimatePresence>
   );
 }, (prev, next) => {
-  // Only re-render if scores change by more than 1 point to reduce flicker and re-renders
   return Math.abs(prev.scores.overall - next.scores.overall) <= 1 &&
          Math.abs(prev.scores.eyeContact - next.scores.eyeContact) <= 1 &&
          Math.abs(prev.scores.posture - next.scores.posture) <= 1 && 

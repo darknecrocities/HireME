@@ -7,19 +7,12 @@ interface ScoreCardProps {
   value: number;
   maxValue?: number;
   icon: LucideIcon;
-  color: string;
+  color?: string;
   delay?: number;
   compact?: boolean;
 }
 
-export default function ScoreCard({ label, value, maxValue = 100, icon: Icon, color, delay = 0, compact = false }: ScoreCardProps) {
-  const tones: Record<string, { solid: string; wash: string }> = {
-    blue: { solid: '#80a7fa', wash: 'rgba(128, 167, 250, 0.14)' },
-    violet: { solid: '#b4a8ed', wash: 'rgba(180, 168, 237, 0.14)' },
-    emerald: { solid: '#79d8ae', wash: 'rgba(121, 216, 174, 0.14)' },
-    amber: { solid: '#e1bc75', wash: 'rgba(225, 188, 117, 0.14)' },
-  };
-  const tone = tones[color] ?? { solid: color, wash: `${color}20` };
+export default function ScoreCard({ label, value, maxValue = 100, icon: Icon, delay = 0, compact = false }: ScoreCardProps) {
   const [displayValue, setDisplayValue] = useState(0);
   const percentage = Math.min(Math.max((value / maxValue) * 100, 0), 100);
 
@@ -49,13 +42,13 @@ export default function ScoreCard({ label, value, maxValue = 100, icon: Icon, co
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay, duration: 0.4 }}
-        className="glass-card metric-card p-4 flex items-center gap-3"
+        className="glass-card metric-card p-4 flex items-center gap-3 border-white/10"
       >
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ background: tone.wash }}>
-          <Icon className="w-5 h-5" style={{ color: tone.solid }} />
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-white/10 text-white">
+          <Icon className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-slate-400 truncate">{label}</p>
+          <p className="text-xs text-zinc-400 truncate">{label}</p>
           <p className="text-lg font-bold text-white">{displayValue}</p>
         </div>
       </motion.div>
@@ -67,31 +60,30 @@ export default function ScoreCard({ label, value, maxValue = 100, icon: Icon, co
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.5 }}
-      className="glass-card metric-card group transition-all duration-300 p-6 border-white/5 hover:border-blue-500/30 shadow-xl"
+      className="glass-card metric-card group transition-all duration-300 p-6 border-white/10 hover:border-white/25 shadow-xl"
     >
       <div className="relative">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl flex items-center justify-center" style={{ background: tone.wash }}>
-            <Icon className="w-5 h-5" style={{ color: tone.solid }} />
-          </div>
-          <div>
-            <p className="text-sm text-slate-400">{label}</p>
-            <p className="text-2xl font-bold text-white">{displayValue}<span className="text-sm text-slate-500 font-normal">/{maxValue}</span></p>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-white/10 text-white border border-white/10">
+              <Icon className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm text-zinc-400">{label}</p>
+              <p className="text-2xl font-bold text-white">{displayValue}<span className="text-sm text-zinc-500 font-normal">/{maxValue}</span></p>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Progress bar */}
-      <div className="w-full h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${percentage}%` }}
-          transition={{ delay: delay + 0.3, duration: 1, ease: 'easeOut' }}
-          className="h-full rounded-full"
-          style={{ background: `linear-gradient(90deg, ${tone.solid}, ${tone.solid}99)` }}
-        />
-      </div>
+        {/* Progress bar */}
+        <div className="w-full h-2 rounded-full overflow-hidden bg-white/10">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${percentage}%` }}
+            transition={{ delay: delay + 0.3, duration: 1, ease: 'easeOut' }}
+            className="h-full rounded-full bg-gradient-to-r from-zinc-400 to-white shadow-[0_0_10px_rgba(255,255,255,0.4)]"
+          />
+        </div>
       </div>
     </motion.div>
   );

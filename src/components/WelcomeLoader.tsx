@@ -10,8 +10,8 @@ export default function WelcomeLoader() {
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black"
     >
       <div className="relative">
-        {/* Deep blue glow background */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-900/20 blur-[100px] rounded-full" />
+        {/* Soft white ambient glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-white/[0.04] blur-[100px] rounded-full" />
         
         <motion.div
           animate={{ 
@@ -22,9 +22,9 @@ export default function WelcomeLoader() {
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="relative z-10 w-24 h-24 flex items-center justify-center drop-shadow-[0_0_50px_rgba(59,130,246,0.5)]"
+          className="relative z-10 w-24 h-24 flex items-center justify-center drop-shadow-[0_0_50px_rgba(255,255,255,0.15)]"
         >
-          <img src="/mediapipe-assets/HireMeLogo.png" alt="HireME Logo" className="w-20 h-20 rounded-3xl object-contain" />
+          <img src="/mediapipe-assets/HireMeLogo.png" alt="HireME Logo" className="w-20 h-20 rounded-3xl object-contain filter brightness-125" />
         </motion.div>
       </div>
 
@@ -35,15 +35,15 @@ export default function WelcomeLoader() {
         className="mt-12 text-center"
       >
         <h1 className="text-4xl font-black tracking-tighter text-white mb-2">
-          HIRE<span className="text-blue-500">ME</span>
+          HIRE<span className="text-zinc-400">ME</span>
         </h1>
-        <div className="flex items-center justify-center gap-2 text-slate-500 text-sm font-medium tracking-widest uppercase">
-          <Sparkles className="w-4 h-4 text-blue-400" />
-          By TAIM TEAM
+        <div className="flex items-center justify-center gap-2 text-zinc-500 text-sm font-medium tracking-widest uppercase">
+          <Sparkles className="w-4 h-4 text-zinc-400" />
+          Career Intelligence
         </div>
       </motion.div>
 
-      <div className="absolute bottom-12 w-48 h-1 bg-white/5 rounded-full overflow-hidden">
+      <div className="absolute bottom-12 w-48 h-1 bg-white/10 rounded-full overflow-hidden">
         <motion.div
           initial={{ x: "-100%" }}
           animate={{ x: "100%" }}
@@ -52,7 +52,7 @@ export default function WelcomeLoader() {
             repeat: Infinity, 
             ease: "linear" 
           }}
-          className="w-full h-full bg-blue-500"
+          className="w-full h-full bg-white"
         />
       </div>
     </motion.div>
