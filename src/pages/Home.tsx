@@ -554,12 +554,12 @@ export default function Home() {
             <Link to="/engine" data-thock="true" className="no-underline text-inherit hover:text-white transition-colors">AI Engine</Link>
           </div>
 
-          <div className="flex flex-col items-center md:items-end gap-1.5">
-            <p className="flex items-center gap-2 text-xs text-zinc-400 uppercase tracking-wider font-bold">
-              HireME © 2026
+          <div className="flex flex-col items-center md:items-end gap-1">
+            <p className="text-xs text-zinc-400 font-medium">
+              Developed by <span className="text-white font-bold">Arron Kian Parejas</span>
             </p>
-            <p className="text-[9px] text-zinc-600 font-mono uppercase tracking-[0.2em]">
-              V2.0-STABLE • OBSIDIAN MONOCHROME
+            <p className="text-[10px] text-zinc-600 font-mono tracking-wider">
+              HireME © 2026
             </p>
           </div>
         </div>
