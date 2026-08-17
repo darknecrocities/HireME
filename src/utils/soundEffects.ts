@@ -2,11 +2,16 @@
  * Mechanical Keyboard Switch Acoustic Synthesizer Engine (Web Audio API)
  * Features 16 distinct switch profiles modeled after real-world enthusiast switches:
  * Linear, Tactile, Clicky, Silent, and Vintage/Electro-Capacitive.
- * Plus Procedural Ambient Soundscapes (Lo-Fi Rain, Cozy Coffee, Deep Server, Binaural Alpha Waves)
- * and Real-Time AnalyserNode for audio visualization.
+ * Plus Procedural Ambient Soundscapes and Real-Time AnalyserNode for audio visualization.
  */
 
-import { triggerHaptic, type PlateType, type AmbientType } from './experienceSettings';
+import {
+  getExperienceSettings,
+  saveExperienceSettings,
+  triggerHaptic,
+  type ExperienceSettings,
+  type AmbientType,
+} from './experienceSettings';
 
 export type SoundProfile =
   | 'oil_king'
@@ -29,13 +34,7 @@ export type SoundProfile =
   | 'typewriter'
   | 'mute';
 
-export interface SoundSettings {
-  profile: SoundProfile;
-  volume: number; // 0.0 to 1.0
-  hoverEnabled: boolean;
-  clickEnabled: boolean;
-  plate?: PlateType;
-}
+export type SoundSettings = ExperienceSettings;
 
 export interface SwitchMeta {
   id: SoundProfile;
@@ -181,47 +180,17 @@ export const SWITCH_PROFILES: SwitchMeta[] = [
   },
 ];
 
-const DEFAULT_SETTINGS: SoundSettings = {
-  profile: 'oil_king',
-  volume: 0.8,
-  hoverEnabled: true,
-  clickEnabled: true,
-  plate: 'pom',
-};
-
 let audioCtx: AudioContext | null = null;
-let masterInputNode: GainNode | null = null;
-let masterGainNode: GainNode | null = null;
 let analyserNode: AnalyserNode | null = null;
-
 let lastHoverSoundTime = 0;
 let lastHoveredElement: Element | null = null;
-let currentSettings: SoundSettings = loadSettings();
 
-function loadSettings(): SoundSettings {
-  if (typeof window === 'undefined') return DEFAULT_SETTINGS;
-  try {
-    const saved = localStorage.getItem('hireme_sfx_settings');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed.profile === 'thock') parsed.profile = 'oil_king';
-      return { ...DEFAULT_SETTINGS, ...parsed };
-    }
-  } catch {}
-  return DEFAULT_SETTINGS;
+export function getAudioSettings(): ExperienceSettings {
+  return getExperienceSettings();
 }
 
-export function saveSettings(settings: Partial<SoundSettings>) {
-  currentSettings = { ...currentSettings, ...settings };
-  if (typeof window !== 'undefined') {
-    try {
-      localStorage.setItem('hireme_sfx_settings', JSON.stringify(currentSettings));
-    } catch {}
-  }
-}
-
-export function getAudioSettings(): SoundSettings {
-  return { ...currentSettings };
+export function saveSettings(settings: Partial<ExperienceSettings>) {
+  saveExperienceSettings(settings);
 }
 
 export function getAudioContext(): AudioContext | null {
@@ -238,37 +207,31 @@ export function getAudioContext(): AudioContext | null {
   return audioCtx;
 }
 
-function getMasterInput(ctx: AudioContext): AudioNode {
-  if (!masterInputNode || !masterGainNode || !analyserNode) {
-    masterInputNode = ctx.createGain();
-    masterGainNode = ctx.createGain();
-    analyserNode = ctx.createAnalyser();
-    analyserNode.fftSize = 256;
-    analyserNode.smoothingTimeConstant = 0.75;
-
-    masterInputNode.connect(analyserNode);
-    analyserNode.connect(masterGainNode);
-    masterGainNode.connect(ctx.destination);
-  }
-  return masterInputNode;
-}
-
 export function getAudioAnalyser(): AnalyserNode | null {
   const ctx = getAudioContext();
   if (!ctx) return null;
-  getMasterInput(ctx);
+  if (!analyserNode) {
+    analyserNode = ctx.createAnalyser();
+    analyserNode.fftSize = 256;
+    analyserNode.smoothingTimeConstant = 0.75;
+  }
   return analyserNode;
+}
+
+/** Direct connect to destination + analyser node for 100% reliable audio output */
+function connectToBus(ctx: AudioContext, node: AudioNode) {
+  try {
+    node.connect(ctx.destination);
+    const analyser = getAudioAnalyser();
+    if (analyser) {
+      node.connect(analyser);
+    }
+  } catch {}
 }
 
 // ══════════════════════════════════════════════════════════════════════
 // SWITCH SYNTHESIS ALGORITHMS
 // ══════════════════════════════════════════════════════════════════════
-
-/** Helper to connect synth output to master bus with plate modifier */
-function connectToBus(ctx: AudioContext, node: AudioNode) {
-  const master = getMasterInput(ctx);
-  node.connect(master);
-}
 
 /** 1. Gateron Oil King (Ultra Deep Lubed Thock) */
 function synthOilKing(ctx: AudioContext, now: number, vol: number, isClick = false) {
@@ -281,7 +244,7 @@ function synthOilKing(ctx: AudioContext, now: number, vol: number, isClick = fal
   osc.frequency.setValueAtTime(baseFreq, now);
   osc.frequency.exponentialRampToValueAtTime(isClick ? 28 : 38, now + 0.045);
 
-  gain.gain.setValueAtTime((isClick ? 0.28 : 0.17) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.32 : 0.2) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + (isClick ? 0.065 : 0.05));
 
   const filter = ctx.createBiquadFilter();
@@ -306,7 +269,7 @@ function synthHolyPanda(ctx: AudioContext, now: number, vol: number, isClick = f
   osc1.type = 'sine';
   osc1.frequency.setValueAtTime(bumpFreq, now);
   osc1.frequency.exponentialRampToValueAtTime(140, now + 0.015);
-  gain1.gain.setValueAtTime(0.22 * vol, now);
+  gain1.gain.setValueAtTime(0.24 * vol, now);
   gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
 
   const osc2 = ctx.createOscillator();
@@ -314,7 +277,7 @@ function synthHolyPanda(ctx: AudioContext, now: number, vol: number, isClick = f
   osc2.type = 'triangle';
   osc2.frequency.setValueAtTime((isClick ? 190 : 230) * (1 + rand), now + 0.01);
   osc2.frequency.exponentialRampToValueAtTime(45, now + 0.05);
-  gain2.gain.setValueAtTime(0.25 * vol, now + 0.01);
+  gain2.gain.setValueAtTime(0.28 * vol, now + 0.01);
   gain2.gain.exponentialRampToValueAtTime(0.001, now + (isClick ? 0.06 : 0.045));
 
   const filter = ctx.createBiquadFilter();
@@ -345,7 +308,7 @@ function synthBobaU4T(ctx: AudioContext, now: number, vol: number, isClick = fal
   osc.frequency.setValueAtTime((isClick ? 210 : 260) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(32, now + 0.04);
 
-  gain.gain.setValueAtTime((isClick ? 0.26 : 0.16) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.3 : 0.19) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
 
   const filter = ctx.createBiquadFilter();
@@ -371,7 +334,7 @@ function synthMilkyYellow(ctx: AudioContext, now: number, vol: number, isClick =
   osc.frequency.setValueAtTime((isClick ? 280 : 330) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(60, now + 0.035);
 
-  gain.gain.setValueAtTime((isClick ? 0.22 : 0.14) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.25 : 0.16) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
 
   const filter = ctx.createBiquadFilter();
@@ -397,7 +360,7 @@ function synthAlpaca(ctx: AudioContext, now: number, vol: number, isClick = fals
   osc.frequency.setValueAtTime((isClick ? 380 : 440) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(80, now + 0.03);
 
-  gain.gain.setValueAtTime((isClick ? 0.24 : 0.15) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.26 : 0.17) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
 
   const filter = ctx.createBiquadFilter();
@@ -416,22 +379,20 @@ function synthAlpaca(ctx: AudioContext, now: number, vol: number, isClick = fals
 function synthMXBlue(ctx: AudioContext, now: number, vol: number, isClick = false) {
   const rand = (Math.random() - 0.5) * 0.06;
 
-  // Click Jacket Metallic Ping
   const oscClick = ctx.createOscillator();
   const gainClick = ctx.createGain();
   oscClick.type = 'square';
   oscClick.frequency.setValueAtTime((isClick ? 1850 : 2100) * (1 + rand), now);
   oscClick.frequency.exponentialRampToValueAtTime(800, now + 0.012);
-  gainClick.gain.setValueAtTime(0.18 * vol, now);
+  gainClick.gain.setValueAtTime(0.2 * vol, now);
   gainClick.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
 
-  // Bottom Out Thud
   const oscThud = ctx.createOscillator();
   const gainThud = ctx.createGain();
   oscThud.type = 'sine';
   oscThud.frequency.setValueAtTime((isClick ? 240 : 280) * (1 + rand), now + 0.006);
   oscThud.frequency.exponentialRampToValueAtTime(50, now + 0.04);
-  gainThud.gain.setValueAtTime(0.2 * vol, now + 0.006);
+  gainThud.gain.setValueAtTime(0.22 * vol, now + 0.006);
   gainThud.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
   oscClick.connect(gainClick);
@@ -454,7 +415,7 @@ function synthBoxNavy(ctx: AudioContext, now: number, vol: number, isClick = fal
   oscClick.type = 'triangle';
   oscClick.frequency.setValueAtTime((isClick ? 1400 : 1600) * (1 + rand), now);
   oscClick.frequency.exponentialRampToValueAtTime(300, now + 0.015);
-  gainClick.gain.setValueAtTime(0.28 * vol, now);
+  gainClick.gain.setValueAtTime(0.3 * vol, now);
   gainClick.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
 
   const oscSub = ctx.createOscillator();
@@ -462,7 +423,7 @@ function synthBoxNavy(ctx: AudioContext, now: number, vol: number, isClick = fal
   oscSub.type = 'sine';
   oscSub.frequency.setValueAtTime(180, now + 0.004);
   oscSub.frequency.exponentialRampToValueAtTime(35, now + 0.045);
-  gainSub.gain.setValueAtTime(0.24 * vol, now + 0.004);
+  gainSub.gain.setValueAtTime(0.26 * vol, now + 0.004);
   gainSub.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
 
   oscClick.connect(gainClick);
@@ -486,7 +447,7 @@ function synthBoxWhite(ctx: AudioContext, now: number, vol: number, isClick = fa
   osc.frequency.setValueAtTime((isClick ? 2400 : 2800) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(600, now + 0.016);
 
-  gain.gain.setValueAtTime((isClick ? 0.22 : 0.14) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.24 : 0.16) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.024);
 
   osc.connect(gain);
@@ -505,7 +466,7 @@ function synthTopre(ctx: AudioContext, now: number, vol: number, isClick = false
   osc.frequency.setValueAtTime((isClick ? 140 : 170) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(25, now + 0.055);
 
-  gain.gain.setValueAtTime((isClick ? 0.32 : 0.2) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.35 : 0.22) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + (isClick ? 0.075 : 0.06));
 
   const filter = ctx.createBiquadFilter();
@@ -525,22 +486,20 @@ function synthTopre(ctx: AudioContext, now: number, vol: number, isClick = false
 function synthBucklingSpring(ctx: AudioContext, now: number, vol: number, isClick = false) {
   const rand = (Math.random() - 0.5) * 0.06;
 
-  // Spring Buckle Ping
   const oscPing = ctx.createOscillator();
   const gainPing = ctx.createGain();
   oscPing.type = 'sawtooth';
   oscPing.frequency.setValueAtTime((isClick ? 1150 : 1300) * (1 + rand), now);
   oscPing.frequency.exponentialRampToValueAtTime(450, now + 0.035);
-  gainPing.gain.setValueAtTime(0.18 * vol, now);
+  gainPing.gain.setValueAtTime(0.2 * vol, now);
   gainPing.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
 
-  // Heavy Plastic Barrel Clack
   const oscBarrel = ctx.createOscillator();
   const gainBarrel = ctx.createGain();
   oscBarrel.type = 'triangle';
   oscBarrel.frequency.setValueAtTime((isClick ? 260 : 310) * (1 + rand), now + 0.005);
   oscBarrel.frequency.exponentialRampToValueAtTime(40, now + 0.045);
-  gainBarrel.gain.setValueAtTime(0.26 * vol, now + 0.005);
+  gainBarrel.gain.setValueAtTime(0.28 * vol, now + 0.005);
   gainBarrel.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
 
   const filter = ctx.createBiquadFilter();
@@ -571,7 +530,7 @@ function synthMXBrown(ctx: AudioContext, now: number, vol: number, isClick = fal
   osc.frequency.setValueAtTime((isClick ? 290 : 340) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(70, now + 0.03);
 
-  gain.gain.setValueAtTime((isClick ? 0.2 : 0.12) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.22 : 0.14) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
 
   osc.connect(gain);
@@ -590,7 +549,7 @@ function synthMXRed(ctx: AudioContext, now: number, vol: number, isClick = false
   osc.frequency.setValueAtTime((isClick ? 310 : 360) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(80, now + 0.025);
 
-  gain.gain.setValueAtTime((isClick ? 0.18 : 0.11) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.2 : 0.13) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
 
   osc.connect(gain);
@@ -609,7 +568,7 @@ function synthMXBlack(ctx: AudioContext, now: number, vol: number, isClick = fal
   osc.frequency.setValueAtTime((isClick ? 180 : 220) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(45, now + 0.04);
 
-  gain.gain.setValueAtTime((isClick ? 0.24 : 0.15) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.27 : 0.17) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
   const filter = ctx.createBiquadFilter();
@@ -634,7 +593,7 @@ function synthSilentLinear(ctx: AudioContext, now: number, vol: number, isClick 
   osc.frequency.setValueAtTime((isClick ? 120 : 150) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(20, now + 0.025);
 
-  gain.gain.setValueAtTime((isClick ? 0.12 : 0.07) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.14 : 0.09) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
 
   const filter = ctx.createBiquadFilter();
@@ -659,7 +618,7 @@ function synthZealios(ctx: AudioContext, now: number, vol: number, isClick = fal
   osc.frequency.setValueAtTime((isClick ? 460 : 520) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(90, now + 0.03);
 
-  gain.gain.setValueAtTime((isClick ? 0.2 : 0.13) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.23 : 0.15) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
 
   const filter = ctx.createBiquadFilter();
@@ -685,7 +644,7 @@ function synthBubble(ctx: AudioContext, now: number, vol: number, isClick = fals
   osc.frequency.setValueAtTime((isClick ? 320 : 400) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(isClick ? 850 : 1050, now + 0.04);
 
-  gain.gain.setValueAtTime((isClick ? 0.28 : 0.18) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.32 : 0.2) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
   osc.connect(gain);
@@ -704,7 +663,7 @@ function synthSciFi(ctx: AudioContext, now: number, vol: number, isClick = false
   osc.frequency.setValueAtTime((isClick ? 1400 : 1700) * (1 + rand), now);
   osc.frequency.exponentialRampToValueAtTime(180, now + 0.045);
 
-  gain.gain.setValueAtTime((isClick ? 0.16 : 0.1) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.19 : 0.12) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
   const filter = ctx.createBiquadFilter();
@@ -728,7 +687,7 @@ function synthTypewriter(ctx: AudioContext, now: number, vol: number, isClick = 
   oscMetal.type = 'square';
   oscMetal.frequency.setValueAtTime((isClick ? 2200 : 2500) * (1 + rand), now);
   oscMetal.frequency.exponentialRampToValueAtTime(400, now + 0.015);
-  gainMetal.gain.setValueAtTime(0.18 * vol, now);
+  gainMetal.gain.setValueAtTime(0.2 * vol, now);
   gainMetal.gain.exponentialRampToValueAtTime(0.001, now + 0.022);
 
   const oscPlaten = ctx.createOscillator();
@@ -736,7 +695,7 @@ function synthTypewriter(ctx: AudioContext, now: number, vol: number, isClick = 
   oscPlaten.type = 'triangle';
   oscPlaten.frequency.setValueAtTime(320 * (1 + rand), now + 0.005);
   oscPlaten.frequency.exponentialRampToValueAtTime(60, now + 0.045);
-  gainPlaten.gain.setValueAtTime(0.24 * vol, now + 0.005);
+  gainPlaten.gain.setValueAtTime(0.28 * vol, now + 0.005);
   gainPlaten.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
 
   oscMetal.connect(gainMetal);
@@ -771,7 +730,7 @@ export function stopAmbientSoundscape() {
 
 export function setAmbientVolume(vol: number) {
   if (ambientNodes && ambientNodes.gain) {
-    ambientNodes.gain.gain.setTargetAtTime(vol * 0.15, (getAudioContext()?.currentTime || 0) + 0.01, 0.1);
+    ambientNodes.gain.gain.setTargetAtTime(vol * 0.18, (getAudioContext()?.currentTime || 0) + 0.01, 0.1);
   }
 }
 
@@ -783,13 +742,12 @@ export function startAmbientSoundscape(type: AmbientType, volume: number = 0.4) 
   if (!ctx) return;
 
   const masterGain = ctx.createGain();
-  masterGain.gain.setValueAtTime(volume * 0.15, ctx.currentTime);
+  masterGain.gain.setValueAtTime(volume * 0.18, ctx.currentTime);
   masterGain.connect(ctx.destination);
 
   const sources: AudioNode[] = [];
 
   if (type === 'lofi_rain') {
-    // Generate pink noise buffer for soft continuous rain
     const bufferSize = ctx.sampleRate * 2;
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const output = noiseBuffer.getChannelData(0);
@@ -819,7 +777,6 @@ export function startAmbientSoundscape(type: AmbientType, volume: number = 0.4) 
     whiteNoise.start();
     sources.push(whiteNoise);
   } else if (type === 'server_drone') {
-    // 60Hz + 120Hz tuned server sub-bass drone
     const osc1 = ctx.createOscillator();
     osc1.type = 'sine';
     osc1.frequency.setValueAtTime(60, ctx.currentTime);
@@ -839,7 +796,6 @@ export function startAmbientSoundscape(type: AmbientType, volume: number = 0.4) 
     osc2.start();
     sources.push(osc1, osc2);
   } else if (type === 'binaural_alpha') {
-    // 432Hz in Left Ear, 442Hz in Right Ear = 10Hz Cognitive Alpha Beat
     const merger = ctx.createChannelMerger(2);
 
     const oscL = ctx.createOscillator();
@@ -858,7 +814,6 @@ export function startAmbientSoundscape(type: AmbientType, volume: number = 0.4) 
     oscR.start();
     sources.push(oscL, oscR);
   } else if (type === 'cozy_coffee') {
-    // Warm low-frequency filtered hum
     const bufferSize = ctx.sampleRate * 2;
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const output = noiseBuffer.getChannelData(0);
@@ -899,19 +854,25 @@ export function startAmbientSoundscape(type: AmbientType, volume: number = 0.4) 
 // PLAYBACK DISPATCHER
 // ══════════════════════════════════════════════════════════════════════
 
-export function playSwitchSound(profile: SoundProfile, isClick = false) {
+export function playSwitchSound(profile: SoundProfile, isClick = false, isPreview = false) {
   if (profile === 'mute') return;
 
-  if (isClick && !currentSettings.clickEnabled) return;
-  if (!isClick && !currentSettings.hoverEnabled) return;
+  const settings = getExperienceSettings();
+  if (!isPreview) {
+    if (isClick && !settings.clickEnabled) return;
+    if (!isClick && !settings.hoverEnabled) return;
+  }
 
   const ctx = getAudioContext();
   if (!ctx) return;
+  if (ctx.state === 'suspended') {
+    ctx.resume().catch(() => {});
+  }
 
   const now = ctx.currentTime;
-  const vol = currentSettings.volume;
+  const vol = isPreview ? Math.max(settings.volume, 0.8) : settings.volume;
+  if (vol <= 0) return;
 
-  // Trigger mobile haptic pulse on clicks
   if (isClick) {
     triggerHaptic('light');
   }
@@ -975,15 +936,17 @@ export function playSwitchSound(profile: SoundProfile, isClick = false) {
 }
 
 export function playHoverSound(overrideProfile?: SoundProfile) {
-  playSwitchSound(overrideProfile || currentSettings.profile, false);
+  const settings = getExperienceSettings();
+  playSwitchSound(overrideProfile || settings.profile, false, false);
 }
 
 export function playClickSound(overrideProfile?: SoundProfile) {
-  playSwitchSound(overrideProfile || currentSettings.profile, true);
+  const settings = getExperienceSettings();
+  playSwitchSound(overrideProfile || settings.profile, true, false);
 }
 
 export function previewSoundProfile(profile: SoundProfile) {
-  playSwitchSound(profile, false);
+  playSwitchSound(profile, true, true);
 }
 
 const INTERACTIVE_SELECTOR = [
@@ -1009,6 +972,13 @@ const INTERACTIVE_SELECTOR = [
 export function setupThockAudioListener() {
   if (typeof window === 'undefined') return () => {};
 
+  const unlockAudio = () => {
+    const ctx = getAudioContext();
+    if (ctx && ctx.state === 'suspended') {
+      ctx.resume().catch(() => {});
+    }
+  };
+
   const handlePointerOver = (e: MouseEvent) => {
     const target = e.target as HTMLElement | null;
     if (!target) return;
@@ -1018,42 +988,35 @@ export function setupThockAudioListener() {
     if (interactive && interactive !== lastHoveredElement) {
       lastHoveredElement = interactive;
       const now = performance.now();
-      if (now - lastHoverSoundTime > 40) {
+      if (now - lastHoverSoundTime > 35) {
         lastHoverSoundTime = now;
         playHoverSound();
       }
     }
   };
 
-  const handlePointerDown = (e: MouseEvent) => {
+  const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+    unlockAudio();
     const target = e.target as HTMLElement | null;
     if (!target) return;
 
     const interactive = target.closest(INTERACTIVE_SELECTOR);
-
     if (interactive) {
       playClickSound();
     }
   };
 
-  const handlePointerOut = (e: MouseEvent) => {
-    if (e.relatedTarget && lastHoveredElement) {
-      const related = e.relatedTarget as HTMLElement;
-      if (!related.closest || !related.closest(lastHoveredElement.nodeName)) {
-        lastHoveredElement = null;
-      }
-    } else {
-      lastHoveredElement = null;
-    }
-  };
-
   window.addEventListener('mouseover', handlePointerOver, { passive: true });
   window.addEventListener('mousedown', handlePointerDown, { passive: true });
-  window.addEventListener('mouseout', handlePointerOut, { passive: true });
+  window.addEventListener('touchstart', handlePointerDown, { passive: true });
+  window.addEventListener('click', unlockAudio, { passive: true });
+  window.addEventListener('keydown', unlockAudio, { passive: true });
 
   return () => {
     window.removeEventListener('mouseover', handlePointerOver);
     window.removeEventListener('mousedown', handlePointerDown);
-    window.removeEventListener('mouseout', handlePointerOut);
+    window.removeEventListener('touchstart', handlePointerDown);
+    window.removeEventListener('click', unlockAudio);
+    window.removeEventListener('keydown', unlockAudio);
   };
 }
