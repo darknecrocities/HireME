@@ -252,7 +252,7 @@ export default function AudioSettingsModal() {
                     <h3 className="text-sm sm:text-base font-extrabold tracking-tight text-white flex items-center gap-2">
                       Experience & SFX Hub
                       <span className="text-[9px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/10 text-zinc-300 border border-white/10 hidden sm:inline">
-                        10+ Features
+                        38 Switches • 10+ Features
                       </span>
                     </h3>
                     <p className="text-[10px] sm:text-[11px] text-zinc-400">
