@@ -2,7 +2,11 @@
  * Mechanical Keyboard Switch Acoustic Synthesizer Engine (Web Audio API)
  * Features 16 distinct switch profiles modeled after real-world enthusiast switches:
  * Linear, Tactile, Clicky, Silent, and Vintage/Electro-Capacitive.
+ * Plus Procedural Ambient Soundscapes (Lo-Fi Rain, Cozy Coffee, Deep Server, Binaural Alpha Waves)
+ * and Real-Time AnalyserNode for audio visualization.
  */
+
+import { triggerHaptic, type PlateType, type AmbientType } from './experienceSettings';
 
 export type SoundProfile =
   | 'oil_king'
@@ -30,6 +34,7 @@ export interface SoundSettings {
   volume: number; // 0.0 to 1.0
   hoverEnabled: boolean;
   clickEnabled: boolean;
+  plate?: PlateType;
 }
 
 export interface SwitchMeta {
@@ -181,9 +186,14 @@ const DEFAULT_SETTINGS: SoundSettings = {
   volume: 0.8,
   hoverEnabled: true,
   clickEnabled: true,
+  plate: 'pom',
 };
 
 let audioCtx: AudioContext | null = null;
+let masterInputNode: GainNode | null = null;
+let masterGainNode: GainNode | null = null;
+let analyserNode: AnalyserNode | null = null;
+
 let lastHoverSoundTime = 0;
 let lastHoveredElement: Element | null = null;
 let currentSettings: SoundSettings = loadSettings();
@@ -194,7 +204,6 @@ function loadSettings(): SoundSettings {
     const saved = localStorage.getItem('hireme_sfx_settings');
     if (saved) {
       const parsed = JSON.parse(saved);
-      // Migrate old 'thock' key to 'oil_king'
       if (parsed.profile === 'thock') parsed.profile = 'oil_king';
       return { ...DEFAULT_SETTINGS, ...parsed };
     }
@@ -215,7 +224,7 @@ export function getAudioSettings(): SoundSettings {
   return { ...currentSettings };
 }
 
-function getAudioContext(): AudioContext | null {
+export function getAudioContext(): AudioContext | null {
   if (typeof window === 'undefined') return null;
   if (!audioCtx) {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -229,9 +238,37 @@ function getAudioContext(): AudioContext | null {
   return audioCtx;
 }
 
+function getMasterInput(ctx: AudioContext): AudioNode {
+  if (!masterInputNode || !masterGainNode || !analyserNode) {
+    masterInputNode = ctx.createGain();
+    masterGainNode = ctx.createGain();
+    analyserNode = ctx.createAnalyser();
+    analyserNode.fftSize = 256;
+    analyserNode.smoothingTimeConstant = 0.75;
+
+    masterInputNode.connect(analyserNode);
+    analyserNode.connect(masterGainNode);
+    masterGainNode.connect(ctx.destination);
+  }
+  return masterInputNode;
+}
+
+export function getAudioAnalyser(): AnalyserNode | null {
+  const ctx = getAudioContext();
+  if (!ctx) return null;
+  getMasterInput(ctx);
+  return analyserNode;
+}
+
 // ══════════════════════════════════════════════════════════════════════
 // SWITCH SYNTHESIS ALGORITHMS
 // ══════════════════════════════════════════════════════════════════════
+
+/** Helper to connect synth output to master bus with plate modifier */
+function connectToBus(ctx: AudioContext, node: AudioNode) {
+  const master = getMasterInput(ctx);
+  node.connect(master);
+}
 
 /** 1. Gateron Oil King (Ultra Deep Lubed Thock) */
 function synthOilKing(ctx: AudioContext, now: number, vol: number, isClick = false) {
@@ -254,7 +291,7 @@ function synthOilKing(ctx: AudioContext, now: number, vol: number, isClick = fal
 
   osc.connect(filter);
   filter.connect(gain);
-  gain.connect(ctx.destination);
+  connectToBus(ctx, gain);
   osc.start(now);
   osc.stop(now + 0.07);
 }
@@ -264,444 +301,620 @@ function synthHolyPanda(ctx: AudioContext, now: number, vol: number, isClick = f
   const rand = (Math.random() - 0.5) * 0.06;
   const bumpFreq = (isClick ? 320 : 380) * (1 + rand);
 
-  // Tactile Bump
   const osc1 = ctx.createOscillator();
   const gain1 = ctx.createGain();
   osc1.type = 'sine';
   osc1.frequency.setValueAtTime(bumpFreq, now);
-  osc1.frequency.exponentialRampToValueAtTime(65, now + 0.035);
+  osc1.frequency.exponentialRampToValueAtTime(140, now + 0.015);
+  gain1.gain.setValueAtTime(0.22 * vol, now);
+  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
 
-  gain1.gain.setValueAtTime((isClick ? 0.22 : 0.14) * vol, now);
-  gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-  // Pop transient
   const osc2 = ctx.createOscillator();
   const gain2 = ctx.createGain();
   osc2.type = 'triangle';
-  osc2.frequency.setValueAtTime(1100 * (1 + rand), now);
-  osc2.frequency.exponentialRampToValueAtTime(220, now + 0.015);
-  gain2.gain.setValueAtTime(0.12 * vol, now);
-  gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
+  osc2.frequency.setValueAtTime((isClick ? 190 : 230) * (1 + rand), now + 0.01);
+  osc2.frequency.exponentialRampToValueAtTime(45, now + 0.05);
+  gain2.gain.setValueAtTime(0.25 * vol, now + 0.01);
+  gain2.gain.exponentialRampToValueAtTime(0.001, now + (isClick ? 0.06 : 0.045));
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(isClick ? 950 : 1100, now);
+  filter.Q.setValueAtTime(2.2, now);
 
   osc1.connect(gain1);
-  gain1.connect(ctx.destination);
-  osc2.connect(gain2);
-  gain2.connect(ctx.destination);
+  osc2.connect(filter);
+  filter.connect(gain2);
+
+  connectToBus(ctx, gain1);
+  connectToBus(ctx, gain2);
 
   osc1.start(now);
-  osc1.stop(now + 0.045);
-  osc2.start(now);
-  osc2.stop(now + 0.02);
+  osc1.stop(now + 0.03);
+  osc2.start(now + 0.008);
+  osc2.stop(now + 0.065);
 }
 
-/** 3. Boba U4T (Creamy Dense Thock) */
+/** 3. Gazzew Boba U4T (Dense Creamy Thock) */
 function synthBobaU4T(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.05;
-  const baseFreq = (isClick ? 210 : 250) * (1 + rand);
-
+  const rand = (Math.random() - 0.5) * 0.04;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(baseFreq, now);
-  osc.frequency.exponentialRampToValueAtTime(42, now + 0.038);
 
-  gain.gain.setValueAtTime((isClick ? 0.24 : 0.15) * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.048);
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime((isClick ? 210 : 260) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(32, now + 0.04);
+
+  gain.gain.setValueAtTime((isClick ? 0.26 : 0.16) * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
 
   const filter = ctx.createBiquadFilter();
   filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(820, now);
-  filter.Q.setValueAtTime(2.2, now);
+  filter.frequency.setValueAtTime(isClick ? 460 : 540, now);
+  filter.Q.setValueAtTime(4.0, now);
 
   osc.connect(filter);
   filter.connect(gain);
-  gain.connect(ctx.destination);
+  connectToBus(ctx, gain);
+
+  osc.start(now);
+  osc.stop(now + 0.06);
+}
+
+/** 4. Gateron Milky Yellow (Warm Buttery Clack) */
+function synthMilkyYellow(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.05;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime((isClick ? 280 : 330) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(60, now + 0.035);
+
+  gain.gain.setValueAtTime((isClick ? 0.22 : 0.14) * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(850, now);
+  filter.Q.setValueAtTime(1.8, now);
+
+  osc.connect(filter);
+  filter.connect(gain);
+  connectToBus(ctx, gain);
+
+  osc.start(now);
+  osc.stop(now + 0.05);
+}
+
+/** 5. Alpaca V2 (Crisp High-Pitched Linear) */
+function synthAlpaca(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.06;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime((isClick ? 380 : 440) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(80, now + 0.03);
+
+  gain.gain.setValueAtTime((isClick ? 0.24 : 0.15) * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'highpass';
+  filter.frequency.setValueAtTime(240, now);
+
+  osc.connect(filter);
+  filter.connect(gain);
+  connectToBus(ctx, gain);
+
+  osc.start(now);
+  osc.stop(now + 0.045);
+}
+
+/** 6. Cherry MX Blue (Click Jacket Sharp Snap) */
+function synthMXBlue(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.06;
+
+  // Click Jacket Metallic Ping
+  const oscClick = ctx.createOscillator();
+  const gainClick = ctx.createGain();
+  oscClick.type = 'square';
+  oscClick.frequency.setValueAtTime((isClick ? 1850 : 2100) * (1 + rand), now);
+  oscClick.frequency.exponentialRampToValueAtTime(800, now + 0.012);
+  gainClick.gain.setValueAtTime(0.18 * vol, now);
+  gainClick.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+
+  // Bottom Out Thud
+  const oscThud = ctx.createOscillator();
+  const gainThud = ctx.createGain();
+  oscThud.type = 'sine';
+  oscThud.frequency.setValueAtTime((isClick ? 240 : 280) * (1 + rand), now + 0.006);
+  oscThud.frequency.exponentialRampToValueAtTime(50, now + 0.04);
+  gainThud.gain.setValueAtTime(0.2 * vol, now + 0.006);
+  gainThud.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+  oscClick.connect(gainClick);
+  oscThud.connect(gainThud);
+  connectToBus(ctx, gainClick);
+  connectToBus(ctx, gainThud);
+
+  oscClick.start(now);
+  oscClick.stop(now + 0.025);
+  oscThud.start(now + 0.006);
+  oscThud.stop(now + 0.055);
+}
+
+/** 7. Kailh Box Navy (Thick Click-Bar Crack) */
+function synthBoxNavy(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.04;
+
+  const oscClick = ctx.createOscillator();
+  const gainClick = ctx.createGain();
+  oscClick.type = 'triangle';
+  oscClick.frequency.setValueAtTime((isClick ? 1400 : 1600) * (1 + rand), now);
+  oscClick.frequency.exponentialRampToValueAtTime(300, now + 0.015);
+  gainClick.gain.setValueAtTime(0.28 * vol, now);
+  gainClick.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+
+  const oscSub = ctx.createOscillator();
+  const gainSub = ctx.createGain();
+  oscSub.type = 'sine';
+  oscSub.frequency.setValueAtTime(180, now + 0.004);
+  oscSub.frequency.exponentialRampToValueAtTime(35, now + 0.045);
+  gainSub.gain.setValueAtTime(0.24 * vol, now + 0.004);
+  gainSub.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
+
+  oscClick.connect(gainClick);
+  oscSub.connect(gainSub);
+  connectToBus(ctx, gainClick);
+  connectToBus(ctx, gainSub);
+
+  oscClick.start(now);
+  oscClick.stop(now + 0.03);
+  oscSub.start(now + 0.004);
+  oscSub.stop(now + 0.06);
+}
+
+/** 8. Kailh Box White (Delicate High-Pitch Click-Bar) */
+function synthBoxWhite(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.05;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime((isClick ? 2400 : 2800) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(600, now + 0.016);
+
+  gain.gain.setValueAtTime((isClick ? 0.22 : 0.14) * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.024);
+
+  osc.connect(gain);
+  connectToBus(ctx, gain);
+  osc.start(now);
+  osc.stop(now + 0.028);
+}
+
+/** 9. Topre 45g (Electro-Capacitive Rubber Dome Thock) */
+function synthTopre(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.04;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime((isClick ? 140 : 170) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(25, now + 0.055);
+
+  gain.gain.setValueAtTime((isClick ? 0.32 : 0.2) * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + (isClick ? 0.075 : 0.06));
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(380, now);
+  filter.Q.setValueAtTime(5.0, now);
+
+  osc.connect(filter);
+  filter.connect(gain);
+  connectToBus(ctx, gain);
+
+  osc.start(now);
+  osc.stop(now + 0.08);
+}
+
+/** 10. IBM Model M Buckling Spring (Vintage Steel Spring Resonant Strike) */
+function synthBucklingSpring(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.06;
+
+  // Spring Buckle Ping
+  const oscPing = ctx.createOscillator();
+  const gainPing = ctx.createGain();
+  oscPing.type = 'sawtooth';
+  oscPing.frequency.setValueAtTime((isClick ? 1150 : 1300) * (1 + rand), now);
+  oscPing.frequency.exponentialRampToValueAtTime(450, now + 0.035);
+  gainPing.gain.setValueAtTime(0.18 * vol, now);
+  gainPing.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+
+  // Heavy Plastic Barrel Clack
+  const oscBarrel = ctx.createOscillator();
+  const gainBarrel = ctx.createGain();
+  oscBarrel.type = 'triangle';
+  oscBarrel.frequency.setValueAtTime((isClick ? 260 : 310) * (1 + rand), now + 0.005);
+  oscBarrel.frequency.exponentialRampToValueAtTime(40, now + 0.045);
+  gainBarrel.gain.setValueAtTime(0.26 * vol, now + 0.005);
+  gainBarrel.gain.exponentialRampToValueAtTime(0.001, now + 0.065);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.frequency.setValueAtTime(1100, now);
+  filter.Q.setValueAtTime(2.8, now);
+
+  oscPing.connect(filter);
+  filter.connect(gainPing);
+  oscBarrel.connect(gainBarrel);
+
+  connectToBus(ctx, gainPing);
+  connectToBus(ctx, gainBarrel);
+
+  oscPing.start(now);
+  oscPing.stop(now + 0.07);
+  oscBarrel.start(now + 0.005);
+  oscBarrel.stop(now + 0.075);
+}
+
+/** 11. Cherry MX Brown */
+function synthMXBrown(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.05;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime((isClick ? 290 : 340) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(70, now + 0.03);
+
+  gain.gain.setValueAtTime((isClick ? 0.2 : 0.12) * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+  osc.connect(gain);
+  connectToBus(ctx, gain);
+  osc.start(now);
+  osc.stop(now + 0.045);
+}
+
+/** 12. Cherry MX Red */
+function synthMXRed(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.05;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'sine';
+  osc.frequency.setValueAtTime((isClick ? 310 : 360) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(80, now + 0.025);
+
+  gain.gain.setValueAtTime((isClick ? 0.18 : 0.11) * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
+
+  osc.connect(gain);
+  connectToBus(ctx, gain);
+  osc.start(now);
+  osc.stop(now + 0.04);
+}
+
+/** 13. Cherry MX Black */
+function synthMXBlack(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.04;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'triangle';
+  osc.frequency.setValueAtTime((isClick ? 180 : 220) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(45, now + 0.04);
+
+  gain.gain.setValueAtTime((isClick ? 0.24 : 0.15) * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(620, now);
+
+  osc.connect(filter);
+  filter.connect(gain);
+  connectToBus(ctx, gain);
+
   osc.start(now);
   osc.stop(now + 0.055);
 }
 
-/** 4. Gateron Milky Yellow (Warm Nylon Butter) */
-function synthMilkyYellow(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.05;
-  const baseFreq = (isClick ? 240 : 290) * (1 + rand);
-
+/** 14. Durock Silent Linear */
+function synthSilentLinear(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.04;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
+
   osc.type = 'sine';
-  osc.frequency.setValueAtTime(baseFreq, now);
-  osc.frequency.exponentialRampToValueAtTime(55, now + 0.032);
+  osc.frequency.setValueAtTime((isClick ? 120 : 150) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(20, now + 0.025);
+
+  gain.gain.setValueAtTime((isClick ? 0.12 : 0.07) * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(280, now);
+
+  osc.connect(filter);
+  filter.connect(gain);
+  connectToBus(ctx, gain);
+
+  osc.start(now);
+  osc.stop(now + 0.035);
+}
+
+/** 15. Zealios V2 67g */
+function synthZealios(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.05;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+
+  osc.type = 'sawtooth';
+  osc.frequency.setValueAtTime((isClick ? 460 : 520) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(90, now + 0.03);
 
   gain.gain.setValueAtTime((isClick ? 0.2 : 0.13) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
 
   const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(950, now);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.045);
-}
-
-/** 5. Alpaca V2 (High-Pitched Crisp Clack) */
-function synthAlpaca(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.06;
-  const baseFreq = (isClick ? 420 : 520) * (1 + rand);
-
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime(baseFreq, now);
-  osc.frequency.exponentialRampToValueAtTime(110, now + 0.026);
-
-  gain.gain.setValueAtTime((isClick ? 0.22 : 0.15) * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.032);
-
-  const filter = ctx.createBiquadFilter();
   filter.type = 'bandpass';
   filter.frequency.setValueAtTime(1300, now);
-  filter.Q.setValueAtTime(1.5, now);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.035);
-}
-
-/** 6. Cherry MX Blue (Click Jacket Snap) */
-function synthMXBlue(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.06;
-
-  // Sharp click jacket
-  const clickOsc = ctx.createOscillator();
-  const clickGain = ctx.createGain();
-  clickOsc.type = 'square';
-  clickOsc.frequency.setValueAtTime((isClick ? 1800 : 2200) * (1 + rand), now);
-  clickOsc.frequency.exponentialRampToValueAtTime(320, now + 0.015);
-
-  clickGain.gain.setValueAtTime((isClick ? 0.18 : 0.12) * vol, now);
-  clickGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
-
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'highpass';
-  filter.frequency.setValueAtTime(900, now);
-
-  clickOsc.connect(filter);
-  filter.connect(clickGain);
-  clickGain.connect(ctx.destination);
-
-  // Bottom out body
-  const bodyOsc = ctx.createOscillator();
-  const bodyGain = ctx.createGain();
-  bodyOsc.type = 'triangle';
-  bodyOsc.frequency.setValueAtTime(340, now + 0.006);
-  bodyOsc.frequency.exponentialRampToValueAtTime(60, now + 0.035);
-  bodyGain.gain.setValueAtTime(0.12 * vol, now + 0.006);
-  bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
-
-  bodyOsc.connect(bodyGain);
-  bodyGain.connect(ctx.destination);
-
-  clickOsc.start(now);
-  clickOsc.stop(now + 0.022);
-  bodyOsc.start(now + 0.006);
-  bodyOsc.stop(now + 0.045);
-}
-
-/** 7. Kailh Box Navy (Thick Clickbar Crack) */
-function synthBoxNavy(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.05;
-
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'sawtooth';
-  osc.frequency.setValueAtTime((isClick ? 1500 : 1900) * (1 + rand), now);
-  osc.frequency.exponentialRampToValueAtTime(90, now + 0.022);
-
-  gain.gain.setValueAtTime((isClick ? 0.26 : 0.18) * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
-
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(1400, now);
   filter.Q.setValueAtTime(3.5, now);
 
   osc.connect(filter);
   filter.connect(gain);
-  gain.connect(ctx.destination);
+  connectToBus(ctx, gain);
+
   osc.start(now);
-  osc.stop(now + 0.035);
+  osc.stop(now + 0.045);
 }
 
-/** 8. Kailh Box White (Crisp Clickbar Chime) */
-function synthBoxWhite(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.05;
-
+/** 16. Organic Bubble Pop */
+function synthBubble(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.08;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
-  osc.type = 'sawtooth';
-  osc.frequency.setValueAtTime((isClick ? 2400 : 2800) * (1 + rand), now);
-  osc.frequency.exponentialRampToValueAtTime(380, now + 0.014);
 
-  gain.gain.setValueAtTime((isClick ? 0.16 : 0.11) * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.018);
-
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'highpass';
-  filter.frequency.setValueAtTime(1200, now);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.022);
-}
-
-/** 9. Topre 45g (Electro-Capacitive Dome Pop) */
-function synthTopre(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.04;
-  const baseFreq = (isClick ? 140 : 175) * (1 + rand);
-
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
   osc.type = 'sine';
-  osc.frequency.setValueAtTime(baseFreq, now);
-  osc.frequency.exponentialRampToValueAtTime(30, now + 0.055);
+  osc.frequency.setValueAtTime((isClick ? 320 : 400) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(isClick ? 850 : 1050, now + 0.04);
 
-  gain.gain.setValueAtTime((isClick ? 0.3 : 0.19) * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
-
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(480, now);
-  filter.Q.setValueAtTime(4.0, now);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.07);
-}
-
-/** 10. IBM Model M Buckling Spring (Steel Spring Ping) */
-function synthBucklingSpring(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.06;
-
-  // Spring Ping Resonance
-  const pingOsc = ctx.createOscillator();
-  const pingGain = ctx.createGain();
-  pingOsc.type = 'sine';
-  pingOsc.frequency.setValueAtTime((isClick ? 2800 : 3200) * (1 + rand), now);
-  pingGain.gain.setValueAtTime(0.12 * vol, now);
-  pingGain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
-
-  // Heavy barrel strike
-  const strikeOsc = ctx.createOscillator();
-  const strikeGain = ctx.createGain();
-  strikeOsc.type = 'triangle';
-  strikeOsc.frequency.setValueAtTime(450, now);
-  strikeOsc.frequency.exponentialRampToValueAtTime(50, now + 0.04);
-  strikeGain.gain.setValueAtTime((isClick ? 0.25 : 0.16) * vol, now);
-  strikeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-
-  pingOsc.connect(pingGain);
-  pingGain.connect(ctx.destination);
-  strikeOsc.connect(strikeGain);
-  strikeGain.connect(ctx.destination);
-
-  pingOsc.start(now);
-  pingOsc.stop(now + 0.08);
-  strikeOsc.start(now);
-  strikeOsc.stop(now + 0.05);
-}
-
-/** 11. Cherry MX Brown (Light Tactile Bump) */
-function synthMXBrown(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.06;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime((isClick ? 320 : 390) * (1 + rand), now);
-  osc.frequency.exponentialRampToValueAtTime(70, now + 0.028);
-
-  gain.gain.setValueAtTime((isClick ? 0.18 : 0.12) * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.04);
-}
-
-/** 12. Cherry MX Red (Light Classic Linear) */
-function synthMXRed(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.05;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime((isClick ? 340 : 410) * (1 + rand), now);
-  osc.frequency.exponentialRampToValueAtTime(80, now + 0.026);
-
-  gain.gain.setValueAtTime((isClick ? 0.16 : 0.11) * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.032);
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.036);
-}
-
-/** 13. Cherry MX Black (Heavy Vintage Landing) */
-function synthMXBlack(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.05;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime((isClick ? 190 : 230) * (1 + rand), now);
-  osc.frequency.exponentialRampToValueAtTime(36, now + 0.042);
-
-  gain.gain.setValueAtTime((isClick ? 0.25 : 0.16) * vol, now);
+  gain.gain.setValueAtTime((isClick ? 0.28 : 0.18) * vol, now);
   gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(650, now);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
+  osc.connect(gain);
+  connectToBus(ctx, gain);
   osc.start(now);
   osc.stop(now + 0.055);
 }
 
-/** 14. Durock Silent Linear (Stealth Whispered Landing) */
-function synthSilentLinear(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.04;
+/** 17. Cyberpunk SciFi Pulse */
+function synthSciFi(ctx: AudioContext, now: number, vol: number, isClick = false) {
+  const rand = (Math.random() - 0.5) * 0.05;
   const osc = ctx.createOscillator();
   const gain = ctx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime((isClick ? 130 : 160) * (1 + rand), now);
-  osc.frequency.exponentialRampToValueAtTime(40, now + 0.025);
 
-  gain.gain.setValueAtTime((isClick ? 0.12 : 0.08) * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+  osc.type = 'square';
+  osc.frequency.setValueAtTime((isClick ? 1400 : 1700) * (1 + rand), now);
+  osc.frequency.exponentialRampToValueAtTime(180, now + 0.045);
+
+  gain.gain.setValueAtTime((isClick ? 0.16 : 0.1) * vol, now);
+  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
 
   const filter = ctx.createBiquadFilter();
   filter.type = 'lowpass';
-  filter.frequency.setValueAtTime(380, now);
+  filter.frequency.setValueAtTime(2400, now);
 
   osc.connect(filter);
   filter.connect(gain);
-  gain.connect(ctx.destination);
+  connectToBus(ctx, gain);
+
   osc.start(now);
-  osc.stop(now + 0.035);
-}
-
-/** 15. Zealios V2 67g (Sharp Tactile Snap) */
-function synthZealios(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.06;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'triangle';
-  osc.frequency.setValueAtTime((isClick ? 680 : 820) * (1 + rand), now);
-  osc.frequency.exponentialRampToValueAtTime(140, now + 0.02);
-
-  gain.gain.setValueAtTime((isClick ? 0.22 : 0.14) * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
-
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(1600, now);
-  filter.Q.setValueAtTime(2.0, now);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.03);
-}
-
-/** 16. Bubble / Pebble */
-function synthBubble(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.1;
-  const startFreq = (isClick ? 380 : 540) * (1 + rand);
-  const endFreq = (isClick ? 850 : 1200) * (1 + rand);
-
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(startFreq, now);
-  osc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.035);
-
-  gain.gain.setValueAtTime(0.18 * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-
-  osc.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.05);
-}
-
-/** 17. Cyberpunk Sci-Fi */
-function synthSciFi(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'sawtooth';
-  const freq = isClick ? 1400 : 1800;
-  osc.frequency.setValueAtTime(freq, now);
-  osc.frequency.exponentialRampToValueAtTime(isClick ? 280 : 420, now + 0.04);
-
-  gain.gain.setValueAtTime(0.08 * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.045);
-
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'bandpass';
-  filter.frequency.setValueAtTime(isClick ? 1200 : 1600, now);
-  filter.Q.setValueAtTime(4.0, now);
-
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.05);
+  osc.stop(now + 0.055);
 }
 
 /** 18. Vintage Typewriter */
 function synthTypewriter(ctx: AudioContext, now: number, vol: number, isClick = false) {
-  const rand = (Math.random() - 0.5) * 0.08;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = 'square';
-  osc.frequency.setValueAtTime((isClick ? 750 : 1100) * (1 + rand), now);
-  osc.frequency.exponentialRampToValueAtTime(120, now + 0.02);
+  const rand = (Math.random() - 0.5) * 0.06;
 
-  gain.gain.setValueAtTime((isClick ? 0.15 : 0.1) * vol, now);
-  gain.gain.exponentialRampToValueAtTime(0.001, now + 0.025);
+  const oscMetal = ctx.createOscillator();
+  const gainMetal = ctx.createGain();
+  oscMetal.type = 'square';
+  oscMetal.frequency.setValueAtTime((isClick ? 2200 : 2500) * (1 + rand), now);
+  oscMetal.frequency.exponentialRampToValueAtTime(400, now + 0.015);
+  gainMetal.gain.setValueAtTime(0.18 * vol, now);
+  gainMetal.gain.exponentialRampToValueAtTime(0.001, now + 0.022);
 
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'highpass';
-  filter.frequency.setValueAtTime(450, now);
+  const oscPlaten = ctx.createOscillator();
+  const gainPlaten = ctx.createGain();
+  oscPlaten.type = 'triangle';
+  oscPlaten.frequency.setValueAtTime(320 * (1 + rand), now + 0.005);
+  oscPlaten.frequency.exponentialRampToValueAtTime(60, now + 0.045);
+  gainPlaten.gain.setValueAtTime(0.24 * vol, now + 0.005);
+  gainPlaten.gain.exponentialRampToValueAtTime(0.001, now + 0.055);
 
-  osc.connect(filter);
-  filter.connect(gain);
-  gain.connect(ctx.destination);
-  osc.start(now);
-  osc.stop(now + 0.03);
+  oscMetal.connect(gainMetal);
+  oscPlaten.connect(gainPlaten);
+  connectToBus(ctx, gainMetal);
+  connectToBus(ctx, gainPlaten);
+
+  oscMetal.start(now);
+  oscMetal.stop(now + 0.025);
+  oscPlaten.start(now + 0.005);
+  oscPlaten.stop(now + 0.06);
 }
 
-/** Dispatcher to play selected switch sound */
-function playSwitchSound(profile: SoundProfile, isClick: boolean) {
-  if (profile === 'mute' || currentSettings.volume <= 0) return;
-  if (!isClick && !currentSettings.hoverEnabled) return;
-  if (isClick && !currentSettings.clickEnabled) return;
+// ══════════════════════════════════════════════════════════════════════
+// PROCEDURAL AMBIENT SOUNDSCAPES
+// ══════════════════════════════════════════════════════════════════════
+
+let ambientNodes: {
+  sources: AudioNode[];
+  gain: GainNode;
+  cleanup: () => void;
+} | null = null;
+
+export function stopAmbientSoundscape() {
+  if (ambientNodes) {
+    try {
+      ambientNodes.cleanup();
+    } catch {}
+    ambientNodes = null;
+  }
+}
+
+export function setAmbientVolume(vol: number) {
+  if (ambientNodes && ambientNodes.gain) {
+    ambientNodes.gain.gain.setTargetAtTime(vol * 0.15, (getAudioContext()?.currentTime || 0) + 0.01, 0.1);
+  }
+}
+
+export function startAmbientSoundscape(type: AmbientType, volume: number = 0.4) {
+  stopAmbientSoundscape();
+  if (type === 'off') return;
 
   const ctx = getAudioContext();
   if (!ctx) return;
+
+  const masterGain = ctx.createGain();
+  masterGain.gain.setValueAtTime(volume * 0.15, ctx.currentTime);
+  masterGain.connect(ctx.destination);
+
+  const sources: AudioNode[] = [];
+
+  if (type === 'lofi_rain') {
+    // Generate pink noise buffer for soft continuous rain
+    const bufferSize = ctx.sampleRate * 2;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + white * 0.0555179;
+      b1 = 0.99332 * b1 + white * 0.0750759;
+      b2 = 0.96900 * b2 + white * 0.1538520;
+      b3 = 0.86650 * b3 + white * 0.3104856;
+      b4 = 0.55000 * b4 + white * 0.5329522;
+      b5 = -0.7616 * b5 - white * 0.0168980;
+      output[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.07;
+      b6 = white * 0.115926;
+    }
+
+    const whiteNoise = ctx.createBufferSource();
+    whiteNoise.buffer = noiseBuffer;
+    whiteNoise.loop = true;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(1100, ctx.currentTime);
+
+    whiteNoise.connect(filter);
+    filter.connect(masterGain);
+    whiteNoise.start();
+    sources.push(whiteNoise);
+  } else if (type === 'server_drone') {
+    // 60Hz + 120Hz tuned server sub-bass drone
+    const osc1 = ctx.createOscillator();
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(60, ctx.currentTime);
+
+    const osc2 = ctx.createOscillator();
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(120, ctx.currentTime);
+
+    const droneGain = ctx.createGain();
+    droneGain.gain.setValueAtTime(0.5, ctx.currentTime);
+
+    osc1.connect(droneGain);
+    osc2.connect(droneGain);
+    droneGain.connect(masterGain);
+
+    osc1.start();
+    osc2.start();
+    sources.push(osc1, osc2);
+  } else if (type === 'binaural_alpha') {
+    // 432Hz in Left Ear, 442Hz in Right Ear = 10Hz Cognitive Alpha Beat
+    const merger = ctx.createChannelMerger(2);
+
+    const oscL = ctx.createOscillator();
+    oscL.type = 'sine';
+    oscL.frequency.setValueAtTime(432, ctx.currentTime);
+
+    const oscR = ctx.createOscillator();
+    oscR.type = 'sine';
+    oscR.frequency.setValueAtTime(442, ctx.currentTime);
+
+    oscL.connect(merger, 0, 0);
+    oscR.connect(merger, 0, 1);
+    merger.connect(masterGain);
+
+    oscL.start();
+    oscR.start();
+    sources.push(oscL, oscR);
+  } else if (type === 'cozy_coffee') {
+    // Warm low-frequency filtered hum
+    const bufferSize = ctx.sampleRate * 2;
+    const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = (Math.random() * 2 - 1) * 0.05;
+    }
+    const noise = ctx.createBufferSource();
+    noise.buffer = noiseBuffer;
+    noise.loop = true;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(320, ctx.currentTime);
+    filter.Q.setValueAtTime(1.5, ctx.currentTime);
+
+    noise.connect(filter);
+    filter.connect(masterGain);
+    noise.start();
+    sources.push(noise);
+  }
+
+  ambientNodes = {
+    sources,
+    gain: masterGain,
+    cleanup: () => {
+      sources.forEach((s) => {
+        try {
+          if ('stop' in s && typeof (s as any).stop === 'function') (s as any).stop();
+          s.disconnect();
+        } catch {}
+      });
+      masterGain.disconnect();
+    },
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// PLAYBACK DISPATCHER
+// ══════════════════════════════════════════════════════════════════════
+
+export function playSwitchSound(profile: SoundProfile, isClick = false) {
+  if (profile === 'mute') return;
+
+  if (isClick && !currentSettings.clickEnabled) return;
+  if (!isClick && !currentSettings.hoverEnabled) return;
+
+  const ctx = getAudioContext();
+  if (!ctx) return;
+
   const now = ctx.currentTime;
   const vol = currentSettings.volume;
+
+  // Trigger mobile haptic pulse on clicks
+  if (isClick) {
+    triggerHaptic('light');
+  }
 
   switch (profile) {
     case 'oil_king':
