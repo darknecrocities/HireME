@@ -6,7 +6,6 @@ import {
   Video,
   BarChart3,
   ArrowRight,
-  Sparkles,
   CheckCircle2,
   Cpu,
   Compass,
@@ -557,7 +556,7 @@ export default function Home() {
 
           <div className="flex flex-col items-center md:items-end gap-1.5">
             <p className="flex items-center gap-2 text-xs text-zinc-400 uppercase tracking-wider font-bold">
-              Precision Engineering <Sparkles className="h-3.5 w-3.5 text-white" /> 2026
+              HireME © 2026
             </p>
             <p className="text-[9px] text-zinc-600 font-mono uppercase tracking-[0.2em]">
               V2.0-STABLE • OBSIDIAN MONOCHROME
