@@ -554,7 +554,7 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
     window.addEventListener('hireme_experience_update', handleSettingsUpdate);
 
     // ═════════════════════════════════════════════════════════
-    // 8. SPRING PHYSICS & INTERACTION ENGINE
+    // 8. SPRING PHYSICS & CURSOR TRACKING ENGINE
     // ═════════════════════════════════════════════════════════
     const pointer = {
       targetX: 0,
@@ -568,23 +568,31 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
       rollVelocity: 0,
     };
 
-    const springK = 0.042;
-    const springDamping = 0.84;
+    // Snappy harmonic spring physics (fast responsiveness, organic settling)
+    const springK = 0.082;
+    const springDamping = 0.76;
 
     const handlePointerMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+      const centerY = rect.top + rect.height * 0.4; // head center
 
-      const normX = (e.clientX - centerX) / (window.innerWidth / 2);
-      const normY = (e.clientY - centerY) / (window.innerHeight / 2);
+      const dx = e.clientX - centerX;
+      const dy = e.clientY - centerY;
 
-      const clampedX = Math.max(-1.0, Math.min(1.0, normX));
-      const clampedY = Math.max(-1.0, Math.min(1.0, normY));
+      const normX = dx / (window.innerWidth * 0.5);
+      const normY = dy / (window.innerHeight * 0.5);
 
-      pointer.targetX = clampedX * 0.42;
-      pointer.targetY = -clampedY * 0.28;
-      pointer.rollTarget = -clampedX * 0.08;
+      const clampedX = Math.max(-1.1, Math.min(1.1, normX));
+      const clampedY = Math.max(-1.1, Math.min(1.1, normY));
+
+      // Corrected rotational physics:
+      // dx > 0 (cursor right) -> yaw positive (head turns right)
+      // dy > 0 (cursor down)  -> pitch positive (head tilts down)
+      // dy < 0 (cursor up)    -> pitch negative (head tilts up)
+      pointer.targetX = clampedX * 0.58;
+      pointer.targetY = clampedY * 0.42;
+      pointer.rollTarget = clampedX * 0.08;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -592,16 +600,21 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
       const touch = e.touches[0];
       const rect = container.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height / 2;
+      const centerY = rect.top + rect.height * 0.4;
 
-      const normX = (touch.clientX - centerX) / (window.innerWidth / 2);
-      const normY = (touch.clientY - centerY) / (window.innerHeight / 2);
+      const dx = touch.clientX - centerX;
+      const dy = touch.clientY - centerY;
 
-      pointer.targetX = Math.max(-0.9, Math.min(0.9, normX)) * 0.38;
-      pointer.targetY = -Math.max(-0.9, Math.min(0.9, normY)) * 0.24;
+      const normX = dx / (window.innerWidth * 0.5);
+      const normY = dy / (window.innerHeight * 0.5);
+
+      pointer.targetX = Math.max(-1.0, Math.min(1.0, normX)) * 0.52;
+      pointer.targetY = Math.max(-1.0, Math.min(1.0, normY)) * 0.38;
+      pointer.rollTarget = Math.max(-1.0, Math.min(1.0, normX)) * 0.06;
     };
 
     window.addEventListener('mousemove', handlePointerMove, { passive: true });
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     // Blink & Micro-animation Loop
@@ -651,27 +664,27 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
       // Subtle student breathing & micro idle
       const breathY = Math.sin(elapsed * 1.5) * 0.008;
       const breathPitch = Math.sin(elapsed * 1.5) * 0.012;
-      const idleYaw = Math.sin(elapsed * 0.7) * 0.02;
+      const idleYaw = Math.sin(elapsed * 0.7) * 0.015;
 
-      // Apply Head Rotations
+      // Apply Head Rotations (Direct, realistic cursor tracking)
       headPivot.rotation.y = pointer.currentX + idleYaw;
       headPivot.rotation.x = pointer.currentY + breathPitch;
       headPivot.rotation.z = pointer.rollCurrent;
       headPivot.position.y = 0.52 + breathY;
 
-      // Gentle Torso Sway
-      torsoGroup.rotation.y = pointer.currentX * 0.28 + idleYaw * 0.4;
-      torsoGroup.rotation.x = pointer.currentY * 0.18 + breathPitch * 0.4;
+      // Natural Torso Follow
+      torsoGroup.rotation.y = pointer.currentX * 0.28 + idleYaw * 0.3;
+      torsoGroup.rotation.x = pointer.currentY * 0.18 + breathPitch * 0.3;
       torsoGroup.rotation.z = pointer.rollCurrent * 0.2;
       torsoGroup.position.y = breathY * 0.6;
 
-      // Organic Eye Gaze Follow
-      const eyeLookX = pointer.currentX * 0.32;
-      const eyeLookY = pointer.currentY * 0.28;
-      eyeL.position.x = -0.125 + eyeLookX * 0.018;
-      eyeL.position.y = 0.05 + eyeLookY * 0.015;
-      eyeR.position.x = 0.125 + eyeLookX * 0.018;
-      eyeR.position.y = 0.05 + eyeLookY * 0.015;
+      // Organic Eye Gaze Follow (Pupils look directly at cursor)
+      const eyeLookX = pointer.currentX * 0.45;
+      const eyeLookY = -pointer.currentY * 0.38;
+      eyeL.position.x = -0.125 + eyeLookX * 0.022;
+      eyeL.position.y = 0.05 + eyeLookY * 0.018;
+      eyeR.position.x = 0.125 + eyeLookX * 0.022;
+      eyeR.position.y = 0.05 + eyeLookY * 0.018;
 
       // Natural Blinking
       blinkTimer += delta;
