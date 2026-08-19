@@ -26,20 +26,23 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
       return;
     }
 
-    // --- Scene Setup ---
+    // ═════════════════════════════════════════════════════════
+    // 1. SCENE & CAMERA (Cinematic Close-Up Portrait, Big Avatar)
+    // ═════════════════════════════════════════════════════════
     const scene = new THREE.Scene();
 
-    const initialWidth = Math.max(container.clientWidth || 360, 100);
-    const initialHeight = Math.max(container.clientHeight || 480, 100);
+    const initialWidth = Math.max(container.clientWidth || 420, 100);
+    const initialHeight = Math.max(container.clientHeight || 560, 100);
 
     const camera = new THREE.PerspectiveCamera(
-      27,
+      28,
       initialWidth / initialHeight,
       0.1,
       100
     );
-    camera.position.set(0, 0.36, 4.4);
-    camera.lookAt(0, 0.36, 0);
+    // Positioned closer and centered on upper chest & head for a large, prominent look
+    camera.position.set(0, 0.18, 3.2);
+    camera.lookAt(0, 0.18, 0);
 
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -49,468 +52,508 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
     renderer.setSize(initialWidth, initialHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.35;
+    renderer.toneMappingExposure = 1.15;
     container.appendChild(renderer.domElement);
 
-    // --- Studio Lighting Setup ---
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    // ═════════════════════════════════════════════════════════
+    // 2. STUDIO LIGHTING RIG
+    // ═════════════════════════════════════════════════════════
+    const ambientLight = new THREE.AmbientLight(0xfff8f2, 1.25);
     scene.add(ambientLight);
 
-    // Soft Key Light
-    const keyLight = new THREE.DirectionalLight(0xfff8f2, 2.6);
-    keyLight.position.set(2.2, 3.2, 3.2);
+    const keyLight = new THREE.DirectionalLight(0xfffaee, 2.5);
+    keyLight.position.set(2.4, 3.2, 3.2);
     scene.add(keyLight);
 
-    // Cool Soft Fill Light
-    const fillLight = new THREE.DirectionalLight(0xdde3eb, 1.6);
-    fillLight.position.set(-2.6, 1.0, 2.6);
+    const fillLight = new THREE.DirectionalLight(0xdbeafe, 1.4);
+    fillLight.position.set(-2.6, 1.4, 2.4);
     scene.add(fillLight);
 
-    // Rim Backlight (Hair & Shoulder Silhouette)
-    const rimLight = new THREE.DirectionalLight(0xffffff, 4.2);
-    rimLight.position.set(0, 3.0, -3.0);
+    const rimLight = new THREE.DirectionalLight(0xffffff, 3.2);
+    rimLight.position.set(0, 2.8, -2.8);
     scene.add(rimLight);
 
-    // Soft Under-Bounce
-    const bounceLight = new THREE.PointLight(0xa8afbc, 0.8, 5);
-    bounceLight.position.set(0, -1.2, 1.4);
+    const bounceLight = new THREE.PointLight(0xffedd5, 0.8, 5);
+    bounceLight.position.set(0, -0.8, 1.6);
     scene.add(bounceLight);
 
-    // --- Avatar Root ---
-    const avatarRoot = new THREE.Group();
-    avatarRoot.position.set(0, 0, 0);
-    scene.add(avatarRoot);
-
-    // --- Curated Materials Palette ---
+    // ═════════════════════════════════════════════════════════
+    // 3. CURATED STYLIZED MATERIALS PALETTE
+    // ═════════════════════════════════════════════════════════
     const skinMat = new THREE.MeshStandardMaterial({
-      color: 0xf5ebe1,
-      roughness: 0.5,
-      metalness: 0.01,
-    });
-
-    const skinCheekMat = new THREE.MeshStandardMaterial({
-      color: 0xeddacf,
+      color: 0xfceee3,
       roughness: 0.58,
+      metalness: 0.02,
     });
 
-    // Deep sleek obsidian base hair
+    const skinWarmMat = new THREE.MeshStandardMaterial({
+      color: 0xf7dacb,
+      roughness: 0.62,
+    });
+
+    const lipMat = new THREE.MeshStandardMaterial({
+      color: 0xe0847d,
+      roughness: 0.42,
+    });
+
     const hairMat = new THREE.MeshStandardMaterial({
-      color: 0x121215,
-      roughness: 0.36,
+      color: 0x18171f,
+      roughness: 0.38,
+      metalness: 0.10,
+    });
+
+    const hairHighlightMat = new THREE.MeshStandardMaterial({
+      color: 0x2e2b3a,
+      roughness: 0.32,
       metalness: 0.14,
     });
 
-    // Satin textured highlight locks
-    const hairHighlightMat = new THREE.MeshStandardMaterial({
-      color: 0x1d1d23,
-      roughness: 0.32,
-      metalness: 0.18,
-    });
+    // Eye materials
+    const eyeWhiteMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const irisOuterMat = new THREE.MeshBasicMaterial({ color: 0x1a1512 });
+    const irisInnerMat = new THREE.MeshBasicMaterial({ color: 0x7c451e });
+    const pupilMat = new THREE.MeshBasicMaterial({ color: 0x050505 });
+    const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const lashMat = new THREE.MeshBasicMaterial({ color: 0x141217 });
 
     const glassesFrameMat = new THREE.MeshStandardMaterial({
-      color: 0x09090b,
+      color: 0x27272a,
       metalness: 0.92,
       roughness: 0.12,
     });
 
     const glassesMetalMat = new THREE.MeshStandardMaterial({
-      color: 0xd4d4d8,
+      color: 0xe4e4e7,
       metalness: 0.95,
       roughness: 0.08,
     });
 
-    const lensMat = new THREE.MeshPhysicalMaterial({
-      color: 0xffffff,
-      transmission: 0.94,
-      opacity: 0.85,
-      transparent: true,
-      roughness: 0.02,
-      ior: 1.52,
-      reflectivity: 0.9,
-      clearcoat: 1.0,
-      clearcoatRoughness: 0.02,
-    });
-
     const hoodieMat = new THREE.MeshStandardMaterial({
       color: 0x141417,
-      roughness: 0.72,
-      metalness: 0.06,
+      roughness: 0.84,
+      metalness: 0.02,
     });
 
     const hoodieRibMat = new THREE.MeshStandardMaterial({
       color: 0x222226,
-      roughness: 0.65,
+      roughness: 0.74,
     });
 
-    const eyeWhiteMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
-      roughness: 0.05,
+    const agletMat = new THREE.MeshStandardMaterial({
+      color: 0xd4d4d8,
+      metalness: 0.95,
+      roughness: 0.1,
     });
-
-    const irisMat = new THREE.MeshStandardMaterial({
-      color: 0x1c1916,
-      roughness: 0.15,
-    });
-
-    const pupilMat = new THREE.MeshBasicMaterial({ color: 0x020202 });
-    const glintMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-    const mouthMat = new THREE.MeshBasicMaterial({ color: 0x5a4642 });
 
     // ═════════════════════════════════════════════════════════
-    // 1. NATURAL STUDENT HOODIE & SHOULDERS
+    // 4. BOY AVATAR RIG & MODEL ARCHITECTURE (PROPORTIONAL & BIG)
     // ═════════════════════════════════════════════════════════
+    const avatarRoot = new THREE.Group();
+    avatarRoot.position.set(0, 0, 0);
+    // Scaled up slightly for a prominent, impressive hero presence
+    avatarRoot.scale.set(1.22, 1.22, 1.22);
+    scene.add(avatarRoot);
+
+    // ─────────────────────────────────────────────────────────
+    // A. TORSO & STREETWEAR HOODIE (Athletic Natural Fit)
+    // ─────────────────────────────────────────────────────────
     const torsoGroup = new THREE.Group();
     avatarRoot.add(torsoGroup);
 
-    // Smooth Curved Torso / Chest
-    const torsoGeo = new THREE.CylinderGeometry(0.32, 0.44, 0.65, 32);
-    torsoGeo.scale(1.2, 1.0, 0.75);
+    // Main Chest / Torso Volume
+    const torsoGeo = new THREE.CylinderGeometry(0.26, 0.38, 0.62, 32);
+    torsoGeo.scale(1.26, 1.0, 0.76);
     const torsoMesh = new THREE.Mesh(torsoGeo, hoodieMat);
-    torsoMesh.position.set(0, -0.06, 0);
+    torsoMesh.position.set(0, -0.18, 0);
     torsoGroup.add(torsoMesh);
 
-    // Anatomical Sloping Shoulders (Smooth rounded caps)
-    const shoulderL = new THREE.Mesh(new THREE.SphereGeometry(0.18, 24, 24), hoodieMat);
-    shoulderL.position.set(-0.42, 0.1, 0);
-    shoulderL.scale.set(1.15, 0.95, 0.85);
+    // Natural Sloping Shoulders (Seamless transition)
+    const shoulderGeo = new THREE.SphereGeometry(0.15, 24, 24);
+    shoulderGeo.scale(1.18, 0.88, 0.85);
+
+    const shoulderL = new THREE.Mesh(shoulderGeo, hoodieMat);
+    shoulderL.position.set(-0.35, -0.02, 0);
     torsoGroup.add(shoulderL);
 
-    const shoulderR = new THREE.Mesh(new THREE.SphereGeometry(0.18, 24, 24), hoodieMat);
-    shoulderR.position.set(0.42, 0.1, 0);
-    shoulderR.scale.set(1.15, 0.95, 0.85);
+    const shoulderR = new THREE.Mesh(shoulderGeo, hoodieMat);
+    shoulderR.position.set(0.35, -0.02, 0);
     torsoGroup.add(shoulderR);
 
-    // Upper Arms (Sloping naturally downward)
-    const armL = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.16, 0.55, 20), hoodieMat);
-    armL.position.set(-0.52, -0.16, 0);
+    // Upper Arms (Relaxed downward slope)
+    const armGeo = new THREE.CylinderGeometry(0.105, 0.13, 0.48, 20);
+    const armL = new THREE.Mesh(armGeo, hoodieMat);
+    armL.position.set(-0.43, -0.24, 0);
     armL.rotation.z = 0.22;
     torsoGroup.add(armL);
 
-    const armR = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.16, 0.55, 20), hoodieMat);
-    armR.position.set(0.52, -0.16, 0);
+    const armR = new THREE.Mesh(armGeo, hoodieMat);
+    armR.position.set(0.43, -0.24, 0);
     armR.rotation.z = -0.22;
     torsoGroup.add(armR);
 
-    // Hoodie Ribbed Collar
-    const collarMesh = new THREE.Mesh(
-      new THREE.TorusGeometry(0.18, 0.045, 16, 32),
-      hoodieRibMat
-    );
-    collarMesh.rotation.x = Math.PI / 2 + 0.12;
-    collarMesh.position.set(0, 0.22, 0.02);
-    collarMesh.scale.set(1.05, 0.9, 1.0);
-    torsoGroup.add(collarMesh);
+    // Snug Hoodie Collar Ring (Snug around neck, no floating lip)
+    const collarGeo = new THREE.TorusGeometry(0.14, 0.035, 16, 36);
+    const collar = new THREE.Mesh(collarGeo, hoodieRibMat);
+    collar.rotation.x = Math.PI / 2 + 0.14;
+    collar.position.set(0, 0.08, 0.01);
+    collar.scale.set(1.08, 0.92, 1.0);
+    torsoGroup.add(collar);
 
-    // Hoodie Drawstrings
-    const stringGeo = new THREE.CylinderGeometry(0.005, 0.005, 0.2, 10);
-    const stringL = new THREE.Mesh(stringGeo, glassesMetalMat);
-    stringL.position.set(-0.07, 0.1, 0.18);
-    stringL.rotation.z = 0.06;
-    torsoGroup.add(stringL);
+    // Hood resting naturally on upper back
+    const hoodDrapeGeo = new THREE.TorusGeometry(0.19, 0.065, 16, 32, Math.PI * 1.2);
+    const hoodDrape = new THREE.Mesh(hoodDrapeGeo, hoodieMat);
+    hoodDrape.position.set(0, 0.05, -0.07);
+    hoodDrape.rotation.x = Math.PI / 2 + 0.35;
+    hoodDrape.rotation.z = Math.PI * 0.9;
+    hoodDrape.scale.set(1.08, 0.95, 1.1);
+    torsoGroup.add(hoodDrape);
 
-    const stringR = new THREE.Mesh(stringGeo, glassesMetalMat);
-    stringR.position.set(0.07, 0.1, 0.18);
-    stringR.rotation.z = -0.06;
-    torsoGroup.add(stringR);
-
-    // Neck (Connects seamlessly into head)
-    const neckMesh = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.12, 0.14, 0.32, 24),
-      skinMat
-    );
-    neckMesh.position.set(0, 0.32, 0.01);
-    torsoGroup.add(neckMesh);
-
-    // ═════════════════════════════════════════════════════════
-    // 2. HEAD PIVOT (Spring Rotation Target)
-    // ═════════════════════════════════════════════════════════
-    const headPivot = new THREE.Group();
-    headPivot.position.set(0, 0.52, 0.02);
-    avatarRoot.add(headPivot);
-
-    // Sculpted Head Cranium (Egg shape with refined jaw taper)
-    const headGeo = new THREE.SphereGeometry(0.34, 48, 48);
-    headGeo.scale(1.0, 1.08, 1.02);
-    const headMesh = new THREE.Mesh(headGeo, skinMat);
-    headMesh.position.set(0, 0, 0);
-    headPivot.add(headMesh);
-
-    // Soft Cheeks
-    const cheekL = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), skinCheekMat);
-    cheekL.position.set(-0.19, -0.04, 0.26);
-    cheekL.scale.set(0.6, 0.8, 0.5);
-    headPivot.add(cheekL);
-
-    const cheekR = new THREE.Mesh(new THREE.SphereGeometry(0.08, 16, 16), skinCheekMat);
-    cheekR.position.set(0.19, -0.04, 0.26);
-    cheekR.scale.set(0.6, 0.8, 0.5);
-    headPivot.add(cheekR);
-
-    // Delicate Button Nose
-    const noseMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(0.022, 16, 16),
-      skinMat
-    );
-    noseMesh.position.set(0, 0.01, 0.35);
-    headPivot.add(noseMesh);
-
-    // Subtle Confident Smile
-    const mouthCurve = new THREE.QuadraticBezierCurve3(
-      new THREE.Vector3(-0.045, -0.1, 0.32),
-      new THREE.Vector3(0, -0.118, 0.33),
-      new THREE.Vector3(0.045, -0.1, 0.32)
-    );
-    const mouthGeo = new THREE.TubeGeometry(mouthCurve, 16, 0.006, 8, false);
-    const mouthMesh = new THREE.Mesh(mouthGeo, mouthMat);
-    headPivot.add(mouthMesh);
-
-    // Natural Ears
-    const earGeo = new THREE.SphereGeometry(0.065, 16, 16);
-    earGeo.scale(0.4, 0.9, 0.6);
-    const earL = new THREE.Mesh(earGeo, skinMat);
-    earL.position.set(-0.33, 0.03, -0.01);
-    earL.rotation.y = -0.18;
-    headPivot.add(earL);
-
-    const earR = new THREE.Mesh(earGeo, skinMat);
-    earR.position.set(0.33, 0.03, -0.01);
-    earR.rotation.y = 0.18;
-    headPivot.add(earR);
-
-    // ═════════════════════════════════════════════════════════
-    // 3. EXPRESSIVE ANATOMIC EYES
-    // ═════════════════════════════════════════════════════════
-    const createEye = (isLeft: boolean) => {
-      const eyeGroup = new THREE.Group();
-      const x = isLeft ? -0.125 : 0.125;
-      eyeGroup.position.set(x, 0.05, 0.31);
-
-      // Eye White Sclera
-      const scleraGeo = new THREE.SphereGeometry(0.046, 24, 24);
-      scleraGeo.scale(1.0, 0.88, 0.65);
-      const sclera = new THREE.Mesh(scleraGeo, eyeWhiteMat);
-      eyeGroup.add(sclera);
-
-      // Deep Brown Iris
-      const irisGeo = new THREE.SphereGeometry(0.024, 24, 24);
-      irisGeo.scale(1.0, 1.0, 0.3);
-      const iris = new THREE.Mesh(irisGeo, irisMat);
-      iris.position.set(0, 0, 0.022);
-      eyeGroup.add(iris);
-
-      // Obsidian Pupil
-      const pupilGeo = new THREE.SphereGeometry(0.012, 16, 16);
-      pupilGeo.scale(1.0, 1.0, 0.2);
-      const pupil = new THREE.Mesh(pupilGeo, pupilMat);
-      pupil.position.set(0, 0, 0.026);
-      eyeGroup.add(pupil);
-
-      // Catchlight Glints (Dual Anime Glint for life)
-      const glint1 = new THREE.Mesh(new THREE.SphereGeometry(0.005, 12, 12), glintMat);
-      glint1.position.set(0.006, 0.007, 0.028);
-      eyeGroup.add(glint1);
-
-      const glint2 = new THREE.Mesh(new THREE.SphereGeometry(0.0028, 10, 10), glintMat);
-      glint2.position.set(-0.005, -0.005, 0.028);
-      eyeGroup.add(glint2);
-
-      // Delicate Upper Eyelash line
-      const lashCurve = new THREE.QuadraticBezierCurve3(
-        new THREE.Vector3(-0.04, 0.028, 0.02),
-        new THREE.Vector3(0, 0.046, 0.028),
-        new THREE.Vector3(0.04, 0.028, 0.02)
-      );
-      const lashGeo = new THREE.TubeGeometry(lashCurve, 12, 0.0035, 6, false);
-      const lash = new THREE.Mesh(lashGeo, hairMat);
-      eyeGroup.add(lash);
-
-      return eyeGroup;
-    };
-
-    const eyeL = createEye(true);
-    const eyeR = createEye(false);
-    headPivot.add(eyeL);
-    headPivot.add(eyeR);
-
-    // Natural Eyebrows
-    const createEyebrow = (isLeft: boolean) => {
-      const browCurve = new THREE.QuadraticBezierCurve3(
-        new THREE.Vector3(isLeft ? -0.038 : -0.048, 0, 0),
-        new THREE.Vector3(0, 0.016, 0.006),
-        new THREE.Vector3(isLeft ? 0.048 : 0.038, 0.004, 0)
-      );
-      const browGeo = new THREE.TubeGeometry(browCurve, 14, 0.0055, 8, false);
-      const browMesh = new THREE.Mesh(browGeo, hairMat);
-      browMesh.position.set(isLeft ? -0.125 : 0.125, 0.145, 0.33);
-      return browMesh;
-    };
-
-    const browL = createEyebrow(true);
-    const browR = createEyebrow(false);
-    headPivot.add(browL);
-    headPivot.add(browR);
-
-    // ═════════════════════════════════════════════════════════
-    // 4. TRENDY ROUND-HEX STUDENT GLASSES
-    // ═════════════════════════════════════════════════════════
-    const glassesGroup = new THREE.Group();
-    glassesGroup.position.set(0, 0.05, 0.38);
-    headPivot.add(glassesGroup);
-
-    const createLensFrame = (isLeft: boolean) => {
+    // Drawstrings with Metal Aglets
+    const createDrawstring = (isLeft: boolean) => {
       const group = new THREE.Group();
-      const x = isLeft ? -0.125 : 0.125;
-      group.position.set(x, 0, 0);
+      const x = isLeft ? -0.06 : 0.06;
+      group.position.set(x, 0.04, 0.13);
 
-      // Round Titanium Ring
-      const frameRing = new THREE.Mesh(
-        new THREE.TorusGeometry(0.074, 0.006, 16, 36),
-        glassesFrameMat
-      );
-      frameRing.scale.set(1.06, 0.95, 1.0);
-      group.add(frameRing);
+      const cordCurve = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(0, 0, 0),
+        new THREE.Vector3(isLeft ? -0.008 : 0.008, -0.09, 0.01),
+        new THREE.Vector3(isLeft ? -0.004 : 0.004, -0.17, 0.008),
+      ]);
+      const cordGeo = new THREE.TubeGeometry(cordCurve, 12, 0.0045, 8, false);
+      const cordMesh = new THREE.Mesh(cordGeo, hoodieRibMat);
+      group.add(cordMesh);
 
-      // Translucent Glass Lens
-      const glass = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.071, 0.071, 0.003, 24),
-        lensMat
-      );
-      glass.rotation.x = Math.PI / 2;
-      glass.scale.set(1.06, 1.0, 0.95);
-      group.add(glass);
+      const agletGeo = new THREE.CylinderGeometry(0.005, 0.0045, 0.024, 10);
+      const aglet = new THREE.Mesh(agletGeo, agletMat);
+      aglet.position.set(isLeft ? -0.004 : 0.004, -0.18, 0.008);
+      group.add(aglet);
 
       return group;
     };
 
-    glassesGroup.add(createLensFrame(true));
-    glassesGroup.add(createLensFrame(false));
+    torsoGroup.add(createDrawstring(true));
+    torsoGroup.add(createDrawstring(false));
 
-    // Glasses Bridge
+    // Neck
+    const neckGeo = new THREE.CylinderGeometry(0.09, 0.11, 0.22, 24);
+    const neck = new THREE.Mesh(neckGeo, skinMat);
+    neck.position.set(0, 0.15, 0.01);
+    torsoGroup.add(neck);
+
+    // ─────────────────────────────────────────────────────────
+    // B. HEAD PIVOT & SCULPTED ANIME/PIXAR FACE (Clean, No Black Bar)
+    // ─────────────────────────────────────────────────────────
+    const headPivot = new THREE.Group();
+    headPivot.position.set(0, 0.32, 0.02);
+    avatarRoot.add(headPivot);
+
+    const headGroup = new THREE.Group();
+    headPivot.add(headGroup);
+
+    // 1. Sculpted Head Cranium (Smooth stylized oval)
+    const craniumGeo = new THREE.SphereGeometry(0.24, 48, 48);
+    craniumGeo.scale(1.0, 1.12, 0.98);
+    const craniumMesh = new THREE.Mesh(craniumGeo, skinMat);
+    craniumMesh.position.set(0, 0.04, 0);
+    headGroup.add(craniumMesh);
+
+    // 2. Sculpted Jaw & Chin (V-line jaw contour)
+    const jawGeo = new THREE.CylinderGeometry(0.22, 0.12, 0.20, 32);
+    jawGeo.scale(0.95, 1.0, 0.88);
+    const jawMesh = new THREE.Mesh(jawGeo, skinMat);
+    jawMesh.position.set(0, -0.09, 0.015);
+    headGroup.add(jawMesh);
+
+    // Delicate Chin Cap
+    const chinGeo = new THREE.SphereGeometry(0.065, 24, 24);
+    chinGeo.scale(1.05, 0.75, 0.88);
+    const chinMesh = new THREE.Mesh(chinGeo, skinMat);
+    chinMesh.position.set(0, -0.17, 0.09);
+    headGroup.add(chinMesh);
+
+    // 3. Cute Stylized Button Nose
+    const noseTipGeo = new THREE.SphereGeometry(0.015, 16, 16);
+    noseTipGeo.scale(1.0, 0.85, 1.0);
+    const noseTip = new THREE.Mesh(noseTipGeo, skinWarmMat);
+    noseTip.position.set(0, 0.015, 0.245);
+    headGroup.add(noseTip);
+
+    // 4. Expressive Lips & Confident Smile
+    const mouthCurve = new THREE.QuadraticBezierCurve3(
+      new THREE.Vector3(-0.034, 0.002, 0.0),
+      new THREE.Vector3(0, -0.008, 0.006),
+      new THREE.Vector3(0.034, 0.002, 0.0)
+    );
+    const mouthGeo = new THREE.TubeGeometry(mouthCurve, 14, 0.0032, 8, false);
+    const mouth = new THREE.Mesh(mouthGeo, lipMat);
+    mouth.position.set(0, -0.075, 0.22);
+    headGroup.add(mouth);
+
+    const lowerLip = new THREE.Mesh(new THREE.SphereGeometry(0.012, 10, 10), lipMat);
+    lowerLip.position.set(0, -0.084, 0.223);
+    lowerLip.scale.set(1.3, 0.4, 0.5);
+    headGroup.add(lowerLip);
+
+    // 5. Stylized Ears
+    const createEar = (isLeft: boolean) => {
+      const earGroup = new THREE.Group();
+      const x = isLeft ? -0.24 : 0.24;
+      earGroup.position.set(x, 0.03, -0.01);
+      earGroup.rotation.y = isLeft ? -0.18 : 0.18;
+
+      const earGeo = new THREE.SphereGeometry(0.055, 16, 16);
+      earGeo.scale(0.32, 0.88, 0.58);
+      const ear = new THREE.Mesh(earGeo, skinWarmMat);
+      earGroup.add(ear);
+
+      return earGroup;
+    };
+
+    headGroup.add(createEar(true));
+    headGroup.add(createEar(false));
+
+    // ─────────────────────────────────────────────────────────
+    // C. GORGEOUS EXPRESSIVE ANIME/PIXAR EYES (Crystal Clear & Sparkling)
+    // ─────────────────────────────────────────────────────────
+    interface EyeRig {
+      root: THREE.Group;
+      gazeGroup: THREE.Group;
+      scaleGroup: THREE.Group;
+    }
+
+    const createAnimeEye = (isLeft: boolean): EyeRig => {
+      const root = new THREE.Group();
+      const x = isLeft ? -0.088 : 0.088;
+      root.position.set(x, 0.052, 0.218);
+
+      const scaleGroup = new THREE.Group();
+      root.add(scaleGroup);
+
+      // Sclera
+      const scleraGeo = new THREE.SphereGeometry(0.038, 28, 28);
+      scleraGeo.scale(1.08, 0.96, 0.45);
+      const sclera = new THREE.Mesh(scleraGeo, eyeWhiteMat);
+      scaleGroup.add(sclera);
+
+      // Gaze Tracking Group
+      const gazeGroup = new THREE.Group();
+      gazeGroup.position.set(0, 0, 0.016);
+      scaleGroup.add(gazeGroup);
+
+      // Outer Iris Ring
+      const irisOuterGeo = new THREE.CylinderGeometry(0.026, 0.026, 0.003, 24);
+      irisOuterGeo.scale(1.0, 1.0, 0.9);
+      const irisOuter = new THREE.Mesh(irisOuterGeo, irisOuterMat);
+      irisOuter.rotation.x = Math.PI / 2;
+      gazeGroup.add(irisOuter);
+
+      // Inner Amber Highlight
+      const irisInnerGeo = new THREE.CylinderGeometry(0.019, 0.019, 0.004, 20);
+      const irisInner = new THREE.Mesh(irisInnerGeo, irisInnerMat);
+      irisInner.rotation.x = Math.PI / 2;
+      irisInner.position.set(0, -0.002, 0.001);
+      gazeGroup.add(irisInner);
+
+      // Deep Black Pupil
+      const pupilGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.005, 20);
+      const pupil = new THREE.Mesh(pupilGeo, pupilMat);
+      pupil.rotation.x = Math.PI / 2;
+      gazeGroup.add(pupil);
+
+      // Catchlight Glints
+      const glint1 = new THREE.Mesh(new THREE.SphereGeometry(0.0048, 12, 12), glintMat);
+      glint1.position.set(0.006, 0.007, 0.005);
+      gazeGroup.add(glint1);
+
+      const glint2 = new THREE.Mesh(new THREE.SphereGeometry(0.0024, 10, 10), glintMat);
+      glint2.position.set(-0.005, -0.005, 0.005);
+      gazeGroup.add(glint2);
+
+      // Upper Eyelash Wing
+      const lashCurve = new THREE.QuadraticBezierCurve3(
+        new THREE.Vector3(isLeft ? -0.034 : -0.028, 0.022, 0.014),
+        new THREE.Vector3(0, 0.038, 0.018),
+        new THREE.Vector3(isLeft ? 0.028 : 0.034, 0.020, 0.014)
+      );
+      const lashGeo = new THREE.TubeGeometry(lashCurve, 16, 0.0036, 6, false);
+      const lash = new THREE.Mesh(lashGeo, lashMat);
+      scaleGroup.add(lash);
+
+      return { root, gazeGroup, scaleGroup };
+    };
+
+    const eyeL = createAnimeEye(true);
+    const eyeR = createAnimeEye(false);
+    headGroup.add(eyeL.root);
+    headGroup.add(eyeR.root);
+
+    // Natural Arched Eyebrows (Clearly visible on the forehead)
+    const createEyebrow = (isLeft: boolean) => {
+      const browCurve = new THREE.QuadraticBezierCurve3(
+        new THREE.Vector3(isLeft ? -0.032 : -0.040, 0, 0),
+        new THREE.Vector3(0, 0.012, 0.006),
+        new THREE.Vector3(isLeft ? 0.040 : 0.032, 0.003, 0)
+      );
+      const browGeo = new THREE.TubeGeometry(browCurve, 14, 0.0038, 6, false);
+      const browMesh = new THREE.Mesh(browGeo, hairMat);
+      browMesh.position.set(isLeft ? -0.088 : 0.088, 0.118, 0.228);
+      return browMesh;
+    };
+
+    headGroup.add(createEyebrow(true));
+    headGroup.add(createEyebrow(false));
+
+    // ─────────────────────────────────────────────────────────
+    // D. ULTRA-SLIM TITANIUM GLASSES (Thin, Delicate, Framing Eyes)
+    // ─────────────────────────────────────────────────────────
+    const glassesGroup = new THREE.Group();
+    glassesGroup.position.set(0, 0.052, 0.265);
+    headGroup.add(glassesGroup);
+
+    const createHexFrame = (isLeft: boolean) => {
+      const group = new THREE.Group();
+      const x = isLeft ? -0.088 : 0.088;
+      group.position.set(x, 0, 0);
+
+      // Ultra-thin Titanium Rim
+      const rimGeo = new THREE.TorusGeometry(0.054, 0.0028, 12, 6);
+      const rimMesh = new THREE.Mesh(rimGeo, glassesFrameMat);
+      rimMesh.scale.set(1.08, 0.94, 1.0);
+      group.add(rimMesh);
+
+      return group;
+    };
+
+    glassesGroup.add(createHexFrame(true));
+    glassesGroup.add(createHexFrame(false));
+
+    // Delicate Bridge
     const bridgeCurve = new THREE.QuadraticBezierCurve3(
-      new THREE.Vector3(-0.042, 0.012, 0.003),
-      new THREE.Vector3(0, 0.028, 0.008),
-      new THREE.Vector3(0.042, 0.012, 0.003)
+      new THREE.Vector3(-0.032, 0.01, 0.002),
+      new THREE.Vector3(0, 0.02, 0.005),
+      new THREE.Vector3(0.032, 0.01, 0.002)
     );
     const bridgeMesh = new THREE.Mesh(
-      new THREE.TubeGeometry(bridgeCurve, 10, 0.004, 8, false),
+      new THREE.TubeGeometry(bridgeCurve, 10, 0.0022, 6, false),
       glassesMetalMat
     );
     glassesGroup.add(bridgeMesh);
 
-    // Temples (Arms extending back)
-    const templeL = new THREE.Mesh(new THREE.BoxGeometry(0.005, 0.005, 0.4), glassesFrameMat);
-    templeL.position.set(-0.21, 0.01, -0.2);
-    templeL.rotation.y = 0.14;
+    // Temple Arms
+    const templeCurveL = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(-0.145, 0.008, 0),
+      new THREE.Vector3(-0.22, 0.012, -0.12),
+      new THREE.Vector3(-0.24, -0.008, -0.25),
+    ]);
+    const templeL = new THREE.Mesh(
+      new THREE.TubeGeometry(templeCurveL, 12, 0.0020, 6, false),
+      glassesFrameMat
+    );
     glassesGroup.add(templeL);
 
-    const templeR = new THREE.Mesh(new THREE.BoxGeometry(0.005, 0.005, 0.4), glassesFrameMat);
-    templeR.position.set(0.21, 0.01, -0.2);
-    templeR.rotation.y = -0.14;
+    const templeCurveR = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(0.145, 0.008, 0),
+      new THREE.Vector3(0.22, 0.012, -0.12),
+      new THREE.Vector3(0.24, -0.008, -0.25),
+    ]);
+    const templeR = new THREE.Mesh(
+      new THREE.TubeGeometry(templeCurveR, 12, 0.0020, 6, false),
+      glassesFrameMat
+    );
     glassesGroup.add(templeR);
 
-    // ═════════════════════════════════════════════════════════
-    // 5. PROPER MODERN STYLED HAIRCUT (Korean Two-Block / Layered Messy Quiff)
-    // ═════════════════════════════════════════════════════════
+    // ─────────────────────────────────────────────────────────
+    // E. STYLISH K-POP / ANIME TWO-BLOCK LAYERED HAIRCUT
+    // ─────────────────────────────────────────────────────────
     const hairGroup = new THREE.Group();
-    headPivot.add(hairGroup);
+    headGroup.add(hairGroup);
 
-    // 1. Sleek Undercut / Taper Fade Base Cap (Snug, smooth curvature)
-    const hairCapGeo = new THREE.SphereGeometry(0.35, 40, 40, 0, Math.PI * 2, 0, Math.PI * 0.52);
-    hairCapGeo.scale(1.02, 1.06, 1.04);
-    const hairCap = new THREE.Mesh(hairCapGeo, hairMat);
-    hairCap.position.set(0, 0.06, -0.02);
-    hairCap.rotation.x = -0.15;
-    hairGroup.add(hairCap);
+    // 1. Fitted Base Undercut Mass (High hairline, completely clear of eyes/forehead)
+    const baseHairGeo = new THREE.SphereGeometry(0.250, 36, 36, 0, Math.PI * 2, 0, Math.PI * 0.44);
+    baseHairGeo.scale(1.02, 1.06, 1.04);
+    const baseHair = new THREE.Mesh(baseHairGeo, hairMat);
+    baseHair.position.set(0, 0.10, -0.02);
+    baseHair.rotation.x = -0.05;
+    hairGroup.add(baseHair);
 
-    // 2. Sculpted Volumetric Hair Clump Builder with Natural Thickness & Taper
-    const addSculptedHairStrand = (
-      curvePoints: [number, number, number][],
-      radius: number,
+    // 2. Sculpted Hair Clump Builder (Flat, tapered ribbons framing forehead cleanly)
+    const addHairLock = (
+      points: [number, number, number][],
+      thickness: number,
       isHighlight = false,
       scaleX = 1.0,
       scaleY = 1.0
     ) => {
-      const pts = curvePoints.map((p) => new THREE.Vector3(...p));
-      const curve = new THREE.CatmullRomCurve3(pts);
-      const geo = new THREE.TubeGeometry(curve, 24, radius, 12, false);
+      const curve = new THREE.CatmullRomCurve3(
+        points.map((p) => new THREE.Vector3(...p))
+      );
+      const geo = new THREE.TubeGeometry(curve, 16, thickness, 8, false);
       geo.scale(scaleX, scaleY, 1.0);
       const mesh = new THREE.Mesh(geo, isHighlight ? hairHighlightMat : hairMat);
       hairGroup.add(mesh);
     };
 
-    // --- A. TEXTURED FRONT CURTAIN BANGS (60/40 Parted Modern Fringe) ---
-    // Left-Parted Swept Fringe (Curving elegantly across the forehead)
-    addSculptedHairStrand([[-0.03, 0.31, 0.25], [-0.09, 0.24, 0.33], [-0.15, 0.16, 0.35]], 0.032, true, 1.3, 0.9);
-    addSculptedHairStrand([[-0.05, 0.32, 0.23], [-0.13, 0.26, 0.31], [-0.22, 0.15, 0.32]], 0.028, false, 1.2, 0.85);
-    addSculptedHairStrand([[-0.08, 0.33, 0.19], [-0.18, 0.25, 0.27], [-0.27, 0.12, 0.27]], 0.026, true, 1.1, 0.9);
-    addSculptedHairStrand([[-0.12, 0.31, 0.17], [-0.23, 0.22, 0.22], [-0.29, 0.08, 0.22]], 0.024, false);
+    // --- 60/40 Parted Curtain Bangs (Resting high on forehead, well above eyes) ---
+    // Left side fringe
+    addHairLock([[-0.01, 0.28, 0.18], [-0.07, 0.23, 0.22], [-0.14, 0.16, 0.22]], 0.022, true, 1.2, 0.8);
+    addHairLock([[-0.04, 0.29, 0.16], [-0.11, 0.24, 0.20], [-0.18, 0.15, 0.20]], 0.020, false, 1.2, 0.8);
+    addHairLock([[-0.08, 0.30, 0.14], [-0.15, 0.23, 0.17], [-0.22, 0.13, 0.16]], 0.018, true, 1.1, 0.8);
+    addHairLock([[-0.12, 0.28, 0.11], [-0.19, 0.20, 0.13], [-0.24, 0.08, 0.12]], 0.016, false);
 
-    // Right-Parted Fringe (Framing temple and glasses)
-    addSculptedHairStrand([[0.03, 0.32, 0.25], [0.09, 0.25, 0.33], [0.16, 0.17, 0.34]], 0.032, true, 1.3, 0.9);
-    addSculptedHairStrand([[0.06, 0.33, 0.23], [0.15, 0.26, 0.30], [0.22, 0.15, 0.31]], 0.028, false, 1.2, 0.85);
-    addSculptedHairStrand([[0.09, 0.34, 0.19], [0.19, 0.25, 0.26], [0.28, 0.12, 0.26]], 0.026, true, 1.1, 0.9);
-    addSculptedHairStrand([[0.13, 0.32, 0.17], [0.24, 0.22, 0.21], [0.30, 0.08, 0.21]], 0.024, false);
+    // Right side fringe
+    addHairLock([[0.01, 0.28, 0.18], [0.07, 0.23, 0.22], [0.14, 0.16, 0.22]], 0.022, true, 1.2, 0.8);
+    addHairLock([[0.04, 0.29, 0.16], [0.11, 0.24, 0.20], [0.18, 0.15, 0.20]], 0.020, false, 1.2, 0.8);
+    addHairLock([[0.08, 0.30, 0.14], [0.15, 0.23, 0.17], [0.22, 0.13, 0.16]], 0.018, true, 1.1, 0.8);
+    addHairLock([[0.12, 0.28, 0.11], [0.19, 0.20, 0.13], [0.24, 0.08, 0.12]], 0.016, false);
 
-    // Parting Accent Center Tuft (Natural organic depth at hairline)
-    addSculptedHairStrand([[0.0, 0.32, 0.27], [-0.02, 0.37, 0.31], [-0.03, 0.27, 0.35]], 0.022, true, 1.1, 0.9);
-    addSculptedHairStrand([[0.02, 0.32, 0.27], [0.04, 0.37, 0.30], [0.05, 0.26, 0.34]], 0.02, false, 1.1, 0.9);
+    // Center Parting Accent
+    addHairLock([[0.0, 0.29, 0.19], [-0.01, 0.26, 0.22], [-0.02, 0.21, 0.23]], 0.015, true);
+    addHairLock([[0.01, 0.29, 0.19], [0.02, 0.26, 0.22], [0.03, 0.21, 0.23]], 0.014, false);
 
-    // --- B. TOP CROWN & TEXTURED QUIFF VOLUME (Fluffy modern textured look) ---
-    addSculptedHairStrand([[0.0, 0.43, 0.14], [-0.07, 0.49, 0.16], [-0.15, 0.41, 0.22]], 0.034, true, 1.2, 0.9);
-    addSculptedHairStrand([[0.0, 0.43, 0.14], [0.07, 0.49, 0.16], [0.15, 0.41, 0.22]], 0.034, false, 1.2, 0.9);
+    // --- Top Crown Texture (Flowing naturally) ---
+    addHairLock([[0.0, 0.33, 0.12], [-0.06, 0.34, 0.10], [-0.13, 0.28, 0.12]], 0.026, true);
+    addHairLock([[0.0, 0.33, 0.12], [0.06, 0.34, 0.10], [0.13, 0.28, 0.12]], 0.026, false);
 
-    addSculptedHairStrand([[0.0, 0.45, 0.03], [-0.11, 0.51, 0.06], [-0.22, 0.40, 0.12]], 0.032, true, 1.2, 0.9);
-    addSculptedHairStrand([[0.0, 0.45, 0.03], [0.11, 0.51, 0.06], [0.22, 0.40, 0.12]], 0.032, false, 1.2, 0.9);
+    addHairLock([[0.0, 0.34, 0.02], [-0.09, 0.35, 0.01], [-0.17, 0.28, 0.04]], 0.024, true);
+    addHairLock([[0.0, 0.34, 0.02], [0.09, 0.35, 0.01], [0.17, 0.28, 0.04]], 0.024, false);
 
-    addSculptedHairStrand([[0.0, 0.46, -0.07], [0.0, 0.52, -0.03], [0.0, 0.45, 0.07]], 0.035, true, 1.3, 0.85);
-    addSculptedHairStrand([[-0.08, 0.45, -0.06], [-0.14, 0.48, -0.02], [-0.15, 0.42, 0.07]], 0.03, false);
-    addSculptedHairStrand([[0.08, 0.45, -0.06], [0.14, 0.48, -0.02], [0.15, 0.42, 0.07]], 0.03, false);
+    // --- Side Burns & Nape Locks ---
+    addHairLock([[-0.18, 0.20, 0.10], [-0.24, 0.12, 0.06], [-0.25, 0.01, 0.04]], 0.018, false);
+    addHairLock([[0.18, 0.20, 0.10], [0.24, 0.12, 0.06], [0.25, 0.01, 0.04]], 0.018, false);
 
-    // --- C. SLEEK SIDE LOCKS & TEMPLE INTEGRATION (Framing ears smoothly) ---
-    addSculptedHairStrand([[-0.25, 0.26, 0.16], [-0.33, 0.16, 0.11], [-0.33, 0.02, 0.07]], 0.024, false, 1.1, 0.8);
-    addSculptedHairStrand([[-0.27, 0.22, 0.08], [-0.35, 0.12, 0.04], [-0.34, -0.02, 0.02]], 0.022, true, 1.1, 0.8);
+    addHairLock([[-0.09, 0.21, -0.13], [-0.13, 0.10, -0.15], [-0.09, -0.01, -0.17]], 0.020, false);
+    addHairLock([[0.09, 0.21, -0.13], [0.13, 0.10, -0.15], [0.09, -0.01, -0.17]], 0.020, false);
+    addHairLock([[0.0, 0.22, -0.14], [0.0, 0.10, -0.16], [0.0, -0.01, -0.17]], 0.022, true);
 
-    addSculptedHairStrand([[0.25, 0.26, 0.16], [0.33, 0.16, 0.11], [0.33, 0.02, 0.07]], 0.024, false, 1.1, 0.8);
-    addSculptedHairStrand([[0.27, 0.22, 0.08], [0.35, 0.12, 0.04], [0.34, -0.02, 0.02]], 0.022, true, 1.1, 0.8);
-
-    // --- D. CLEAN NAPE TAPER (Seamless neck blend) ---
-    addSculptedHairStrand([[-0.14, 0.29, -0.16], [-0.20, 0.13, -0.20], [-0.14, -0.02, -0.22]], 0.028, false);
-    addSculptedHairStrand([[0.14, 0.29, -0.16], [0.20, 0.13, -0.20], [0.14, -0.02, -0.22]], 0.028, false);
-    addSculptedHairStrand([[0.0, 0.31, -0.19], [0.0, 0.13, -0.23], [0.0, -0.02, -0.24]], 0.03, true);
-
-    // ═════════════════════════════════════════════════════════
-    // 6. AMBIENT BACKGROUND PARTICLES
-    // ═════════════════════════════════════════════════════════
-    const particleCount = 28;
+    // --- Ambient Particles ---
+    const particleCount = 16;
     const particleGeo = new THREE.BufferGeometry();
     const particlePos = new Float32Array(particleCount * 3);
 
     for (let i = 0; i < particleCount; i++) {
       const theta = (i / particleCount) * Math.PI * 2;
-      const radius = 1.3 + Math.random() * 1.1;
+      const radius = 1.0 + Math.random() * 0.8;
       particlePos[i * 3] = Math.cos(theta) * radius;
-      particlePos[i * 3 + 1] = (Math.random() - 0.5) * 2.0 + 0.4;
-      particlePos[i * 3 + 2] = Math.sin(theta) * radius - 0.3;
+      particlePos[i * 3 + 1] = (Math.random() - 0.5) * 1.5 + 0.3;
+      particlePos[i * 3 + 2] = Math.sin(theta) * radius - 0.2;
     }
 
     particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePos, 3));
     const particleMat = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 0.016,
+      size: 0.012,
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.25,
     });
     const particles = new THREE.Points(particleGeo, particleMat);
     scene.add(particles);
 
     // ═════════════════════════════════════════════════════════
-    // 7. LIVE EXPERIENCE SETTINGS SYNCHRONIZER
+    // 5. LIVE EXPERIENCE SETTINGS SYNCHRONIZER
     // ═════════════════════════════════════════════════════════
     const applyExperience = (s: ExperienceSettings) => {
-      // Glasses visibility
       glassesGroup.visible = s.avatarGlasses;
 
-      // Hoodie color styling
       if (s.avatarHoodie === 'noir') {
         hoodieMat.color.setHex(0x141417);
         hoodieRibMat.color.setHex(0x222226);
@@ -525,21 +568,27 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
         hoodieRibMat.color.setHex(0x047857);
       }
 
-      // Studio lighting style
       if (s.avatarLighting === 'cyber') {
-        keyLight.color.setHex(0x70d6ff);
-        fillLight.color.setHex(0xff70a6);
+        keyLight.color.setHex(0x67e8f9);
+        keyLight.intensity = 2.0;
+        fillLight.color.setHex(0xf472b6);
+        fillLight.intensity = 1.4;
         rimLight.color.setHex(0x38bdf8);
+        rimLight.intensity = 3.6;
       } else if (s.avatarLighting === 'noir_rim') {
         keyLight.color.setHex(0xffffff);
         keyLight.intensity = 1.4;
         fillLight.color.setHex(0x71717a);
-        rimLight.intensity = 5.5;
-      } else {
-        keyLight.color.setHex(0xfff8f2);
-        keyLight.intensity = 2.6;
-        fillLight.color.setHex(0xdde3eb);
+        fillLight.intensity = 0.8;
+        rimLight.color.setHex(0xffffff);
         rimLight.intensity = 4.2;
+      } else {
+        keyLight.color.setHex(0xfffaee);
+        keyLight.intensity = 2.5;
+        fillLight.color.setHex(0xdbeafe);
+        fillLight.intensity = 1.4;
+        rimLight.color.setHex(0xffffff);
+        rimLight.intensity = 3.2;
       }
     };
 
@@ -554,7 +603,7 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
     window.addEventListener('hireme_experience_update', handleSettingsUpdate);
 
     // ═════════════════════════════════════════════════════════
-    // 8. SPRING PHYSICS & CURSOR TRACKING ENGINE
+    // 6. SPRING PHYSICS & INTERACTIVE CURSOR TRACKING
     // ═════════════════════════════════════════════════════════
     const pointer = {
       targetX: 0,
@@ -568,14 +617,13 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
       rollVelocity: 0,
     };
 
-    // Snappy harmonic spring physics (fast responsiveness, organic settling)
     const springK = 0.082;
-    const springDamping = 0.76;
+    const springDamping = 0.78;
 
     const handlePointerMove = (e: MouseEvent) => {
       const rect = container.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height * 0.4; // head center
+      const centerY = rect.top + rect.height * 0.42;
 
       const dx = e.clientX - centerX;
       const dy = e.clientY - centerY;
@@ -586,13 +634,9 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
       const clampedX = Math.max(-1.1, Math.min(1.1, normX));
       const clampedY = Math.max(-1.1, Math.min(1.1, normY));
 
-      // Corrected rotational physics:
-      // dx > 0 (cursor right) -> yaw positive (head turns right)
-      // dy > 0 (cursor down)  -> pitch positive (head tilts down)
-      // dy < 0 (cursor up)    -> pitch negative (head tilts up)
-      pointer.targetX = clampedX * 0.58;
-      pointer.targetY = clampedY * 0.42;
-      pointer.rollTarget = clampedX * 0.08;
+      pointer.targetX = clampedX * 0.50;
+      pointer.targetY = clampedY * 0.36;
+      pointer.rollTarget = clampedX * 0.06;
     };
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -600,7 +644,7 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
       const touch = e.touches[0];
       const rect = container.getBoundingClientRect();
       const centerX = rect.left + rect.width / 2;
-      const centerY = rect.top + rect.height * 0.4;
+      const centerY = rect.top + rect.height * 0.42;
 
       const dx = touch.clientX - centerX;
       const dy = touch.clientY - centerY;
@@ -608,26 +652,24 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
       const normX = dx / (window.innerWidth * 0.5);
       const normY = dy / (window.innerHeight * 0.5);
 
-      pointer.targetX = Math.max(-1.0, Math.min(1.0, normX)) * 0.52;
-      pointer.targetY = Math.max(-1.0, Math.min(1.0, normY)) * 0.38;
-      pointer.rollTarget = Math.max(-1.0, Math.min(1.0, normX)) * 0.06;
+      pointer.targetX = Math.max(-1.0, Math.min(1.0, normX)) * 0.45;
+      pointer.targetY = Math.max(-1.0, Math.min(1.0, normY)) * 0.32;
+      pointer.rollTarget = Math.max(-1.0, Math.min(1.0, normX)) * 0.05;
     };
 
     window.addEventListener('mousemove', handlePointerMove, { passive: true });
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
-    // Blink & Micro-animation Loop
     let blinkTimer = 0;
     let isBlinking = false;
     let blinkProgress = 0;
-    let nextBlinkInterval = 2.8 + Math.random() * 2.5;
+    let nextBlinkInterval = 3.2 + Math.random() * 2.5;
 
-    // Resizing with aspect-ratio guard
     const handleResize = () => {
       if (!container) return;
-      const width = Math.max(container.clientWidth || 360, 100);
-      const height = Math.max(container.clientHeight || 480, 100);
+      const width = Math.max(container.clientWidth || 420, 100);
+      const height = Math.max(container.clientHeight || 560, 100);
       if (width > 0 && height > 0) {
         camera.aspect = width / height;
         camera.updateProjectionMatrix();
@@ -636,9 +678,6 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
     };
     window.addEventListener('resize', handleResize);
 
-    // ═════════════════════════════════════════════════════════
-    // 9. ANIMATION LOOP
-    // ═════════════════════════════════════════════════════════
     let animationFrameId: number;
     const clock = new THREE.Clock();
 
@@ -648,7 +687,7 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
       const delta = Math.min(clock.getDelta(), 0.1);
       const elapsed = clock.getElapsedTime();
 
-      // Spring Physics for Head Rotation
+      // Head spring physics
       const forceX = (pointer.targetX - pointer.currentX) * springK;
       pointer.velocityX = (pointer.velocityX + forceX) * springDamping;
       pointer.currentX += pointer.velocityX;
@@ -661,55 +700,52 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
       pointer.rollVelocity = (pointer.rollVelocity + forceRoll) * springDamping;
       pointer.rollCurrent += pointer.rollVelocity;
 
-      // Subtle student breathing & micro idle
-      const breathY = Math.sin(elapsed * 1.5) * 0.008;
-      const breathPitch = Math.sin(elapsed * 1.5) * 0.012;
-      const idleYaw = Math.sin(elapsed * 0.7) * 0.015;
+      // Natural breathing
+      const breathY = Math.sin(elapsed * 1.4) * 0.006;
+      const breathPitch = Math.sin(elapsed * 1.4) * 0.008;
+      const idleYaw = Math.sin(elapsed * 0.6) * 0.010;
 
-      // Apply Head Rotations (Direct, realistic cursor tracking)
       headPivot.rotation.y = pointer.currentX + idleYaw;
       headPivot.rotation.x = pointer.currentY + breathPitch;
       headPivot.rotation.z = pointer.rollCurrent;
-      headPivot.position.y = 0.52 + breathY;
+      headPivot.position.y = 0.32 + breathY;
 
-      // Natural Torso Follow
-      torsoGroup.rotation.y = pointer.currentX * 0.28 + idleYaw * 0.3;
-      torsoGroup.rotation.x = pointer.currentY * 0.18 + breathPitch * 0.3;
-      torsoGroup.rotation.z = pointer.rollCurrent * 0.2;
-      torsoGroup.position.y = breathY * 0.6;
+      torsoGroup.rotation.y = pointer.currentX * 0.22 + idleYaw * 0.2;
+      torsoGroup.rotation.x = pointer.currentY * 0.14 + breathPitch * 0.2;
+      torsoGroup.rotation.z = pointer.rollCurrent * 0.15;
+      torsoGroup.position.y = breathY * 0.5;
 
-      // Organic Eye Gaze Follow (Pupils look directly at cursor)
-      const eyeLookX = pointer.currentX * 0.45;
-      const eyeLookY = -pointer.currentY * 0.38;
-      eyeL.position.x = -0.125 + eyeLookX * 0.022;
-      eyeL.position.y = 0.05 + eyeLookY * 0.018;
-      eyeR.position.x = 0.125 + eyeLookX * 0.022;
-      eyeR.position.y = 0.05 + eyeLookY * 0.018;
+      // Gaze Tracking
+      const eyeLookX = pointer.currentX * 0.007;
+      const eyeLookY = -pointer.currentY * 0.005;
+      eyeL.gazeGroup.position.x = eyeLookX;
+      eyeL.gazeGroup.position.y = eyeLookY;
+      eyeR.gazeGroup.position.x = eyeLookX;
+      eyeR.gazeGroup.position.y = eyeLookY;
 
-      // Natural Blinking
+      // Crisp Eye Blinking
       blinkTimer += delta;
       if (!isBlinking && blinkTimer > nextBlinkInterval) {
         isBlinking = true;
         blinkTimer = 0;
         blinkProgress = 0;
-        nextBlinkInterval = 2.4 + Math.random() * 3.2;
+        nextBlinkInterval = 2.8 + Math.random() * 3.2;
       }
 
       if (isBlinking) {
         blinkProgress += delta * 14;
         const blinkScale = Math.max(0.08, Math.sin(blinkProgress * Math.PI));
-        eyeL.scale.y = 1.0 - (1.0 - 0.08) * blinkScale;
-        eyeR.scale.y = 1.0 - (1.0 - 0.08) * blinkScale;
+        eyeL.scaleGroup.scale.y = 1.0 - (1.0 - 0.08) * blinkScale;
+        eyeR.scaleGroup.scale.y = 1.0 - (1.0 - 0.08) * blinkScale;
 
         if (blinkProgress >= 1.0) {
           isBlinking = false;
-          eyeL.scale.y = 1.0;
-          eyeR.scale.y = 1.0;
+          eyeL.scaleGroup.scale.y = 1.0;
+          eyeR.scaleGroup.scale.y = 1.0;
         }
       }
 
-      // Ambient Particle Orbit
-      particles.rotation.y = elapsed * 0.035;
+      particles.rotation.y = elapsed * 0.025;
 
       renderer.render(scene, camera);
     };
@@ -719,6 +755,7 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('mousemove', handlePointerMove);
+      window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('hireme_experience_update', handleSettingsUpdate);
@@ -749,7 +786,7 @@ export default function BoyAvatarCanvas({ className = '' }: BoyAvatarCanvasProps
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-[420px] sm:h-[480px] lg:h-[540px] flex items-center justify-center select-none ${className}`}
+      className={`relative w-full h-[480px] sm:h-[560px] lg:h-[620px] flex items-center justify-center select-none ${className}`}
       style={{ touchAction: 'none' }}
     />
   );

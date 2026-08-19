@@ -17,7 +17,6 @@ import {
   Radio,
   MousePointer,
   Keyboard,
-  Eye,
   Smartphone,
   Activity,
 } from 'lucide-react';
@@ -277,7 +276,7 @@ export default function AudioSettingsModal() {
                   { id: 'playground', label: 'Typing HUD', icon: Activity },
                   { id: 'ambient', label: 'Ambient Focus', icon: CloudRain },
                   { id: 'visuals', label: 'Cursor & FX', icon: MousePointer },
-                  { id: 'avatar', label: 'Avatar 3D', icon: Eye },
+                  { id: 'avatar', label: 'Avatar 3D', icon: Sparkles },
                 ].map((tab) => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.id;
